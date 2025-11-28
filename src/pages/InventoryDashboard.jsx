@@ -303,7 +303,11 @@ const InventoryDashboard = () => {
                                     {groupedIngredients[groupKey].length}
                                 </span>
                             </h4>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                                gap: 'var(--spacing-sm)'
+                            }}>
                                 {groupedIngredients[groupKey].map(ing => (
                                     <IngredientCard key={ing.id} ingredient={ing} />
                                 ))}

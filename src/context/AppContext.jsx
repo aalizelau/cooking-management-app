@@ -6,10 +6,51 @@ export const useApp = () => useContext(AppContext);
 
 // Mock Data
 const INITIAL_INGREDIENTS = [
+    // Dairy - In Stock
     { id: '1', name: 'Milk', category: 'Dairy', stockStatus: 'In Stock', location: 'Refrigerated', history: [] },
     { id: '2', name: 'Eggs', category: 'Dairy', stockStatus: 'In Stock', location: 'Refrigerated', history: [] },
-    { id: '3', name: 'Flour', category: 'Pantry', stockStatus: 'Out of Stock', location: 'Room Temp', history: [] },
     { id: '4', name: 'Butter', category: 'Dairy', stockStatus: 'In Stock', location: 'Refrigerated', history: [] },
+    { id: '5', name: 'Cheddar Cheese', category: 'Dairy', stockStatus: 'In Stock', location: 'Refrigerated', history: [] },
+    { id: '6', name: 'Greek Yogurt', category: 'Dairy', stockStatus: 'In Stock', location: 'Refrigerated', history: [] },
+
+    // Fruits - In Stock
+    { id: '7', name: 'Apples', category: 'Fruits', stockStatus: 'In Stock', location: 'Refrigerated', history: [] },
+    { id: '8', name: 'Bananas', category: 'Fruits', stockStatus: 'In Stock', location: 'Room Temp', history: [] },
+    { id: '9', name: 'Oranges', category: 'Fruits', stockStatus: 'In Stock', location: 'Room Temp', history: [] },
+    { id: '10', name: 'Strawberries', category: 'Fruits', stockStatus: 'In Stock', location: 'Refrigerated', history: [] },
+
+    // Vegetables - In Stock
+    { id: '11', name: 'Carrots', category: 'Vegetables', stockStatus: 'In Stock', location: 'Refrigerated', history: [] },
+    { id: '12', name: 'Broccoli', category: 'Vegetables', stockStatus: 'In Stock', location: 'Refrigerated', history: [] },
+    { id: '13', name: 'Spinach', category: 'Vegetables', stockStatus: 'In Stock', location: 'Refrigerated', history: [] },
+    { id: '14', name: 'Bell Peppers', category: 'Vegetables', stockStatus: 'In Stock', location: 'Refrigerated', history: [] },
+
+    // Meat - In Stock
+    { id: '15', name: 'Chicken Breast', category: 'Meat', stockStatus: 'In Stock', location: 'Frozen', history: [] },
+    { id: '16', name: 'Ground Beef', category: 'Meat', stockStatus: 'In Stock', location: 'Frozen', history: [] },
+    { id: '17', name: 'Salmon Fillet', category: 'Meat', stockStatus: 'In Stock', location: 'Frozen', history: [] },
+
+    // Pantry - In Stock
+    { id: '18', name: 'Rice', category: 'Pantry', stockStatus: 'In Stock', location: 'Room Temp', history: [] },
+    { id: '19', name: 'Pasta', category: 'Pantry', stockStatus: 'In Stock', location: 'Room Temp', history: [] },
+    { id: '20', name: 'Olive Oil', category: 'Pantry', stockStatus: 'In Stock', location: 'Room Temp', history: [] },
+    { id: '21', name: 'Canned Tomatoes', category: 'Pantry', stockStatus: 'In Stock', location: 'Room Temp', history: [] },
+
+    // Snacks - In Stock
+    { id: '22', name: 'Potato Chips', category: 'Snacks', stockStatus: 'In Stock', location: 'Room Temp', history: [] },
+    { id: '23', name: 'Crackers', category: 'Snacks', stockStatus: 'In Stock', location: 'Room Temp', history: [] },
+    { id: '24', name: 'Dark Chocolate', category: 'Snacks', stockStatus: 'In Stock', location: 'Room Temp', history: [] },
+
+    // Beverages - In Stock
+    { id: '25', name: 'Orange Juice', category: 'Beverages', stockStatus: 'In Stock', location: 'Refrigerated', history: [] },
+    { id: '26', name: 'Coffee Beans', category: 'Beverages', stockStatus: 'In Stock', location: 'Room Temp', history: [] },
+
+    // Out of Stock Items
+    { id: '3', name: 'Flour', category: 'Pantry', stockStatus: 'Out of Stock', location: 'Room Temp', history: [] },
+    { id: '27', name: 'Sugar', category: 'Pantry', stockStatus: 'Out of Stock', location: 'Room Temp', history: [] },
+    { id: '28', name: 'Bacon', category: 'Meat', stockStatus: 'Out of Stock', location: 'Refrigerated', history: [] },
+    { id: '29', name: 'Bread', category: 'Pantry', stockStatus: 'Out of Stock', location: 'Room Temp', history: [] },
+    { id: '30', name: 'Cookies', category: 'Snacks', stockStatus: 'Out of Stock', location: 'Room Temp', history: [] },
 ];
 
 const INITIAL_RECIPES = [
