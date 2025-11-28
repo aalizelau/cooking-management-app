@@ -10,6 +10,20 @@ const ShoppingCart = () => {
 
     const cartIngredients = ingredients.filter(ing => cart.includes(ing.id));
 
+    // Group cart ingredients by category
+    const groupByCategory = (ingredientsList) => {
+        const grouped = {};
+        ingredientsList.forEach(ing => {
+            if (!grouped[ing.category]) {
+                grouped[ing.category] = [];
+            }
+            grouped[ing.category].push(ing);
+        });
+        return grouped;
+    };
+
+    const groupedCartItems = groupByCategory(cartIngredients);
+
     const toggleCheck = (id) => {
         if (checkedItems.includes(id)) {
             setCheckedItems(checkedItems.filter(item => item !== id));
@@ -54,32 +68,63 @@ const ShoppingCart = () => {
         <div>
             <h2>Shopping Cart ({cart.length})</h2>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)', marginTop: 'var(--spacing-md)' }}>
-                {cartIngredients.map(ing => {
-                    const isChecked = checkedItems.includes(ing.id);
-                    return (
-                        <div
-                            key={ing.id}
-                            className="card"
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 'var(--spacing-md)',
-                                opacity: isChecked ? 0.6 : 1,
-                                cursor: 'pointer'
-                            }}
-                            onClick={() => toggleCheck(ing.id)}
-                        >
-                            <div style={{ color: isChecked ? 'var(--color-primary)' : 'var(--color-muted)' }}>
-                                {isChecked ? <CheckSquare size={24} /> : <Square size={24} />}
-                            </div>
-                            <div>
-                                <h3 style={{ textDecoration: isChecked ? 'line-through' : 'none' }}>{ing.name}</h3>
-                                <span className="badge" style={{ backgroundColor: '#f0f0f0', color: '#555' }}>{ing.category}</span>
-                            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)', marginTop: 'var(--spacing-md)' }}>
+                {Object.keys(groupedCartItems).sort().map(category => (
+                    <div key={category}>
+                        <h4 style={{
+                            fontSize: '1rem',
+                            fontWeight: '600',
+                            color: 'var(--color-text)',
+                            marginBottom: 'var(--spacing-sm)',
+                            paddingBottom: 'var(--spacing-xs)',
+                            borderBottom: '2px solid #e0e0e0',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 'var(--spacing-xs)'
+                        }}>
+                            {category}
+                            <span style={{
+                                fontSize: '0.85rem',
+                                fontWeight: 'normal',
+                                color: 'var(--color-muted)',
+                                backgroundColor: '#f5f5f5',
+                                padding: '2px 8px',
+                                borderRadius: '12px'
+                            }}>
+                                {groupedCartItems[category].length}
+                            </span>
+                        </h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+                            {groupedCartItems[category].map(ing => {
+                                const isChecked = checkedItems.includes(ing.id);
+                                return (
+                                    <div
+                                        key={ing.id}
+                                        className="card"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 'var(--spacing-md)',
+                                            opacity: isChecked ? 0.6 : 1,
+                                            cursor: 'pointer'
+                                        }}
+                                        onClick={() => toggleCheck(ing.id)}
+                                    >
+                                        <div style={{ color: isChecked ? 'var(--color-primary)' : 'var(--color-muted)' }}>
+                                            {isChecked ? <CheckSquare size={24} /> : <Square size={24} />}
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+                                            {ing.emoji && <span style={{ fontSize: '1.25rem' }}>{ing.emoji}</span>}
+                                            <h3 style={{ textDecoration: isChecked ? 'line-through' : 'none', margin: 0 }}>
+                                                {ing.name}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
-                    );
-                })}
+                    </div>
+                ))}
             </div>
 
             {checkedItems.length > 0 && (
