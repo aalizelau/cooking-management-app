@@ -3,8 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, DollarSign, MapPin, Store, Edit, Save, X } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
-const IngredientDetail = () => {
-    const { id } = useParams();
+const IngredientDetail = ({ id: propId }) => {
+    const { id: paramId } = useParams();
+    const id = propId || paramId;
     const navigate = useNavigate();
     const { ingredients, updateIngredient } = useApp();
 
