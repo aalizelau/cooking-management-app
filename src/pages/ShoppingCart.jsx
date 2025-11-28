@@ -7,8 +7,6 @@ const ShoppingCart = () => {
     const { cart, ingredients, removeFromCart, updateIngredient, clearCart } = useApp();
     const navigate = useNavigate();
     const [checkedItems, setCheckedItems] = useState([]);
-    const [isRestocking, setIsRestocking] = useState(false);
-    const [restockLocation, setRestockLocation] = useState('Refrigerated');
 
     const cartIngredients = ingredients.filter(ing => cart.includes(ing.id));
 
@@ -21,18 +19,18 @@ const ShoppingCart = () => {
     };
 
     const handleRestock = () => {
-        // Move checked items to In Stock with the selected location
+        // Move checked items to In Stock using their default location
         checkedItems.forEach(id => {
+            const ingredient = ingredients.find(ing => ing.id === id);
             updateIngredient(id, {
                 stockStatus: 'In Stock',
-                location: restockLocation
+                location: ingredient.defaultLocation || 'Room Temp' // Fallback to Room Temp if no default
             });
             removeFromCart(id);
         });
 
         // Reset UI
         setCheckedItems([]);
-        setIsRestocking(false);
 
         // If cart is empty, go back to inventory
         if (cart.length === checkedItems.length) {
@@ -104,35 +102,17 @@ const ShoppingCart = () => {
                 }}>
                     <div>
                         <span style={{ fontWeight: 'bold' }}>{checkedItems.length} items selected</span>
+                        <div style={{ fontSize: '0.85rem', marginTop: '4px', opacity: 0.9 }}>
+                            Will be moved to their default locations
+                        </div>
                     </div>
 
-                    {isRestocking ? (
-                        <div style={{ display: 'flex', gap: 'var(--spacing-sm)', alignItems: 'center' }}>
-                            <select
-                                value={restockLocation}
-                                onChange={e => setRestockLocation(e.target.value)}
-                                style={{ color: 'black', padding: '4px 8px' }}
-                                onClick={e => e.stopPropagation()}
-                            >
-                                <option value="Refrigerated">Refrigerated</option>
-                                <option value="Frozen">Frozen</option>
-                                <option value="Room Temp">Room Temp</option>
-                            </select>
-                            <button
-                                className="btn btn-primary"
-                                onClick={(e) => { e.stopPropagation(); handleRestock(); }}
-                            >
-                                Confirm
-                            </button>
-                        </div>
-                    ) : (
-                        <button
-                            className="btn btn-primary"
-                            onClick={(e) => { e.stopPropagation(); setIsRestocking(true); }}
-                        >
-                            Move to Stock
-                        </button>
-                    )}
+                    <button
+                        className="btn btn-primary"
+                        onClick={(e) => { e.stopPropagation(); handleRestock(); }}
+                    >
+                        Move to Stock
+                    </button>
                 </div>
             )}
         </div>

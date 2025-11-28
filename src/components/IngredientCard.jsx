@@ -1,22 +1,7 @@
 import React from 'react';
-import { ShoppingCart, Check, X, Cookie, ChefHat } from 'lucide-react';
+import { ShoppingCart, Check, X, ChefHat } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
-
-// Map categories to emojis
-const getCategoryEmoji = (category) => {
-    const emojiMap = {
-        'Dairy': '🥛',
-        'Pantry': '📦',
-        'Fruits': '🍎',
-        'Vegetables': '🥬',
-        'Meat': '🥩',
-        'Snacks': '🍪',
-        'Beverages': '☕',
-        'General': '🍴',
-    };
-    return emojiMap[category] || '🍴';
-};
 
 const IngredientCard = ({ ingredient }) => {
     const { updateIngredient, addToCart, cart } = useApp();
@@ -61,9 +46,11 @@ const IngredientCard = ({ ingredient }) => {
             }}
         >
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', flex: 1 }}>
-                <span style={{ fontSize: '1.5rem' }}>
-                    {getCategoryEmoji(ingredient.category)}
-                </span>
+                {ingredient.emoji && (
+                    <span style={{ fontSize: '1.5rem' }}>
+                        {ingredient.emoji}
+                    </span>
+                )}
                 <h3 style={{ fontSize: '0.95rem', margin: 0 }}>{ingredient.name}</h3>
             </div>
 

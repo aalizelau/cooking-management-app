@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, DollarSign, MapPin, Store } from 'lucide-react';
+import { ArrowLeft, Plus, DollarSign, MapPin, Store, Edit, Save, X } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 const IngredientDetail = () => {
@@ -10,10 +10,27 @@ const IngredientDetail = () => {
 
     const [ingredient, setIngredient] = useState(null);
     const [newEntry, setNewEntry] = useState({ price: '', store: '', location: '' });
+    const [isEditing, setIsEditing] = useState(false);
+    const [editForm, setEditForm] = useState({
+        name: '',
+        category: '',
+        emoji: '',
+        location: '',
+        defaultLocation: ''
+    });
 
     useEffect(() => {
         const found = ingredients.find(i => i.id === id);
-        if (found) setIngredient(found);
+        if (found) {
+            setIngredient(found);
+            setEditForm({
+                name: found.name,
+                category: found.category,
+                emoji: found.emoji || '',
+                location: found.location,
+                defaultLocation: found.defaultLocation || found.location
+            });
+        }
     }, [id, ingredients]);
 
     if (!ingredient) return <div>Ingredient not found</div>;
@@ -37,6 +54,28 @@ const IngredientDetail = () => {
         setNewEntry({ price: '', store: '', location: '' });
     };
 
+    const handleSave = () => {
+        updateIngredient(ingredient.id, {
+            name: editForm.name,
+            category: editForm.category,
+            emoji: editForm.emoji,
+            location: editForm.location,
+            defaultLocation: editForm.defaultLocation
+        });
+        setIsEditing(false);
+    };
+
+    const handleCancel = () => {
+        setEditForm({
+            name: ingredient.name,
+            category: ingredient.category,
+            emoji: ingredient.emoji || '',
+            location: ingredient.location,
+            defaultLocation: ingredient.defaultLocation || ingredient.location
+        });
+        setIsEditing(false);
+    };
+
     return (
         <div>
             <button className="btn btn-outline" onClick={() => navigate('/inventory')} style={{ marginBottom: 'var(--spacing-md)' }}>
@@ -45,19 +84,111 @@ const IngredientDetail = () => {
 
             <div className="card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 'var(--spacing-lg)' }}>
-                    <div>
-                        <h1 style={{ marginBottom: 'var(--spacing-xs)' }}>{ingredient.name}</h1>
-                        <span className="badge" style={{ backgroundColor: '#f0f0f0', color: '#555' }}>{ingredient.category}</span>
+                    <div style={{ flex: 1 }}>
+                        {isEditing ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Emoji</label>
+                                    <input
+                                        value={editForm.emoji}
+                                        onChange={e => setEditForm({ ...editForm, emoji: e.target.value })}
+                                        placeholder="🍎 (Enter emoji)"
+                                        style={{ width: '100px', fontSize: '1.5rem' }}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Name</label>
+                                    <input
+                                        value={editForm.name}
+                                        onChange={e => setEditForm({ ...editForm, name: e.target.value })}
+                                        style={{ width: '100%', fontSize: '1.5rem', fontWeight: 'bold' }}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Category</label>
+                                    <select
+                                        value={editForm.category}
+                                        onChange={e => setEditForm({ ...editForm, category: e.target.value })}
+                                        style={{ width: '100%' }}
+                                    >
+                                        <option value="Dairy">🥛 Dairy</option>
+                                        <option value="Fruits">🍎 Fruits</option>
+                                        <option value="Vegetables">🥬 Vegetables</option>
+                                        <option value="Meat">🥩 Meat</option>
+                                        <option value="Pantry">📦 Pantry</option>
+                                        <option value="Snacks">🍪 Snacks</option>
+                                        <option value="Beverages">☕ Beverages</option>
+                                        <option value="General">🍴 General</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Current Location</label>
+                                    <select
+                                        value={editForm.location}
+                                        onChange={e => setEditForm({ ...editForm, location: e.target.value })}
+                                        style={{ width: '100%' }}
+                                    >
+                                        <option value="Refrigerated">Refrigerated</option>
+                                        <option value="Frozen">Frozen</option>
+                                        <option value="Room Temp">Room Temp</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Default Location</label>
+                                    <select
+                                        value={editForm.defaultLocation}
+                                        onChange={e => setEditForm({ ...editForm, defaultLocation: e.target.value })}
+                                        style={{ width: '100%' }}
+                                    >
+                                        <option value="Refrigerated">Refrigerated</option>
+                                        <option value="Frozen">Frozen</option>
+                                        <option value="Room Temp">Room Temp</option>
+                                    </select>
+                                    <small style={{ color: 'var(--color-muted)', fontSize: '0.85rem' }}>
+                                        Items will return to this location when restocked
+                                    </small>
+                                </div>
+                            </div>
+                        ) : (
+                            <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-xs)' }}>
+                                    {ingredient.emoji && <span style={{ fontSize: '2rem' }}>{ingredient.emoji}</span>}
+                                    <h1 style={{ margin: 0 }}>{ingredient.name}</h1>
+                                </div>
+                                <span className="badge" style={{ backgroundColor: '#f0f0f0', color: '#555' }}>{ingredient.category}</span>
+                            </div>
+                        )}
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                        <div style={{
-                            fontSize: '1.2rem',
-                            fontWeight: 'bold',
-                            color: ingredient.stockStatus === 'In Stock' ? 'var(--color-success)' : 'var(--color-danger)'
-                        }}>
-                            {ingredient.stockStatus}
-                        </div>
-                        <div style={{ color: 'var(--color-muted)' }}>{ingredient.location}</div>
+                    <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)', alignItems: 'flex-end' }}>
+                        {isEditing ? (
+                            <div style={{ display: 'flex', gap: 'var(--spacing-xs)' }}>
+                                <button className="btn btn-outline" onClick={handleCancel}>
+                                    <X size={18} /> Cancel
+                                </button>
+                                <button className="btn btn-primary" onClick={handleSave}>
+                                    <Save size={18} /> Save
+                                </button>
+                            </div>
+                        ) : (
+                            <button className="btn btn-outline" onClick={() => setIsEditing(true)}>
+                                <Edit size={18} /> Edit
+                            </button>
+                        )}
+                        {!isEditing && (
+                            <>
+                                <div style={{
+                                    fontSize: '1.2rem',
+                                    fontWeight: 'bold',
+                                    color: ingredient.stockStatus === 'In Stock' ? 'var(--color-success)' : 'var(--color-danger)'
+                                }}>
+                                    {ingredient.stockStatus}
+                                </div>
+                                <div style={{ color: 'var(--color-muted)' }}>📍 {ingredient.location}</div>
+                                <div style={{ fontSize: '0.85rem', color: 'var(--color-muted)' }}>
+                                    Default: {ingredient.defaultLocation || ingredient.location}
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
 

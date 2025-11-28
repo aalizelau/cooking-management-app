@@ -16,13 +16,29 @@ const InventoryDashboard = () => {
     // New Ingredient State
     const [newIngredient, setNewIngredient] = useState({
         name: '',
+        emoji: '',
         category: 'General',
         stockStatus: 'In Stock',
-        location: 'Refrigerated'
+        location: 'Room Temp'
     });
 
     const categories = ['All', ...new Set(ingredients.map(i => i.category))];
     const locations = ['All', 'Refrigerated', 'Frozen', 'Room Temp'];
+
+    // Helper function to get default location based on category
+    const getDefaultLocationForCategory = (category) => {
+        const categoryDefaults = {
+            'Dairy': 'Refrigerated',
+            'Fruits': 'Refrigerated',
+            'Vegetables': 'Refrigerated',
+            'Meat': 'Frozen',
+            'Pantry': 'Room Temp',
+            'Snacks': 'Room Temp',
+            'Beverages': 'Room Temp',
+            'General': 'Room Temp'
+        };
+        return categoryDefaults[category] || 'Room Temp';
+    };
 
     // Count ingredients for each tab
     const inStockCount = ingredients.filter(ing => ing.stockStatus === 'In Stock').length;
@@ -77,13 +93,27 @@ const InventoryDashboard = () => {
         e.preventDefault();
         if (!newIngredient.name) return;
 
+        const defaultLocation = getDefaultLocationForCategory(newIngredient.category);
+
         addIngredient({
             ...newIngredient,
+            defaultLocation: defaultLocation,
+            location: newIngredient.stockStatus === 'Out of Stock' ? defaultLocation : newIngredient.location,
             history: []
         });
 
-        setNewIngredient({ name: '', category: 'General', stockStatus: 'In Stock', location: 'Refrigerated' });
+        setNewIngredient({ name: '', emoji: '', category: 'General', stockStatus: 'In Stock', location: 'Room Temp' });
         setIsAdding(false);
+    };
+
+    // Handler to update location when category changes
+    const handleCategoryChange = (category) => {
+        const defaultLocation = getDefaultLocationForCategory(category);
+        setNewIngredient({
+            ...newIngredient,
+            category: category,
+            location: defaultLocation
+        });
     };
 
     return (
@@ -99,7 +129,14 @@ const InventoryDashboard = () => {
                 <div className="card" style={{ marginBottom: 'var(--spacing-md)', border: '2px solid var(--color-primary)' }}>
                     <h3>Add New Ingredient</h3>
                     <form onSubmit={handleAdd} style={{ display: 'grid', gap: 'var(--spacing-md)', marginTop: 'var(--spacing-sm)' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr', gap: 'var(--spacing-md)' }}>
+                            <input
+                                placeholder="🍎"
+                                value={newIngredient.emoji}
+                                onChange={e => setNewIngredient({ ...newIngredient, emoji: e.target.value })}
+                                style={{ fontSize: '1.5rem', textAlign: 'center' }}
+                                maxLength={2}
+                            />
                             <input
                                 placeholder="Name (e.g. Milk)"
                                 value={newIngredient.name}
@@ -109,7 +146,7 @@ const InventoryDashboard = () => {
                             <input
                                 placeholder="Category (e.g. Dairy)"
                                 value={newIngredient.category}
-                                onChange={e => setNewIngredient({ ...newIngredient, category: e.target.value })}
+                                onChange={e => handleCategoryChange(e.target.value)}
                             />
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
