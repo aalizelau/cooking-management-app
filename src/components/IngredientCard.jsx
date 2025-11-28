@@ -62,12 +62,23 @@ const IngredientCard = ({ ingredient }) => {
                         title="Mark as Consumed"
                         style={{
                             padding: 'var(--spacing-xs)',
-                            // color: 'var(--color-danger)',
-                            // borderColor: 'var(--color-danger)',
                             minWidth: 'auto',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center'
+                            justifyContent: 'center',
+                            transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'scale(1.1) rotate(-10deg)';
+                            e.currentTarget.style.color = 'var(--color-danger)';
+                            e.currentTarget.style.borderColor = 'var(--color-danger)';
+                            e.currentTarget.style.backgroundColor = '#fff0f0';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
+                            e.currentTarget.style.color = '';
+                            e.currentTarget.style.borderColor = '';
+                            e.currentTarget.style.backgroundColor = '';
                         }}
                     >
                         <ChefHat size={18} />
