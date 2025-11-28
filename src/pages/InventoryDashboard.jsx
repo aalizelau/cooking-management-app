@@ -8,11 +8,11 @@ const InventoryDashboard = () => {
     const { ingredients, addIngredient, cart } = useApp();
     const navigate = useNavigate();
 
-    const [outOfStockCategory, setOutOfStockCategory] = useState('All');
-    const [outOfStockSearch, setOutOfStockSearch] = useState('');
-    const [inStockLocation, setInStockLocation] = useState('All');
-    const [inStockCategory, setInStockCategory] = useState('All');
-    const [inStockSearch, setInStockSearch] = useState('');
+    const [stockTab, setStockTab] = useState('in-stock'); // 'in-stock' or 'out-of-stock'
+    const [groupByTab, setGroupByTab] = useState('category'); // 'category' or 'location'
+    const [filterCategory, setFilterCategory] = useState('All');
+    const [filterLocation, setFilterLocation] = useState('All');
+    const [searchQuery, setSearchQuery] = useState('');
     const [isAdding, setIsAdding] = useState(false);
 
     // New Ingredient State
@@ -26,21 +26,54 @@ const InventoryDashboard = () => {
     const categories = ['All', ...new Set(ingredients.map(i => i.category))];
     const locations = ['All', 'Refrigerated', 'Frozen', 'Room Temp'];
 
-    // Separate ingredients by stock status
-    const outOfStockIngredients = ingredients.filter(ing => {
-        const isOutOfStock = ing.stockStatus === 'Out of Stock';
-        const matchesCat = outOfStockCategory === 'All' || ing.category === outOfStockCategory;
-        const matchesSearch = ing.name.toLowerCase().includes(outOfStockSearch.toLowerCase());
-        return isOutOfStock && matchesCat && matchesSearch;
+    // Count ingredients for each tab
+    const inStockCount = ingredients.filter(ing => ing.stockStatus === 'In Stock').length;
+    const outOfStockCount = ingredients.filter(ing => ing.stockStatus === 'Out of Stock').length;
+
+    // Filter ingredients based on current stock tab
+    const currentStockIngredients = ingredients.filter(ing => {
+        const matchesStock = stockTab === 'in-stock'
+            ? ing.stockStatus === 'In Stock'
+            : ing.stockStatus === 'Out of Stock';
+        const matchesCat = filterCategory === 'All' || ing.category === filterCategory;
+        const matchesLoc = filterLocation === 'All' || ing.location === filterLocation;
+        const matchesSearch = ing.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+        // For out of stock, location filter doesn't apply
+        if (stockTab === 'out-of-stock') {
+            return matchesStock && matchesCat && matchesSearch;
+        }
+        return matchesStock && matchesCat && matchesLoc && matchesSearch;
     });
 
-    const inStockIngredients = ingredients.filter(ing => {
-        const isInStock = ing.stockStatus === 'In Stock';
-        const matchesLoc = inStockLocation === 'All' || ing.location === inStockLocation;
-        const matchesCat = inStockCategory === 'All' || ing.category === inStockCategory;
-        const matchesSearch = ing.name.toLowerCase().includes(inStockSearch.toLowerCase());
-        return isInStock && matchesLoc && matchesCat && matchesSearch;
-    });
+    // Group ingredients by category
+    const groupByCategory = (ingredientsList) => {
+        const grouped = {};
+        ingredientsList.forEach(ing => {
+            if (!grouped[ing.category]) {
+                grouped[ing.category] = [];
+            }
+            grouped[ing.category].push(ing);
+        });
+        return grouped;
+    };
+
+    // Group ingredients by location
+    const groupByLocation = (ingredientsList) => {
+        const grouped = {};
+        ingredientsList.forEach(ing => {
+            if (!grouped[ing.location]) {
+                grouped[ing.location] = [];
+            }
+            grouped[ing.location].push(ing);
+        });
+        return grouped;
+    };
+
+    // Determine which grouping to use
+    const groupedIngredients = groupByTab === 'category'
+        ? groupByCategory(currentStockIngredients)
+        : groupByLocation(currentStockIngredients);
 
     const handleAdd = (e) => {
         e.preventDefault();
@@ -134,87 +167,150 @@ const InventoryDashboard = () => {
                 </div>
             )}
 
-            {/* OUT OF STOCK SECTION */}
-            <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-                <h3 style={{
-                    marginBottom: 'var(--spacing-md)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'var(--spacing-sm)',
-                    color: 'var(--color-danger)'
-                }}>
-                    Out of Stock ({outOfStockIngredients.length})
-                </h3>
-
-                <div style={{ display: 'flex', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-md)', flexWrap: 'wrap' }}>
-                    <div style={{ position: 'relative', flex: 1, minWidth: '200px' }}>
-                        <Search size={18} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)' }} />
-                        <input
-                            placeholder="Search out of stock..."
-                            value={outOfStockSearch}
-                            onChange={e => setOutOfStockSearch(e.target.value)}
-                            style={{ paddingLeft: '36px', width: '100%' }}
-                        />
-                    </div>
-                    <select value={outOfStockCategory} onChange={e => setOutOfStockCategory(e.target.value)}>
-                        {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                    </select>
+            {/* TAB NAVIGATION */}
+            <div style={{ marginBottom: 'var(--spacing-lg)' }}>
+                {/* Stock Status Tabs */}
+                <div style={{ display: 'flex', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-md)' }}>
+                    <button
+                        onClick={() => setStockTab('in-stock')}
+                        style={{
+                            padding: 'var(--spacing-sm) var(--spacing-md)',
+                            border: 'none',
+                            borderRadius: 'var(--border-radius)',
+                            cursor: 'pointer',
+                            fontWeight: '600',
+                            fontSize: '0.95rem',
+                            transition: 'all 0.2s ease',
+                            backgroundColor: stockTab === 'in-stock' ? 'var(--color-success)' : '#f5f5f5',
+                            color: stockTab === 'in-stock' ? 'white' : 'var(--color-text)',
+                        }}
+                    >
+                        In Stock ({inStockCount})
+                    </button>
+                    <button
+                        onClick={() => {
+                            setStockTab('out-of-stock');
+                            // Reset to category grouping when switching to out of stock
+                            if (groupByTab === 'location') {
+                                setGroupByTab('category');
+                            }
+                        }}
+                        style={{
+                            padding: 'var(--spacing-sm) var(--spacing-md)',
+                            border: 'none',
+                            borderRadius: 'var(--border-radius)',
+                            cursor: 'pointer',
+                            fontWeight: '600',
+                            fontSize: '0.95rem',
+                            transition: 'all 0.2s ease',
+                            backgroundColor: stockTab === 'out-of-stock' ? 'var(--color-danger)' : '#f5f5f5',
+                            color: stockTab === 'out-of-stock' ? 'white' : 'var(--color-text)',
+                        }}
+                    >
+                        Out of Stock ({outOfStockCount})
+                    </button>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
-                    {outOfStockIngredients.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: 'var(--spacing-lg)', color: 'var(--color-muted)', backgroundColor: '#f9f9f9', borderRadius: 'var(--border-radius)' }}>
-                            No out of stock ingredients.
-                        </div>
-                    ) : (
-                        outOfStockIngredients.map(ing => (
-                            <IngredientCard key={ing.id} ingredient={ing} />
-                        ))
-                    )}
+                {/* Group By Tabs */}
+                <div style={{ display: 'flex', gap: 'var(--spacing-xs)' }}>
+                    <button
+                        onClick={() => setGroupByTab('category')}
+                        style={{
+                            padding: 'var(--spacing-sm) var(--spacing-md)',
+                            border: 'none',
+                            borderRadius: 'var(--border-radius)',
+                            cursor: 'pointer',
+                            fontWeight: '500',
+                            fontSize: '0.9rem',
+                            transition: 'all 0.2s ease',
+                            backgroundColor: groupByTab === 'category' ? 'var(--color-primary)' : '#f5f5f5',
+                            color: groupByTab === 'category' ? 'white' : 'var(--color-text)',
+                        }}
+                    >
+                        By Category
+                    </button>
+                    <button
+                        onClick={() => setGroupByTab('location')}
+                        disabled={stockTab === 'out-of-stock'}
+                        style={{
+                            padding: 'var(--spacing-sm) var(--spacing-md)',
+                            border: 'none',
+                            borderRadius: 'var(--border-radius)',
+                            cursor: stockTab === 'out-of-stock' ? 'not-allowed' : 'pointer',
+                            fontWeight: '500',
+                            fontSize: '0.9rem',
+                            transition: 'all 0.2s ease',
+                            backgroundColor: groupByTab === 'location' ? 'var(--color-primary)' : '#f5f5f5',
+                            color: groupByTab === 'location' ? 'white' : 'var(--color-text)',
+                            opacity: stockTab === 'out-of-stock' ? 0.5 : 1,
+                        }}
+                    >
+                        By Location
+                    </button>
                 </div>
             </div>
 
-            {/* IN STOCK SECTION */}
-            <div>
-                <h3 style={{
-                    marginBottom: 'var(--spacing-md)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'var(--spacing-sm)',
-                    color: 'var(--color-success)'
-                }}>
-                    In Stock ({inStockIngredients.length})
-                </h3>
-
-                <div style={{ display: 'flex', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-md)', flexWrap: 'wrap' }}>
-                    <div style={{ position: 'relative', flex: 1, minWidth: '200px' }}>
-                        <Search size={18} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)' }} />
-                        <input
-                            placeholder="Search in stock..."
-                            value={inStockSearch}
-                            onChange={e => setInStockSearch(e.target.value)}
-                            style={{ paddingLeft: '36px', width: '100%' }}
-                        />
-                    </div>
-                    <select value={inStockLocation} onChange={e => setInStockLocation(e.target.value)}>
+            {/* FILTERS AND SEARCH */}
+            <div style={{ display: 'flex', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-md)', flexWrap: 'wrap' }}>
+                <div style={{ position: 'relative', flex: 1, minWidth: '200px' }}>
+                    <Search size={18} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)' }} />
+                    <input
+                        placeholder="Search ingredients..."
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        style={{ paddingLeft: '36px', width: '100%' }}
+                    />
+                </div>
+                <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
+                    {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                </select>
+                {stockTab === 'in-stock' && groupByTab === 'category' && (
+                    <select value={filterLocation} onChange={e => setFilterLocation(e.target.value)}>
                         {locations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
                     </select>
-                    <select value={inStockCategory} onChange={e => setInStockCategory(e.target.value)}>
-                        {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                    </select>
-                </div>
+                )}
+            </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
-                    {inStockIngredients.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: 'var(--spacing-lg)', color: 'var(--color-muted)', backgroundColor: '#f9f9f9', borderRadius: 'var(--border-radius)' }}>
-                            No in stock ingredients.
+            {/* GROUPED INGREDIENTS DISPLAY */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
+                {currentStockIngredients.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: 'var(--spacing-lg)', color: 'var(--color-muted)', backgroundColor: '#f9f9f9', borderRadius: 'var(--border-radius)' }}>
+                        No ingredients found.
+                    </div>
+                ) : (
+                    Object.keys(groupedIngredients).sort().map(groupKey => (
+                        <div key={groupKey}>
+                            <h4 style={{
+                                fontSize: '1rem',
+                                fontWeight: '600',
+                                color: 'var(--color-text)',
+                                marginBottom: 'var(--spacing-sm)',
+                                paddingBottom: 'var(--spacing-xs)',
+                                borderBottom: '2px solid #e0e0e0',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--spacing-xs)'
+                            }}>
+                                {groupKey}
+                                <span style={{
+                                    fontSize: '0.85rem',
+                                    fontWeight: 'normal',
+                                    color: 'var(--color-muted)',
+                                    backgroundColor: '#f5f5f5',
+                                    padding: '2px 8px',
+                                    borderRadius: '12px'
+                                }}>
+                                    {groupedIngredients[groupKey].length}
+                                </span>
+                            </h4>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+                                {groupedIngredients[groupKey].map(ing => (
+                                    <IngredientCard key={ing.id} ingredient={ing} />
+                                ))}
+                            </div>
                         </div>
-                    ) : (
-                        inStockIngredients.map(ing => (
-                            <IngredientCard key={ing.id} ingredient={ing} />
-                        ))
-                    )}
-                </div>
+                    ))
+                )}
             </div>
         </div>
     );
