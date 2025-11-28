@@ -156,7 +156,12 @@ const IngredientDetail = ({ id: propId }) => {
                                     {ingredient.emoji && <span style={{ fontSize: '2rem' }}>{ingredient.emoji}</span>}
                                     <h1 style={{ margin: 0 }}>{ingredient.name}</h1>
                                 </div>
-                                <span className="badge" style={{ backgroundColor: '#f0f0f0', color: '#555' }}>{ingredient.category}</span>
+                                <div style={{ display: 'flex', gap: 'var(--spacing-xs)' }}>
+                                    <span className="badge" style={{ backgroundColor: '#f0f0f0', color: '#555' }}>{ingredient.category}</span>
+                                    <span className="badge" style={{ backgroundColor: '#eef2ff', color: '#4f46e5' }}>
+                                        📍 {ingredient.defaultLocation || ingredient.location}
+                                    </span>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -183,10 +188,6 @@ const IngredientDetail = ({ id: propId }) => {
                                     color: ingredient.stockStatus === 'In Stock' ? 'var(--color-success)' : 'var(--color-danger)'
                                 }}>
                                     {ingredient.stockStatus}
-                                </div>
-                                <div style={{ color: 'var(--color-muted)' }}>📍 {ingredient.location}</div>
-                                <div style={{ fontSize: '0.85rem', color: 'var(--color-muted)' }}>
-                                    Default: {ingredient.defaultLocation || ingredient.location}
                                 </div>
                             </>
                         )}
