@@ -1,8 +1,11 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { ChefHat, Package } from 'lucide-react';
+import { ChefHat, Package, ShoppingCart } from 'lucide-react';
+import { useApp } from '../context/AppContext';
 
 const Layout = () => {
+    const { cart } = useApp();
+
     return (
         <div className="layout">
             <header style={{
@@ -31,6 +34,33 @@ const Layout = () => {
                         >
                             <Package size={20} />
                             Inventory
+                        </NavLink>
+                        <NavLink
+                            to="/shopping-cart"
+                            className={({ isActive }) => isActive ? 'btn btn-primary' : 'btn btn-outline'}
+                            style={{ gap: 'var(--spacing-sm)', position: 'relative' }}
+                        >
+                            <ShoppingCart size={20} />
+                            Cart
+                            {cart.length > 0 && (
+                                <span style={{
+                                    position: 'absolute',
+                                    top: '-5px',
+                                    right: '-5px',
+                                    backgroundColor: 'var(--color-danger)',
+                                    color: 'white',
+                                    borderRadius: '50%',
+                                    width: '20px',
+                                    height: '20px',
+                                    fontSize: '12px',
+                                    fontWeight: 'bold',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    {cart.length}
+                                </span>
+                            )}
                         </NavLink>
                     </nav>
                 </div>

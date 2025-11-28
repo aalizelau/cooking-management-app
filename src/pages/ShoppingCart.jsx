@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, CheckSquare, Square, ShoppingBag } from 'lucide-react';
+import { CheckSquare, Square, ShoppingBag } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -54,10 +54,6 @@ const ShoppingCart = () => {
 
     return (
         <div>
-            <button className="btn btn-outline" onClick={() => navigate('/inventory')} style={{ marginBottom: 'var(--spacing-md)' }}>
-                <ArrowLeft size={16} style={{ marginRight: '8px' }} /> Back to Inventory
-            </button>
-
             <h2>Shopping Cart ({cart.length})</h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)', marginTop: 'var(--spacing-md)' }}>

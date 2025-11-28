@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { Plus, Search, Filter, ShoppingCart as CartIcon } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import IngredientCard from '../components/IngredientCard';
-import { useNavigate } from 'react-router-dom';
 
 const InventoryDashboard = () => {
-    const { ingredients, addIngredient, cart } = useApp();
-    const navigate = useNavigate();
+    const { ingredients, addIngredient } = useApp();
 
     const [stockTab, setStockTab] = useState('in-stock'); // 'in-stock' or 'out-of-stock'
     const [groupByTab, setGroupByTab] = useState('category'); // 'category' or 'location'
@@ -92,36 +90,9 @@ const InventoryDashboard = () => {
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
                 <h2>Inventory</h2>
-                <div style={{ display: 'flex', gap: 'var(--spacing-sm)' }}>
-                    <button
-                        className="btn btn-outline"
-                        onClick={() => navigate('/shopping-cart')} // We'll create this route/page next
-                        style={{ position: 'relative' }}
-                    >
-                        <CartIcon size={20} />
-                        {cart.length > 0 && (
-                            <span style={{
-                                position: 'absolute',
-                                top: '-5px',
-                                right: '-5px',
-                                backgroundColor: 'var(--color-primary)',
-                                color: 'white',
-                                borderRadius: '50%',
-                                width: '18px',
-                                height: '18px',
-                                fontSize: '12px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                            }}>
-                                {cart.length}
-                            </span>
-                        )}
-                    </button>
-                    <button className="btn btn-primary" onClick={() => setIsAdding(!isAdding)}>
-                        <Plus size={20} /> Add Item
-                    </button>
-                </div>
+                <button className="btn btn-primary" onClick={() => setIsAdding(!isAdding)}>
+                    <Plus size={20} /> Add Item
+                </button>
             </div>
 
             {isAdding && (
