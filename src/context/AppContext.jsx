@@ -108,29 +108,32 @@ export const AppProvider = ({ children }) => {
 
     // Actions
     const addIngredient = (ingredient) => {
-        setIngredients([...ingredients, { ...ingredient, id: Date.now().toString() }]);
+        setIngredients(prev => [...prev, { ...ingredient, id: Date.now().toString() }]);
     };
 
     const updateIngredient = (id, updates) => {
-        setIngredients(ingredients.map(ing => ing.id === id ? { ...ing, ...updates } : ing));
+        setIngredients(prev => prev.map(ing => ing.id === id ? { ...ing, ...updates } : ing));
     };
 
     const addRecipe = (recipe) => {
-        setRecipes([...recipes, { ...recipe, id: Date.now().toString() }]);
+        setRecipes(prev => [...prev, { ...recipe, id: Date.now().toString() }]);
     };
 
     const updateRecipe = (id, updates) => {
-        setRecipes(recipes.map(rec => rec.id === id ? { ...rec, ...updates } : rec));
+        setRecipes(prev => prev.map(rec => rec.id === id ? { ...rec, ...updates } : rec));
     };
 
     const addToCart = (ingredientId) => {
-        if (!cart.includes(ingredientId)) {
-            setCart([...cart, ingredientId]);
-        }
+        setCart(prev => {
+            if (!prev.includes(ingredientId)) {
+                return [...prev, ingredientId];
+            }
+            return prev;
+        });
     };
 
     const removeFromCart = (ingredientId) => {
-        setCart(cart.filter(id => id !== ingredientId));
+        setCart(prev => prev.filter(id => id !== ingredientId));
     };
 
     const clearCart = () => setCart([]);
