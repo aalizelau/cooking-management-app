@@ -7,9 +7,13 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "supabase:setup": "node setup_wizard.js",
+    "supabase:test": "node test_supabase_connection.js",
+    "supabase:migrate": "node migrate_to_supabase.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.86.0",
     "emoji-picker-react": "^4.16.1",
     "lucide-react": "^0.555.0",
     "react": "^19.2.0",

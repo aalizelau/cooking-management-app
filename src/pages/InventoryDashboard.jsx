@@ -155,9 +155,22 @@ const InventoryDashboard = () => {
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
                 <h2>Inventory</h2>
-                <button className="btn btn-primary" onClick={() => setIsAdding(!isAdding)}>
-                    <Plus size={20} /> Add Item
-                </button>
+                <div style={{ display: 'flex', gap: 'var(--spacing-sm)' }}>
+                    <button
+                        className="btn btn-outline"
+                        onClick={() => {
+                            const dataStr = JSON.stringify(ingredients, null, 4);
+                            navigator.clipboard.writeText(dataStr).then(() => {
+                                alert('Ingredients data copied to clipboard! You can now paste it to the AI.');
+                            });
+                        }}
+                    >
+                        Copy Data JSON
+                    </button>
+                    <button className="btn btn-primary" onClick={() => setIsAdding(!isAdding)}>
+                        <Plus size={20} /> Add Item
+                    </button>
+                </div>
             </div>
 
             {isAdding && (
