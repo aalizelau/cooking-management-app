@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, DollarSign, MapPin, Store, Edit, Save, X, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Plus, DollarSign, MapPin, Store, Edit, Save, X, ShoppingCart, Trash2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import EmojiPicker from 'emoji-picker-react';
 
@@ -8,13 +8,14 @@ const IngredientDetail = ({ id: propId }) => {
     const { id: paramId } = useParams();
     const id = propId || paramId;
     const navigate = useNavigate();
-    const { ingredients, updateIngredient, addToCart, removeFromCart, cart } = useApp();
+    const { ingredients, updateIngredient, deleteIngredient, addToCart, removeFromCart, cart } = useApp();
     const isInCart = cart.includes(id);
 
     const [ingredient, setIngredient] = useState(null);
     const [newEntry, setNewEntry] = useState({ price: '', store: '' });
     const [isEditing, setIsEditing] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [editForm, setEditForm] = useState({
         name: '',
         category: '',
@@ -95,6 +96,22 @@ const IngredientDetail = ({ id: propId }) => {
         });
         setIsEditing(false);
         setShowEmojiPicker(false);
+    };
+
+    const handleDelete = async () => {
+        try {
+            // Remove from cart if it's in the cart
+            if (isInCart) {
+                await removeFromCart(ingredient.id);
+            }
+            // Delete the ingredient
+            await deleteIngredient(ingredient.id);
+            // Navigate back to inventory
+            navigate('/inventory');
+        } catch (err) {
+            console.error('Failed to delete ingredient:', err);
+            alert('Failed to delete ingredient. Please try again.');
+        }
     };
 
     return (
@@ -246,9 +263,32 @@ const IngredientDetail = ({ id: propId }) => {
                                 </button>
                             </div>
                         ) : (
-                            <button className="btn btn-outline" onClick={() => setIsEditing(true)}>
-                                <Edit size={18} /> Edit
-                            </button>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
+                                <button className="btn btn-outline" onClick={() => setIsEditing(true)}>
+                                    <Edit size={18} /> Edit
+                                </button>
+                                <button
+                                    className="btn btn-outline"
+                                    onClick={() => setShowDeleteConfirm(true)}
+                                    style={{
+                                        color: 'var(--color-danger)',
+                                        borderColor: 'var(--color-danger)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.backgroundColor = 'var(--color-danger)';
+                                        e.currentTarget.style.color = 'white';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.backgroundColor = '';
+                                        e.currentTarget.style.color = 'var(--color-danger)';
+                                    }}
+                                >
+                                    <Trash2 size={18} /> Delete
+                                </button>
+                            </div>
                         )}
                         {!isEditing && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
@@ -354,6 +394,54 @@ const IngredientDetail = ({ id: propId }) => {
                     </div>
                 </div>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000
+                }}>
+                    <div className="card" style={{
+                        maxWidth: '400px',
+                        width: '90%',
+                        padding: 'var(--spacing-lg)',
+                        backgroundColor: 'white'
+                    }}>
+                        <h3 style={{ marginTop: 0, marginBottom: 'var(--spacing-md)' }}>Delete Ingredient?</h3>
+                        <p style={{ marginBottom: 'var(--spacing-lg)', color: 'var(--color-text)' }}>
+                            Are you sure you want to delete <strong>{ingredient.name}</strong>? This action cannot be undone.
+                        </p>
+                        <div style={{ display: 'flex', gap: 'var(--spacing-sm)', justifyContent: 'flex-end' }}>
+                            <button
+                                className="btn btn-outline"
+                                onClick={() => setShowDeleteConfirm(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="btn"
+                                onClick={handleDelete}
+                                style={{
+                                    backgroundColor: 'var(--color-danger)',
+                                    color: 'white',
+                                    borderColor: 'var(--color-danger)'
+                                }}
+                            >
+                                <Trash2 size={18} style={{ marginRight: '6px' }} />
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
