@@ -5,11 +5,14 @@ import RecipeCard from '../components/RecipeCard';
 
 const RecipeGallery = () => {
     const { recipes, addRecipe } = useApp();
+    const [activeTab, setActiveTab] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
 
-    const filteredRecipes = recipes.filter(recipe =>
-        recipe.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredRecipes = recipes.filter(recipe => {
+        const matchesSearch = recipe.title.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesTab = activeTab === 'All' || recipe.status === activeTab;
+        return matchesSearch && matchesTab;
+    });
 
     const handleCreateRecipe = () => {
         const newRecipe = {
@@ -24,6 +27,8 @@ const RecipeGallery = () => {
         addRecipe(newRecipe);
         // In a real app, we'd probably navigate to the edit page immediately
     };
+
+    const tabs = ['Done', 'Half-done', 'New', 'All'];
 
     return (
         <div>
@@ -42,6 +47,28 @@ const RecipeGallery = () => {
                     onChange={e => setSearchQuery(e.target.value)}
                     style={{ paddingLeft: '36px', width: '100%', maxWidth: '400px' }}
                 />
+            </div>
+
+            <div style={{ display: 'flex', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-lg)', overflowX: 'auto', paddingBottom: '4px' }}>
+                {tabs.map(tab => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        style={{
+                            padding: '8px 16px',
+                            borderRadius: '50px',
+                            border: 'none',
+                            backgroundColor: activeTab === tab ? 'var(--color-primary)' : 'var(--color-bg-secondary)',
+                            color: activeTab === tab ? 'white' : 'var(--color-text)',
+                            cursor: 'pointer',
+                            fontWeight: '600',
+                            transition: 'all 0.2s ease',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        {tab}
+                    </button>
+                ))}
             </div>
 
             <div style={{
