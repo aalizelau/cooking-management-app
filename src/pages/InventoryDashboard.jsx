@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, X } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import IngredientCard from '../components/IngredientCard';
 
@@ -224,21 +224,23 @@ const InventoryDashboard = () => {
             )}
 
             {/* TAB NAVIGATION */}
-            <div style={{ marginBottom: 'var(--spacing-lg)' }}>
+            <div style={{ display: 'flex', gap: 'var(--spacing-md)', marginBottom: 'var(--spacing-lg)', alignItems: 'center', flexWrap: 'wrap' }}>
                 {/* Stock Status Tabs */}
-                <div style={{ display: 'flex', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-md)' }}>
+                <div style={{ display: 'flex', overflow: 'hidden', borderRadius: 'var(--border-radius)' }}>
                     <button
                         onClick={() => setStockTab('in-stock')}
                         style={{
                             padding: 'var(--spacing-sm) var(--spacing-md)',
                             border: 'none',
-                            borderRadius: 'var(--border-radius)',
+                            borderRadius: 0,
                             cursor: 'pointer',
                             fontWeight: '600',
                             fontSize: '0.95rem',
                             transition: 'all 0.2s ease',
                             backgroundColor: stockTab === 'in-stock' ? 'var(--color-success)' : '#f5f5f5',
                             color: stockTab === 'in-stock' ? 'white' : 'var(--color-text)',
+                            borderTopLeftRadius: 'var(--border-radius)',
+                            borderBottomLeftRadius: 'var(--border-radius)',
                         }}
                     >
                         In Stock ({inStockCount})
@@ -254,13 +256,16 @@ const InventoryDashboard = () => {
                         style={{
                             padding: 'var(--spacing-sm) var(--spacing-md)',
                             border: 'none',
-                            borderRadius: 'var(--border-radius)',
+                            borderRadius: 0,
                             cursor: 'pointer',
                             fontWeight: '600',
                             fontSize: '0.95rem',
                             transition: 'all 0.2s ease',
                             backgroundColor: stockTab === 'out-of-stock' ? 'var(--color-danger)' : '#f5f5f5',
                             color: stockTab === 'out-of-stock' ? 'white' : 'var(--color-text)',
+                            borderLeft: '1px solid rgba(0,0,0,0.1)',
+                            borderTopRightRadius: 'var(--border-radius)',
+                            borderBottomRightRadius: 'var(--border-radius)',
                         }}
                     >
                         Out of Stock ({outOfStockCount})
@@ -268,19 +273,21 @@ const InventoryDashboard = () => {
                 </div>
 
                 {/* Group By Tabs */}
-                <div style={{ display: 'flex', gap: 'var(--spacing-xs)' }}>
+                <div style={{ display: 'flex', overflow: 'hidden', borderRadius: 'var(--border-radius)' }}>
                     <button
                         onClick={() => setGroupByTab('category')}
                         style={{
                             padding: 'var(--spacing-sm) var(--spacing-md)',
                             border: 'none',
-                            borderRadius: 'var(--border-radius)',
+                            borderRadius: 0,
                             cursor: 'pointer',
                             fontWeight: '500',
                             fontSize: '0.9rem',
                             transition: 'all 0.2s ease',
                             backgroundColor: groupByTab === 'category' ? 'var(--color-primary)' : '#f5f5f5',
                             color: groupByTab === 'category' ? 'white' : 'var(--color-text)',
+                            borderTopLeftRadius: 'var(--border-radius)',
+                            borderBottomLeftRadius: 'var(--border-radius)',
                         }}
                     >
                         By Category
@@ -291,7 +298,7 @@ const InventoryDashboard = () => {
                         style={{
                             padding: 'var(--spacing-sm) var(--spacing-md)',
                             border: 'none',
-                            borderRadius: 'var(--border-radius)',
+                            borderRadius: 0,
                             cursor: stockTab === 'out-of-stock' ? 'not-allowed' : 'pointer',
                             fontWeight: '500',
                             fontSize: '0.9rem',
@@ -299,6 +306,9 @@ const InventoryDashboard = () => {
                             backgroundColor: groupByTab === 'location' ? 'var(--color-primary)' : '#f5f5f5',
                             color: groupByTab === 'location' ? 'white' : 'var(--color-text)',
                             opacity: stockTab === 'out-of-stock' ? 0.5 : 1,
+                            borderLeft: '1px solid rgba(0,0,0,0.1)',
+                            borderTopRightRadius: 'var(--border-radius)',
+                            borderBottomRightRadius: 'var(--border-radius)',
                         }}
                     >
                         By Location
@@ -314,8 +324,33 @@ const InventoryDashboard = () => {
                         placeholder="Search ingredients..."
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
-                        style={{ paddingLeft: '36px', width: '100%' }}
+                        style={{ paddingLeft: '36px', paddingRight: searchQuery ? '36px' : '12px', width: '100%' }}
                     />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery('')}
+                            style={{
+                                position: 'absolute',
+                                right: '10px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                padding: '4px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'var(--color-muted)',
+                                transition: 'color 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-text)'}
+                            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-muted)'}
+                            title="Clear search"
+                        >
+                            <X size={18} />
+                        </button>
+                    )}
                 </div>
                 <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
                     {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
@@ -365,7 +400,7 @@ const InventoryDashboard = () => {
                                 gap: 'var(--spacing-sm)'
                             }}>
                                 {groupedIngredients[groupKey].map(ing => (
-                                    <IngredientCard key={ing.id} ingredient={ing} />
+                                    <IngredientCard key={ing.id} ingredient={ing} onCardClick={() => setSearchQuery('')} />
                                 ))}
                             </div>
                         </div>
