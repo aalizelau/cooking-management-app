@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit2, Save, X, Plus, Trash2, CheckCircle, AlertCircle, Upload, Image } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { uploadRecipeImage } from '../lib/supabase';
 
 const RecipeDetail = () => {
     const { id } = useParams();
@@ -13,6 +14,7 @@ const RecipeDetail = () => {
     const [editedRecipe, setEditedRecipe] = useState(null);
     const [ingredientSearch, setIngredientSearch] = useState('');
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [uploadingImage, setUploadingImage] = useState(false);
     const fileInputRef = useRef(null);
 
     useEffect(() => {
@@ -45,15 +47,25 @@ const RecipeDetail = () => {
         }
     };
 
-    const handleImageUpload = (e) => {
+    const handleImageUpload = async (e) => {
         const file = e.target.files[0];
         if (file) {
-            // Create a URL for the uploaded image
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setEditedRecipe({ ...editedRecipe, image: reader.result });
-            };
-            reader.readAsDataURL(file);
+            try {
+                setUploadingImage(true);
+
+                // Upload to Supabase Storage
+                const publicUrl = await uploadRecipeImage(file, recipe.id);
+
+                // Set the public URL instead of Base64
+                setEditedRecipe({ ...editedRecipe, image: publicUrl });
+
+                console.log('✅ Image uploaded successfully:', publicUrl);
+            } catch (error) {
+                console.error('Failed to upload image:', error);
+                alert('Failed to upload image. Please try again.');
+            } finally {
+                setUploadingImage(false);
+            }
         }
     };
 
@@ -134,14 +146,16 @@ const RecipeDetail = () => {
                             <button
                                 onClick={() => fileInputRef.current.click()}
                                 className="btn btn-outline"
+                                disabled={uploadingImage}
                                 style={{
                                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '6px'
+                                    gap: '6px',
+                                    opacity: uploadingImage ? 0.6 : 1
                                 }}
                             >
-                                <Upload size={18} /> Upload Image
+                                <Upload size={18} /> {uploadingImage ? 'Uploading...' : 'Upload Image'}
                             </button>
                         </div>
                     )}

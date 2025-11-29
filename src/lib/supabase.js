@@ -357,6 +357,41 @@ export function subscribeToCart(callback) {
  */
 
 /**
+ * Upload recipe cover image to Supabase Storage
+ * @param {File} file - The image file to upload
+ * @param {string} recipeId - The recipe ID to use in the filename
+ * @returns {Promise<string>} - The public URL of the uploaded image
+ */
+export async function uploadRecipeImage(file, recipeId) {
+    // Generate a unique filename
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 9);
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${timestamp}_${randomString}.${fileExt}`;
+    const filePath = `covers/${fileName}`;
+
+    // Upload to Supabase Storage
+    const { data, error } = await supabase.storage
+        .from('recipe-images')
+        .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+        });
+
+    if (error) {
+        console.error('Error uploading image:', error);
+        throw error;
+    }
+
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+        .from('recipe-images')
+        .getPublicUrl(filePath);
+
+    return publicUrl;
+}
+
+/**
  * Fetch all recipes from Supabase
  */
 export async function fetchRecipes() {
