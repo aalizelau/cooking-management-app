@@ -172,14 +172,12 @@ const IngredientDetail = ({ id: propId }) => {
                                         onChange={e => setEditForm({ ...editForm, category: e.target.value })}
                                         style={{ width: '100%' }}
                                     >
-                                        <option value="Dairy">🥛 Dairy</option>
-                                        <option value="Fruits">🍎 Fruits</option>
-                                        <option value="Vegetables">🥬 Vegetables</option>
-                                        <option value="Meat">🥩 Meat</option>
-                                        <option value="Pantry">📦 Pantry</option>
-                                        <option value="Snacks">🍪 Snacks</option>
-                                        <option value="Beverages">☕ Beverages</option>
-                                        <option value="General">🍴 General</option>
+                                        <option value="原材料">🥬 原材料 (Raw Materials)</option>
+                                        <option value="水果">🍎 水果 (Fruits)</option>
+                                        <option value="零食">🍪 零食 (Snacks)</option>
+                                        <option value="半成品">📦 半成品 (Semi-finished)</option>
+                                        <option value="調味料">🧂 調味料 (Seasonings)</option>
+                                        <option value="無食材類型">🍴 無食材類型 (Uncategorized)</option>
                                     </select>
                                 </div>
                                 <div>
@@ -189,9 +187,9 @@ const IngredientDetail = ({ id: propId }) => {
                                         onChange={e => setEditForm({ ...editForm, defaultLocation: e.target.value })}
                                         style={{ width: '100%' }}
                                     >
-                                        <option value="Refrigerated">Refrigerated</option>
-                                        <option value="Frozen">Frozen</option>
-                                        <option value="Room Temp">Room Temp</option>
+                                        <option value="冷藏">冷藏 (Refrigerated)</option>
+                                        <option value="急凍">急凍 (Frozen)</option>
+                                        <option value="常溫">常溫 (Room Temp)</option>
                                     </select>
                                     <small style={{ color: 'var(--color-muted)', fontSize: '0.85rem' }}>
                                         Items will return to this location when restocked

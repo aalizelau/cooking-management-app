@@ -92,10 +92,10 @@ const InventoryDashboard = () => {
     const groupByLocation = (ingredientsList) => {
         const grouped = {};
         ingredientsList.forEach(ing => {
-            if (!grouped[ing.location]) {
-                grouped[ing.location] = [];
+            if (!grouped[ing.defaultLocation]) {
+                grouped[ing.defaultLocation] = [];
             }
-            grouped[ing.location].push(ing);
+            grouped[ing.defaultLocation].push(ing);
         });
         return grouped;
     };
