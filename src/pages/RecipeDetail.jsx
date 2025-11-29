@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit2, Save, X, Plus, Trash2, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Edit2, Save, X, Plus, Trash2, CheckCircle, AlertCircle, Upload, Image } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 const RecipeDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { recipes, updateRecipe, ingredients } = useApp();
+    const { recipes, updateRecipe, deleteRecipe, ingredients } = useApp();
 
     const [recipe, setRecipe] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editedRecipe, setEditedRecipe] = useState(null);
     const [ingredientSearch, setIngredientSearch] = useState('');
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         // Convert id to number if recipes have numeric IDs
@@ -32,6 +34,31 @@ const RecipeDetail = () => {
     const handleCancel = () => {
         setEditedRecipe(recipe);
         setIsEditing(false);
+    };
+
+    const handleDelete = async () => {
+        try {
+            await deleteRecipe(recipe.id);
+            navigate('/recipes');
+        } catch (err) {
+            console.error('Failed to delete recipe:', err);
+        }
+    };
+
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // Create a URL for the uploaded image
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setEditedRecipe({ ...editedRecipe, image: reader.result });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleImageUrlChange = (url) => {
+        setEditedRecipe({ ...editedRecipe, image: url });
     };
 
     const toggleLinkedIngredient = (ingId) => {
@@ -72,10 +99,10 @@ const RecipeDetail = () => {
 
             <div className="card" style={{ overflow: 'hidden', padding: 0 }}>
                 <div style={{ height: '300px', position: 'relative', backgroundColor: '#eee' }}>
-                    {recipe.image ? (
+                    {editedRecipe?.image ? (
                         <img
-                            src={recipe.image}
-                            alt={recipe.title}
+                            src={editedRecipe.image}
+                            alt={editedRecipe.title}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             onError={(e) => {
                                 e.target.style.display = 'none';
@@ -87,6 +114,38 @@ const RecipeDetail = () => {
                             <span style={{ fontSize: '3rem' }}>🍳</span>
                         </div>
                     )}
+
+                    {/* Image Upload Button in Edit Mode */}
+                    {isEditing && (
+                        <div style={{
+                            position: 'absolute',
+                            top: '16px',
+                            right: '16px',
+                            display: 'flex',
+                            gap: '8px'
+                        }}>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleImageUpload}
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                            />
+                            <button
+                                onClick={() => fileInputRef.current.click()}
+                                className="btn btn-outline"
+                                style={{
+                                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px'
+                                }}
+                            >
+                                <Upload size={18} /> Upload Image
+                            </button>
+                        </div>
+                    )}
+
                     <div style={{
                         position: 'absolute',
                         bottom: 0,
@@ -97,11 +156,20 @@ const RecipeDetail = () => {
                         color: 'white'
                     }}>
                         {isEditing ? (
-                            <input
-                                value={editedRecipe.title}
-                                onChange={e => setEditedRecipe({ ...editedRecipe, title: e.target.value })}
-                                style={{ fontSize: '2rem', fontWeight: 'bold', width: '100%', background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none' }}
-                            />
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+                                <input
+                                    value={editedRecipe.title}
+                                    onChange={e => setEditedRecipe({ ...editedRecipe, title: e.target.value })}
+                                    style={{ fontSize: '2rem', fontWeight: 'bold', width: '100%', background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none' }}
+                                    placeholder="Recipe Title"
+                                />
+                                <input
+                                    value={editedRecipe.image || ''}
+                                    onChange={e => handleImageUrlChange(e.target.value)}
+                                    style={{ fontSize: '0.9rem', width: '100%', background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', padding: '8px' }}
+                                    placeholder="Or paste image URL here..."
+                                />
+                            </div>
                         ) : (
                             <h1 style={{ fontSize: '2.5rem', marginBottom: 'var(--spacing-xs)' }}>{recipe.title}</h1>
                         )}
@@ -148,9 +216,32 @@ const RecipeDetail = () => {
                                     <button className="btn btn-primary" onClick={handleSave}><Save size={18} /> Save Changes</button>
                                 </div>
                             ) : (
-                                <button className="btn btn-outline" onClick={() => setIsEditing(true)}>
-                                    <Edit2 size={18} style={{ marginRight: '8px' }} /> Edit Recipe
-                                </button>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+                                    <button className="btn btn-outline" onClick={() => setIsEditing(true)}>
+                                        <Edit2 size={18} style={{ marginRight: '8px' }} /> Edit Recipe
+                                    </button>
+                                    <button
+                                        className="btn btn-outline"
+                                        onClick={() => setShowDeleteConfirm(true)}
+                                        style={{
+                                            color: 'var(--color-danger)',
+                                            borderColor: 'var(--color-danger)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'var(--color-danger)';
+                                            e.currentTarget.style.color = 'white';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.backgroundColor = '';
+                                            e.currentTarget.style.color = 'var(--color-danger)';
+                                        }}
+                                    >
+                                        <Trash2 size={18} /> Delete
+                                    </button>
+                                </div>
                             )}
                         </div>
                     </div>
@@ -277,6 +368,54 @@ const RecipeDetail = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000
+                }}>
+                    <div className="card" style={{
+                        maxWidth: '400px',
+                        width: '90%',
+                        padding: 'var(--spacing-lg)',
+                        backgroundColor: 'white'
+                    }}>
+                        <h3 style={{ marginTop: 0, marginBottom: 'var(--spacing-md)' }}>Delete Recipe?</h3>
+                        <p style={{ marginBottom: 'var(--spacing-lg)', color: 'var(--color-text)' }}>
+                            Are you sure you want to delete <strong>{recipe.title}</strong>? This action cannot be undone.
+                        </p>
+                        <div style={{ display: 'flex', gap: 'var(--spacing-sm)', justifyContent: 'flex-end' }}>
+                            <button
+                                className="btn btn-outline"
+                                onClick={() => setShowDeleteConfirm(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="btn"
+                                onClick={handleDelete}
+                                style={{
+                                    backgroundColor: 'var(--color-danger)',
+                                    color: 'white',
+                                    borderColor: 'var(--color-danger)'
+                                }}
+                            >
+                                <Trash2 size={18} style={{ marginRight: '6px' }} />
+                                Delete Recipe
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

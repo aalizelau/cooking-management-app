@@ -2454,6 +2454,20 @@ export const AppProvider = ({ children }) => {
         }
     };
 
+    const deleteRecipeAction = async (id) => {
+        setSyncing(true);
+        try {
+            await deleteRecipe(id);
+            setRecipes(prev => prev.filter(rec => rec.id !== id));
+            console.log('✅ Recipe deleted');
+        } catch (err) {
+            console.error('Failed to delete recipe:', err);
+            alert('Failed to delete recipe');
+        } finally {
+            setSyncing(false);
+        }
+    };
+
     const addToCart = async (ingredientId) => {
         // Optimistically update UI
         setCart(prev => {
@@ -2519,6 +2533,7 @@ export const AppProvider = ({ children }) => {
             deleteIngredient: deleteIngredientAction,
             addRecipe,
             updateRecipe,
+            deleteRecipe: deleteRecipeAction,
             addToCart,
             removeFromCart,
             clearCart,
