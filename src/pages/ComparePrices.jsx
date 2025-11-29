@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Store, ShoppingCart } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { useNavigate } from 'react-router-dom';
 import StoreLogo from '../components/StoreLogo';
+import IngredientDetail from './IngredientDetail';
 
 const ComparePrices = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedIngredientId, setSelectedIngredientId] = useState(null);
     const { ingredients } = useApp();
-    const navigate = useNavigate();
 
     const storeData = useMemo(() => {
         const data = {};
@@ -60,26 +60,28 @@ const ComparePrices = () => {
     }, {});
 
     return (
-        <div className="page-container">
-            <header className="page-header">
-                <div>
-                    <h1 className="page-title">Price Comparison</h1>
-                    <p className="text-muted">Compare prices by supermarket</p>
+        <div style={{ display: 'flex', height: 'calc(100vh - 80px)', gap: 'var(--spacing-md)' }}>
+            {/* Left Panel: Price Comparison */}
+            <div style={{ flex: selectedIngredientId ? 1 : 'auto', overflowY: 'auto', paddingRight: 'var(--spacing-sm)' }}>
+                <header className="page-header">
+                    <div>
+                        <h1 className="page-title">Price Comparison</h1>
+                        <p className="text-muted">Compare prices by supermarket</p>
+                    </div>
+                </header>
+
+                <div className="search-bar" style={{ marginBottom: 'var(--spacing-lg)' }}>
+                    <Search size={20} className="search-icon" />
+                    <input
+                        type="text"
+                        placeholder="Search ingredients or stores..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="search-input"
+                    />
                 </div>
-            </header>
 
-            <div className="search-bar" style={{ marginBottom: 'var(--spacing-lg)' }}>
-                <Search size={20} className="search-icon" />
-                <input
-                    type="text"
-                    placeholder="Search ingredients or stores..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="search-input"
-                />
-            </div>
-
-            <div style={{ display: 'grid', gap: 'var(--spacing-lg)' }}>
+                <div style={{ display: 'grid', gap: 'var(--spacing-lg)' }}>
                 {Object.entries(filteredStores).map(([store, items]) => (
                     <div key={store} className="card" style={{ padding: 'var(--spacing-md)' }}>
                         <div style={{
@@ -98,30 +100,32 @@ const ComparePrices = () => {
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 'var(--spacing-md)' }}>
-                            {items.map((item, index) => (
-                                <div
-                                    key={`${item.id}-${index}`}
-                                    onClick={() => navigate(`/inventory/${item.id}`, { state: { from: 'compare' } })}
-                                    style={{
-                                        backgroundColor: 'var(--color-bg-secondary)',
-                                        padding: 'var(--spacing-md)',
-                                        borderRadius: 'var(--radius-sm)',
-                                        border: '1px solid var(--color-border)',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        gap: '8px',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s ease',
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.transform = 'translateY(-2px)';
-                                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.transform = 'translateY(0)';
-                                        e.currentTarget.style.boxShadow = 'none';
-                                    }}
-                                >
+                            {items.map((item, index) => {
+                                const isSelected = selectedIngredientId === item.id;
+                                return (
+                                    <div
+                                        key={`${item.id}-${index}`}
+                                        onClick={() => setSelectedIngredientId(item.id)}
+                                        style={{
+                                            backgroundColor: isSelected ? '#fff8f6' : 'var(--color-bg-secondary)',
+                                            padding: 'var(--spacing-md)',
+                                            borderRadius: 'var(--radius-sm)',
+                                            border: isSelected ? '2px solid var(--color-primary)' : '1px solid var(--color-border)',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: '8px',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(-2px)';
+                                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                            e.currentTarget.style.boxShadow = 'none';
+                                        }}
+                                    >
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                             <span style={{ fontSize: '1.5rem' }}>{item.emoji}</span>
@@ -138,7 +142,8 @@ const ComparePrices = () => {
                                         ${item.price}
                                     </div>
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 ))}
@@ -148,7 +153,29 @@ const ComparePrices = () => {
                         No prices found matching your search.
                     </div>
                 )}
+                </div>
             </div>
+
+            {/* Right Panel: Ingredient Details */}
+            {selectedIngredientId && (
+                <div style={{
+                    flex: 1,
+                    borderLeft: '1px solid var(--color-border)',
+                    paddingLeft: 'var(--spacing-md)',
+                    overflowY: 'auto',
+                    backgroundColor: '#fff',
+                    borderRadius: 'var(--radius-lg)',
+                    boxShadow: 'var(--shadow-sm)',
+                    padding: 'var(--spacing-md)'
+                }}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--spacing-sm)' }}>
+                        <button onClick={() => setSelectedIngredientId(null)} className="btn btn-icon">
+                            <X size={20} />
+                        </button>
+                    </div>
+                    <IngredientDetail id={selectedIngredientId} />
+                </div>
+            )}
         </div>
     );
 };
