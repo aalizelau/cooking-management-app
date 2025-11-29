@@ -46,18 +46,24 @@ const InventoryDashboard = () => {
 
     // Filter ingredients based on current stock tab
     const currentStockIngredients = ingredients.filter(ing => {
+        const matchesSearch = ing.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCat = filterCategory === 'All' || ing.category === filterCategory;
+
+        // If searching, ignore stock status tab but respect category
+        if (searchQuery) {
+            return matchesSearch && matchesCat;
+        }
+
         const matchesStock = stockTab === 'in-stock'
             ? ing.stockStatus === 'In Stock'
             : ing.stockStatus === 'Out of Stock';
-        const matchesCat = filterCategory === 'All' || ing.category === filterCategory;
         const matchesLoc = filterLocation === 'All' || ing.location === filterLocation;
-        const matchesSearch = ing.name.toLowerCase().includes(searchQuery.toLowerCase());
 
         // For out of stock, location filter doesn't apply
         if (stockTab === 'out-of-stock') {
-            return matchesStock && matchesCat && matchesSearch;
+            return matchesStock && matchesCat;
         }
-        return matchesStock && matchesCat && matchesLoc && matchesSearch;
+        return matchesStock && matchesCat && matchesLoc;
     });
 
     // Group ingredients by category
