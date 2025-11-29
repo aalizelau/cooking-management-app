@@ -49,13 +49,13 @@ const IngredientCard = ({ ingredient }) => {
                 e.currentTarget.style.boxShadow = '';
             }}
         >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)', flex: 1 }}>
                 {ingredient.emoji && (
-                    <span style={{ fontSize: '1.5rem' }}>
+                    <span style={{ fontSize: '1.2rem' }}>
                         {ingredient.emoji}
                     </span>
                 )}
-                <h3 style={{ fontSize: '0.95rem', margin: 0 }}>{ingredient.name}</h3>
+                <h3 style={{ fontSize: '1rem', margin: 0 }}>{ingredient.name}</h3>
             </div>
 
             <div>

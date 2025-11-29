@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, DollarSign, MapPin, Store, Edit, Save, X } from 'lucide-react';
+import { ArrowLeft, Plus, DollarSign, MapPin, Store, Edit, Save, X, ShoppingCart } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import EmojiPicker from 'emoji-picker-react';
 
@@ -8,7 +8,8 @@ const IngredientDetail = ({ id: propId }) => {
     const { id: paramId } = useParams();
     const id = propId || paramId;
     const navigate = useNavigate();
-    const { ingredients, updateIngredient } = useApp();
+    const { ingredients, updateIngredient, addToCart, removeFromCart, cart } = useApp();
+    const isInCart = cart.includes(id);
 
     const [ingredient, setIngredient] = useState(null);
     const [newEntry, setNewEntry] = useState({ price: '', store: '' });
@@ -252,15 +253,39 @@ const IngredientDetail = ({ id: propId }) => {
                             </button>
                         )}
                         {!isEditing && (
-                            <>
-                                <div style={{
-                                    fontSize: '1.2rem',
-                                    fontWeight: 'bold',
-                                    color: ingredient.stockStatus === 'In Stock' ? 'var(--color-success)' : 'var(--color-danger)'
-                                }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+                                <button
+                                    onClick={() => updateIngredient(ingredient.id, {
+                                        stockStatus: ingredient.stockStatus === 'In Stock' ? 'Out of Stock' : 'In Stock'
+                                    })}
+                                    className="btn"
+                                    style={{
+                                        backgroundColor: ingredient.stockStatus === 'In Stock' ? 'var(--color-success)' : '#fff',
+                                        color: ingredient.stockStatus === 'In Stock' ? '#fff' : 'var(--color-danger)',
+                                        border: `1px solid ${ingredient.stockStatus === 'In Stock' ? 'var(--color-success)' : 'var(--color-danger)'}`,
+                                        minWidth: '120px'
+                                    }}
+                                >
                                     {ingredient.stockStatus}
-                                </div>
-                            </>
+                                </button>
+
+                                <button
+                                    onClick={() => isInCart ? removeFromCart(ingredient.id) : addToCart(ingredient.id)}
+                                    className="btn btn-outline"
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        backgroundColor: isInCart ? 'var(--color-success)' : '#fff',
+                                        color: isInCart ? '#fff' : 'var(--color-danger)',
+                                        borderColor: isInCart ? 'var(--color-success)' : 'var(--color-danger)',
+                                        minWidth: '120px'
+                                    }}
+                                >
+                                    <ShoppingCart size={16} />
+                                    {isInCart ? 'In Cart' : 'Add to Cart'}
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>

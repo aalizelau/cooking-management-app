@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import IngredientCard from '../components/IngredientCard';
@@ -6,11 +6,21 @@ import IngredientCard from '../components/IngredientCard';
 const InventoryDashboard = () => {
     const { ingredients, addIngredient } = useApp();
 
-    const [stockTab, setStockTab] = useState('in-stock'); // 'in-stock' or 'out-of-stock'
-    const [groupByTab, setGroupByTab] = useState('category'); // 'category' or 'location'
-    const [filterCategory, setFilterCategory] = useState('All');
-    const [filterLocation, setFilterLocation] = useState('All');
-    const [searchQuery, setSearchQuery] = useState('');
+    // State with persistence
+    const [stockTab, setStockTab] = useState(() => sessionStorage.getItem('inventory_stockTab') || 'in-stock');
+    const [groupByTab, setGroupByTab] = useState(() => sessionStorage.getItem('inventory_groupByTab') || 'category');
+    const [filterCategory, setFilterCategory] = useState(() => sessionStorage.getItem('inventory_filterCategory') || 'All');
+    const [filterLocation, setFilterLocation] = useState(() => sessionStorage.getItem('inventory_filterLocation') || 'All');
+    const [searchQuery, setSearchQuery] = useState(() => sessionStorage.getItem('inventory_searchQuery') || '');
+
+    useEffect(() => {
+        sessionStorage.setItem('inventory_stockTab', stockTab);
+        sessionStorage.setItem('inventory_groupByTab', groupByTab);
+        sessionStorage.setItem('inventory_filterCategory', filterCategory);
+        sessionStorage.setItem('inventory_filterLocation', filterLocation);
+        sessionStorage.setItem('inventory_searchQuery', searchQuery);
+    }, [stockTab, groupByTab, filterCategory, filterLocation, searchQuery]);
+
     const [isAdding, setIsAdding] = useState(false);
 
     // New Ingredient State
