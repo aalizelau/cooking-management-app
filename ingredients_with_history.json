@@ -5,7 +5,6 @@
         "category": "無食材類型",
         "emoji": "🍗",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -15,20 +14,15 @@
         "category": "水果",
         "emoji": "🍎",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "6CAD一盒",
-                "store": "WholeFood",
-                "location": "冷藏"
+                "store": "WholeFood"
             },
             {
-                "date": "2025-11-29",
                 "price": "7CAD/盒",
-                "store": "T&T",
-                "location": "冷藏"
+                "store": "T&T"
             }
         ]
     },
@@ -38,14 +32,11 @@
         "category": "原材料",
         "emoji": "🍚",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "10CAD/包",
-                "store": "SaveOnFood",
-                "location": "常溫"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -55,7 +46,6 @@
         "category": "半成品",
         "emoji": "🥬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -65,14 +55,11 @@
         "category": "無食材類型",
         "emoji": "🍎",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "1.8/lb",
-                "store": "metro",
-                "location": "常溫"
+                "store": "metro"
             }
         ]
     },
@@ -82,7 +69,6 @@
         "category": "無食材類型",
         "emoji": "🍎",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -92,7 +78,6 @@
         "category": "原材料",
         "emoji": "🌭",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -102,20 +87,15 @@
         "category": "原材料",
         "emoji": "🥩",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "5CAD/4個",
-                "store": "SaveOnFood",
-                "location": "常溫"
+                "store": "SaveOnFood"
             },
             {
-                "date": "2025-11-29",
                 "price": "2cad 一個",
-                "store": "metro",
-                "location": "常溫"
+                "store": "metro"
             }
         ]
     },
@@ -125,14 +105,11 @@
         "category": "原材料",
         "emoji": "🍅",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "6CAD一盒",
-                "store": "SaveOnFood",
-                "location": "冷藏"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -142,7 +119,6 @@
         "category": "無食材類型",
         "emoji": "🍬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -152,7 +128,6 @@
         "category": "調味料",
         "emoji": "🥩",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": []
     },
@@ -162,7 +137,6 @@
         "category": "調味料",
         "emoji": "🍷",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": []
     },
@@ -172,7 +146,6 @@
         "category": "原材料",
         "emoji": "🍚",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -182,7 +155,6 @@
         "category": "無食材類型",
         "emoji": "🍗",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -192,7 +164,6 @@
         "category": "無食材類型",
         "emoji": "🦐",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -202,7 +173,6 @@
         "category": "無食材類型",
         "emoji": "🥓",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -212,7 +182,6 @@
         "category": "無食材類型",
         "emoji": "🫑",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -222,7 +191,6 @@
         "category": "無食材類型",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -232,20 +200,15 @@
         "category": "原材料",
         "emoji": "🥬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "5CAD/1個",
-                "store": "WholeFood",
-                "location": "常溫"
+                "store": "WholeFood"
             },
             {
-                "date": "2025-11-29",
                 "price": "8CAD一個",
-                "store": "SaveOnFood",
-                "location": "常溫"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -255,7 +218,6 @@
         "category": "無食材類型",
         "emoji": "🦪",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -265,7 +227,6 @@
         "category": "無食材類型",
         "emoji": "🐟",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -275,7 +236,6 @@
         "category": "原材料",
         "emoji": "🍅",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -285,7 +245,6 @@
         "category": "無食材類型",
         "emoji": "🥬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -295,7 +254,6 @@
         "category": "調味料",
         "emoji": "🥫",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -305,7 +263,6 @@
         "category": "無食材類型",
         "emoji": "🫑",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -315,7 +272,6 @@
         "category": "零食",
         "emoji": "🍎",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -325,14 +281,11 @@
         "category": "原材料",
         "emoji": "🥬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "3.5CAD 一綑",
-                "store": "SaveOnFood",
-                "location": "常溫"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -342,7 +295,6 @@
         "category": "原材料",
         "emoji": "🧄",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": []
     },
@@ -352,7 +304,6 @@
         "category": "調味料",
         "emoji": "🥫",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -362,7 +313,6 @@
         "category": "原材料",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -372,14 +322,11 @@
         "category": "原材料",
         "emoji": "🍗",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "3.7CAD/6個",
-                "store": "SaveOnFood",
-                "location": "冷藏"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -389,7 +336,6 @@
         "category": "原材料",
         "emoji": "🥓",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -399,7 +345,6 @@
         "category": "無食材類型",
         "emoji": "🧄",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -409,7 +354,6 @@
         "category": "無食材類型",
         "emoji": "🥬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -419,7 +363,6 @@
         "category": "原材料",
         "emoji": "🥬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -429,7 +372,6 @@
         "category": "無食材類型",
         "emoji": "🥔",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -439,7 +381,6 @@
         "category": "原材料",
         "emoji": "🥓",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -449,7 +390,6 @@
         "category": "原材料",
         "emoji": "🌭",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -459,7 +399,6 @@
         "category": "原材料",
         "emoji": "🥩",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -469,7 +408,6 @@
         "category": "調味料",
         "emoji": "🥫",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -479,7 +417,6 @@
         "category": "無食材類型",
         "emoji": "🦐",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -489,7 +426,6 @@
         "category": "無食材類型",
         "emoji": "🍜",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -499,7 +435,6 @@
         "category": "無食材類型",
         "emoji": "🧄",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -509,7 +444,6 @@
         "category": "無食材類型",
         "emoji": "🍜",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -519,7 +453,6 @@
         "category": "無食材類型",
         "emoji": "🥛",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -529,7 +462,6 @@
         "category": "原材料",
         "emoji": "🧀",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -539,7 +471,6 @@
         "category": "原材料",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -549,7 +480,6 @@
         "category": "原材料",
         "emoji": "🥬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -559,26 +489,19 @@
         "category": "原材料",
         "emoji": "🍚",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "3根3CAD",
-                "store": "metro",
-                "location": "常溫"
+                "store": "metro"
             },
             {
-                "date": "2025-11-29",
                 "price": "4根9CAD",
-                "store": "IGA",
-                "location": "常溫"
+                "store": "IGA"
             },
             {
-                "date": "2025-11-29",
                 "price": "8CAD/4個",
-                "store": "SaveOnFood",
-                "location": "常溫"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -588,7 +511,6 @@
         "category": "無食材類型",
         "emoji": "🍎",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -598,7 +520,6 @@
         "category": "無食材類型",
         "emoji": "🥜",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -608,7 +529,6 @@
         "category": "原材料",
         "emoji": "🧄",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -618,7 +538,6 @@
         "category": "原材料",
         "emoji": "🦀",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -628,26 +547,19 @@
         "category": "無食材類型",
         "emoji": "🦐",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "6CAD一盒",
-                "store": "SaveOnFood",
-                "location": "常溫"
+                "store": "SaveOnFood"
             },
             {
-                "date": "2025-11-29",
                 "price": "19/lb",
-                "store": "WholeFood",
-                "location": "常溫"
+                "store": "WholeFood"
             },
             {
-                "date": "2025-11-29",
                 "price": "13CAD/bag",
-                "store": "T&T",
-                "location": "常溫"
+                "store": "T&T"
             }
         ]
     },
@@ -657,7 +569,6 @@
         "category": "無食材類型",
         "emoji": "🦐",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -667,7 +578,6 @@
         "category": "無食材類型",
         "emoji": "🥓",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -677,26 +587,19 @@
         "category": "原材料",
         "emoji": "🍄",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "2CAD一盒",
-                "store": "walmart",
-                "location": "常溫"
+                "store": "walmart"
             },
             {
-                "date": "2025-11-29",
                 "price": "3CAD一盒",
-                "store": "metro",
-                "location": "常溫"
+                "store": "metro"
             },
             {
-                "date": "2025-11-29",
                 "price": "4CAD/盒",
-                "store": "SaveOnFood",
-                "location": "常溫"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -706,7 +609,6 @@
         "category": "調味料",
         "emoji": "🍅",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -716,7 +618,6 @@
         "category": "無食材類型",
         "emoji": "🫒",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -726,7 +627,6 @@
         "category": "無食材類型",
         "emoji": "🫒",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -736,7 +636,6 @@
         "category": "無食材類型",
         "emoji": "🫒",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -746,7 +645,6 @@
         "category": "原材料",
         "emoji": "🥓",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -756,7 +654,6 @@
         "category": "原材料",
         "emoji": "🥬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -766,7 +663,6 @@
         "category": "無食材類型",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -776,7 +672,6 @@
         "category": "原材料",
         "emoji": "🍗",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -786,7 +681,6 @@
         "category": "無食材類型",
         "emoji": "🥛",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -796,7 +690,6 @@
         "category": "無食材類型",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -806,7 +699,6 @@
         "category": "無食材類型",
         "emoji": "🐟",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -816,7 +708,6 @@
         "category": "零食",
         "emoji": "🥛",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -826,7 +717,6 @@
         "category": "原材料",
         "emoji": "🥩",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": []
     },
@@ -836,7 +726,6 @@
         "category": "無食材類型",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -846,7 +735,6 @@
         "category": "半成品",
         "emoji": "🥓",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -856,7 +744,6 @@
         "category": "原材料",
         "emoji": "🍜",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -866,7 +753,6 @@
         "category": "調味料",
         "emoji": "🍗",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -876,7 +762,6 @@
         "category": "原材料",
         "emoji": "🐟",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -886,7 +771,6 @@
         "category": "無食材類型",
         "emoji": "🥩",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -896,7 +780,6 @@
         "category": "無食材類型",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -906,7 +789,6 @@
         "category": "水果",
         "emoji": "🍎",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -916,7 +798,6 @@
         "category": "無食材類型",
         "emoji": "🧂",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -926,7 +807,6 @@
         "category": "調味料",
         "emoji": "🧄",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -936,7 +816,6 @@
         "category": "無食材類型",
         "emoji": "🥬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -946,7 +825,6 @@
         "category": "零食",
         "emoji": "🧃",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": []
     },
@@ -956,7 +834,6 @@
         "category": "零食",
         "emoji": "🧁",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -966,7 +843,6 @@
         "category": "水果",
         "emoji": "🍎",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -976,7 +852,6 @@
         "category": "原材料",
         "emoji": "🍜",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -986,7 +861,6 @@
         "category": "原材料",
         "emoji": "🍜",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -996,7 +870,6 @@
         "category": "半成品",
         "emoji": "",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1006,7 +879,6 @@
         "category": "調味料",
         "emoji": "",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1016,14 +888,11 @@
         "category": "零食",
         "emoji": "🍎",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "8CAD/300g",
-                "store": "T&T",
-                "location": "常溫"
+                "store": "T&T"
             }
         ]
     },
@@ -1033,7 +902,6 @@
         "category": "調味料",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1043,7 +911,6 @@
         "category": "原材料",
         "emoji": "",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1053,20 +920,15 @@
         "category": "無食材類型",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "34.9/kg",
-                "store": "WholeFood",
-                "location": "常溫"
+                "store": "WholeFood"
             },
             {
-                "date": "2025-11-29",
                 "price": "3.49/100g",
-                "store": "SaveOnFood",
-                "location": "常溫"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -1076,7 +938,6 @@
         "category": "無食材類型",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1086,7 +947,6 @@
         "category": "無食材類型",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1096,7 +956,6 @@
         "category": "水果",
         "emoji": "🍎",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1106,7 +965,6 @@
         "category": "零食",
         "emoji": "🍎",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1116,20 +974,15 @@
         "category": "原材料",
         "emoji": "🐟",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "7CAD/ 3x80g",
-                "store": "walmart",
-                "location": "常溫"
+                "store": "walmart"
             },
             {
-                "date": "2025-11-29",
                 "price": "18CAD",
-                "store": "Costco",
-                "location": "常溫"
+                "store": "Costco"
             }
         ]
     },
@@ -1139,7 +992,6 @@
         "category": "原材料",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1149,7 +1001,6 @@
         "category": "零食",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1159,7 +1010,6 @@
         "category": "零食",
         "emoji": "🧁",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1169,7 +1019,6 @@
         "category": "調味料",
         "emoji": "🥚",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": []
     },
@@ -1179,7 +1028,6 @@
         "category": "零食",
         "emoji": "🍬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1189,7 +1037,6 @@
         "category": "零食",
         "emoji": "🍬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1199,7 +1046,6 @@
         "category": "零食",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1209,7 +1055,6 @@
         "category": "零食",
         "emoji": "🍚",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1219,7 +1064,6 @@
         "category": "半成品",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1229,7 +1073,6 @@
         "category": "零食",
         "emoji": "🍎",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1239,7 +1082,6 @@
         "category": "零食",
         "emoji": "🧀",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1249,7 +1091,6 @@
         "category": "調味料",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1259,7 +1100,6 @@
         "category": "零食",
         "emoji": "🍎",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1269,7 +1109,6 @@
         "category": "零食",
         "emoji": "🍬",
         "stockStatus": "In Stock",
-        "location": "急凍",
         "defaultLocation": "急凍",
         "history": []
     },
@@ -1279,32 +1118,23 @@
         "category": "無食材類型",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "$7.67/kg = 3.48/lb",
-                "store": "T&T",
-                "location": "常溫"
+                "store": "T&T"
             },
             {
-                "date": "2025-11-29",
                 "price": "$ 8.8/kg",
-                "store": "metro",
-                "location": "常溫"
+                "store": "metro"
             },
             {
-                "date": "2025-11-29",
                 "price": "6CAD/lb",
-                "store": "IGA",
-                "location": "常溫"
+                "store": "IGA"
             },
             {
-                "date": "2025-11-29",
                 "price": "5.5CAD/lb",
-                "store": "SaveOnFood",
-                "location": "常溫"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -1314,7 +1144,6 @@
         "category": "無食材類型",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1324,7 +1153,6 @@
         "category": "無食材類型",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1334,7 +1162,6 @@
         "category": "無食材類型",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1344,7 +1171,6 @@
         "category": "無食材類型",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1354,7 +1180,6 @@
         "category": "水果",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1364,7 +1189,6 @@
         "category": "水果",
         "emoji": "🍎",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1374,7 +1198,6 @@
         "category": "水果",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1384,7 +1207,6 @@
         "category": "水果",
         "emoji": "🍎",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1394,7 +1216,6 @@
         "category": "零食",
         "emoji": "🍪",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1404,7 +1225,6 @@
         "category": "半成品",
         "emoji": "",
         "stockStatus": "In Stock",
-        "location": "急凍",
         "defaultLocation": "急凍",
         "history": []
     },
@@ -1414,14 +1234,11 @@
         "category": "原材料",
         "emoji": "🍎",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "3.5CAD",
-                "store": "SaveOnFood",
-                "location": "常溫"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -1431,7 +1248,6 @@
         "category": "零食",
         "emoji": "🐟",
         "stockStatus": "In Stock",
-        "location": "急凍",
         "defaultLocation": "急凍",
         "history": []
     },
@@ -1441,14 +1257,11 @@
         "category": "無食材類型",
         "emoji": "🍗",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "12CAD/lb",
-                "store": "WholeFood",
-                "location": "常溫"
+                "store": "WholeFood"
             }
         ]
     },
@@ -1458,7 +1271,6 @@
         "category": "無食材類型",
         "emoji": "🍜",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1468,7 +1280,6 @@
         "category": "調味料",
         "emoji": "🥫",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1478,14 +1289,11 @@
         "category": "零食",
         "emoji": "🍬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "3.7CAD一個",
-                "store": "WholeFood",
-                "location": "常溫"
+                "store": "WholeFood"
             }
         ]
     },
@@ -1495,14 +1303,11 @@
         "category": "原材料",
         "emoji": "🧀",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "9CAD一盒",
-                "store": "SaveOnFood",
-                "location": "常溫"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -1512,14 +1317,11 @@
         "category": "半成品",
         "emoji": "🥟",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "15CAD",
-                "store": "WholeFood",
-                "location": "常溫"
+                "store": "WholeFood"
             }
         ]
     },
@@ -1529,14 +1331,11 @@
         "category": "原材料",
         "emoji": "🥬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "2CAD/lb",
-                "store": "SaveOnFood",
-                "location": "常溫"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -1546,7 +1345,6 @@
         "category": "原材料",
         "emoji": "🥬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1556,7 +1354,6 @@
         "category": "調味料",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1566,14 +1363,11 @@
         "category": "調味料",
         "emoji": "🫒",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "4CAD/450ML",
-                "store": "SaveOnFood",
-                "location": "常溫"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -1583,14 +1377,11 @@
         "category": "半成品",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "9CAD/1盒",
-                "store": "SaveOnFood",
-                "location": "常溫"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -1600,14 +1391,11 @@
         "category": "原材料",
         "emoji": "",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "1.8CAD/300g",
-                "store": "SaveOnFood",
-                "location": "冷藏"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -1617,14 +1405,11 @@
         "category": "原材料",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "4CAD/500g",
-                "store": "WholeFood",
-                "location": "常溫"
+                "store": "WholeFood"
             }
         ]
     },
@@ -1634,7 +1419,6 @@
         "category": "半成品",
         "emoji": "🥔",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1644,7 +1428,6 @@
         "category": "調味料",
         "emoji": "🥛",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1654,7 +1437,6 @@
         "category": "調味料",
         "emoji": "🫒",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1664,7 +1446,6 @@
         "category": "零食",
         "emoji": "🍎",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": []
     },
@@ -1674,7 +1455,6 @@
         "category": "半成品",
         "emoji": "🧀",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1684,14 +1464,11 @@
         "category": "半成品",
         "emoji": "🦐",
         "stockStatus": "In Stock",
-        "location": "急凍",
         "defaultLocation": "急凍",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "15CAD",
-                "store": "T&T",
-                "location": "急凍"
+                "store": "T&T"
             }
         ]
     },
@@ -1701,14 +1478,11 @@
         "category": "半成品",
         "emoji": "🧁",
         "stockStatus": "In Stock",
-        "location": "急凍",
         "defaultLocation": "急凍",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "5CAD",
-                "store": "T&T",
-                "location": "急凍"
+                "store": "T&T"
             }
         ]
     },
@@ -1718,7 +1492,6 @@
         "category": "半成品",
         "emoji": "🥔",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1728,7 +1501,6 @@
         "category": "調味料",
         "emoji": "🍗",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": []
     },
@@ -1738,7 +1510,6 @@
         "category": "調味料",
         "emoji": "🥫",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": []
     },
@@ -1748,7 +1519,6 @@
         "category": "調味料",
         "emoji": "🥛",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": []
     },
@@ -1758,14 +1528,11 @@
         "category": "原材料",
         "emoji": "🥬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "5CAD/lb",
-                "store": "T&T",
-                "location": "常溫"
+                "store": "T&T"
             }
         ]
     },
@@ -1775,7 +1542,6 @@
         "category": "調味料",
         "emoji": "",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1785,14 +1551,11 @@
         "category": "零食",
         "emoji": "🐟",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "5CAD/bag",
-                "store": "T&T",
-                "location": "常溫"
+                "store": "T&T"
             }
         ]
     },
@@ -1802,7 +1565,6 @@
         "category": "零食",
         "emoji": "🥬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1812,14 +1574,11 @@
         "category": "零食",
         "emoji": "🍚",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "7CAD/90g",
-                "store": "T&T",
-                "location": "常溫"
+                "store": "T&T"
             }
         ]
     },
@@ -1829,14 +1588,11 @@
         "category": "零食",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "4CAD/180g",
-                "store": "T&T",
-                "location": "常溫"
+                "store": "T&T"
             }
         ]
     },
@@ -1846,7 +1602,6 @@
         "category": "零食",
         "emoji": "🥩",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1856,7 +1611,6 @@
         "category": "零食",
         "emoji": "🥛",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1866,7 +1620,6 @@
         "category": "零食",
         "emoji": "🍬",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1876,7 +1629,6 @@
         "category": "零食",
         "emoji": "",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1886,7 +1638,6 @@
         "category": "零食",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1896,7 +1647,6 @@
         "category": "零食",
         "emoji": "",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1906,7 +1656,6 @@
         "category": "零食",
         "emoji": "🥩",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1916,7 +1665,6 @@
         "category": "零食",
         "emoji": "🐟",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1926,7 +1674,6 @@
         "category": "零食",
         "emoji": "🍪",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1936,7 +1683,6 @@
         "category": "零食",
         "emoji": "🥛",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1946,7 +1692,6 @@
         "category": "零食",
         "emoji": "🥔",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1956,7 +1701,6 @@
         "category": "零食",
         "emoji": "",
         "stockStatus": "In Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1966,7 +1710,6 @@
         "category": "半成品",
         "emoji": "🍗",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1976,7 +1719,6 @@
         "category": "半成品",
         "emoji": "🍜",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -1986,14 +1728,11 @@
         "category": "原材料",
         "emoji": "🐟",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "24CAD/kg; 11CAD/0.5kg",
-                "store": "T&T",
-                "location": "常溫"
+                "store": "T&T"
             }
         ]
     },
@@ -2003,14 +1742,11 @@
         "category": "水果",
         "emoji": "",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "4.37/kg; 1.5CAD/ 2個",
-                "store": "T&T",
-                "location": "冷藏"
+                "store": "T&T"
             }
         ]
     },
@@ -2020,14 +1756,11 @@
         "category": "水果",
         "emoji": "🍎",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "2.5CAD/ 1個",
-                "store": "T&T",
-                "location": "常溫"
+                "store": "T&T"
             }
         ]
     },
@@ -2037,7 +1770,6 @@
         "category": "半成品",
         "emoji": "🍗",
         "stockStatus": "In Stock",
-        "location": "急凍",
         "defaultLocation": "急凍",
         "history": []
     },
@@ -2047,7 +1779,6 @@
         "category": "半成品",
         "emoji": "🥟",
         "stockStatus": "In Stock",
-        "location": "急凍",
         "defaultLocation": "急凍",
         "history": []
     },
@@ -2057,7 +1788,6 @@
         "category": "原材料",
         "emoji": "🐟",
         "stockStatus": "In Stock",
-        "location": "急凍",
         "defaultLocation": "急凍",
         "history": []
     },
@@ -2067,14 +1797,11 @@
         "category": "半成品",
         "emoji": "🧁",
         "stockStatus": "In Stock",
-        "location": "冷藏",
         "defaultLocation": "冷藏",
         "history": [
             {
-                "date": "2025-11-29",
                 "price": "12CAD/個(330g)",
-                "store": "SaveOnFood",
-                "location": "冷藏"
+                "store": "SaveOnFood"
             }
         ]
     },
@@ -2084,7 +1811,6 @@
         "category": "原材料",
         "emoji": "🦪",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -2094,7 +1820,6 @@
         "category": "半成品",
         "emoji": "🍜",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -2104,7 +1829,6 @@
         "category": "原材料",
         "emoji": "🐟",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     },
@@ -2114,7 +1838,6 @@
         "category": "半成品",
         "emoji": "",
         "stockStatus": "Out of Stock",
-        "location": "常溫",
         "defaultLocation": "常溫",
         "history": []
     }

@@ -10,13 +10,12 @@ const IngredientDetail = ({ id: propId }) => {
     const { ingredients, updateIngredient } = useApp();
 
     const [ingredient, setIngredient] = useState(null);
-    const [newEntry, setNewEntry] = useState({ price: '', store: '', location: '' });
+    const [newEntry, setNewEntry] = useState({ price: '', store: '' });
     const [isEditing, setIsEditing] = useState(false);
     const [editForm, setEditForm] = useState({
         name: '',
         category: '',
         emoji: '',
-        location: '',
         defaultLocation: ''
     });
 
@@ -28,8 +27,7 @@ const IngredientDetail = ({ id: propId }) => {
                 name: found.name,
                 category: found.category,
                 emoji: found.emoji || '',
-                location: found.location,
-                defaultLocation: found.defaultLocation || found.location
+                defaultLocation: found.defaultLocation
             });
         }
     }, [id, ingredients]);
@@ -44,15 +42,13 @@ const IngredientDetail = ({ id: propId }) => {
             ...(ingredient.history || []),
             {
                 id: Date.now(),
-                date: new Date().toISOString(),
                 price: newEntry.price,
-                store: newEntry.store,
-                location: newEntry.location || ingredient.location // Default to current location if not specified
+                store: newEntry.store
             }
         ];
 
         updateIngredient(ingredient.id, { history: updatedHistory });
-        setNewEntry({ price: '', store: '', location: '' });
+        setNewEntry({ price: '', store: '' });
     };
 
     const handleSave = () => {
@@ -60,7 +56,6 @@ const IngredientDetail = ({ id: propId }) => {
             name: editForm.name,
             category: editForm.category,
             emoji: editForm.emoji,
-            location: editForm.location,
             defaultLocation: editForm.defaultLocation
         });
         setIsEditing(false);
@@ -71,8 +66,7 @@ const IngredientDetail = ({ id: propId }) => {
             name: ingredient.name,
             category: ingredient.category,
             emoji: ingredient.emoji || '',
-            location: ingredient.location,
-            defaultLocation: ingredient.defaultLocation || ingredient.location
+            defaultLocation: ingredient.defaultLocation
         });
         setIsEditing(false);
     };
@@ -123,18 +117,6 @@ const IngredientDetail = ({ id: propId }) => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Current Location</label>
-                                    <select
-                                        value={editForm.location}
-                                        onChange={e => setEditForm({ ...editForm, location: e.target.value })}
-                                        style={{ width: '100%' }}
-                                    >
-                                        <option value="Refrigerated">Refrigerated</option>
-                                        <option value="Frozen">Frozen</option>
-                                        <option value="Room Temp">Room Temp</option>
-                                    </select>
-                                </div>
-                                <div>
                                     <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Default Location</label>
                                     <select
                                         value={editForm.defaultLocation}
@@ -159,7 +141,7 @@ const IngredientDetail = ({ id: propId }) => {
                                 <div style={{ display: 'flex', gap: 'var(--spacing-xs)' }}>
                                     <span className="badge" style={{ backgroundColor: '#f0f0f0', color: '#555' }}>{ingredient.category}</span>
                                     <span className="badge" style={{ backgroundColor: '#eef2ff', color: '#4f46e5' }}>
-                                        📍 {ingredient.defaultLocation || ingredient.location}
+                                        📍 {ingredient.defaultLocation}
                                     </span>
                                 </div>
                             </div>
@@ -212,12 +194,9 @@ const IngredientDetail = ({ id: propId }) => {
                                     }}>
                                         <div>
                                             <div style={{ fontWeight: 'bold' }}>{entry.store}</div>
-                                            <div style={{ fontSize: '0.8rem', color: 'var(--color-muted)' }}>
-                                                {new Date(entry.date).toLocaleDateString()}
-                                            </div>
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 'bold', color: 'var(--color-primary)' }}>
-                                            {entry.price} CAD
+                                            {entry.price}
                                         </div>
                                     </div>
                                 ))

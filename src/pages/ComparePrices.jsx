@@ -14,14 +14,13 @@ const ComparePrices = () => {
         ingredients.forEach(ingredient => {
             if (ingredient.history && ingredient.history.length > 0) {
                 ingredient.history.forEach(record => {
-                    const storeName = record.store || record.location || 'Unknown Store';
+                    const storeName = record.store || 'Unknown Store';
                     if (!data[storeName]) {
                         data[storeName] = [];
                     }
 
-                    // Avoid duplicates if multiple history entries for same store (e.g. different dates)
-                    // For now, just show the latest one or all? User said "price and location should be added to price history"
-                    // Let's show all unique price points for that store
+                    // Avoid duplicates if multiple history entries for same store
+                    // Show all unique price points for that store
                     const exists = data[storeName].some(item =>
                         item.id === ingredient.id && item.price === record.price
                     );
@@ -31,8 +30,7 @@ const ComparePrices = () => {
                             id: ingredient.id,
                             name: ingredient.name,
                             emoji: ingredient.emoji,
-                            price: record.price,
-                            date: record.date
+                            price: record.price
                         });
                     }
                 });
