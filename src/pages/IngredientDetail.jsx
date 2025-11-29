@@ -391,8 +391,7 @@ const IngredientDetail = ({ id: propId }) => {
                                                 <input
                                                     value={entry.price}
                                                     onChange={e => handleHistoryChange(entry.id, 'price', e.target.value)}
-                                                    type="number"
-                                                    step="0.01"
+                                                    type="text"
                                                     style={{ width: '100%' }}
                                                 />
                                             </div>
@@ -484,8 +483,7 @@ const IngredientDetail = ({ id: propId }) => {
                                         value={newEntry.price}
                                         onChange={e => setNewEntry({ ...newEntry, price: e.target.value })}
                                         placeholder="e.g. 7.99"
-                                        type="number"
-                                        step="0.01"
+                                        type="text"
                                         style={{ width: '100%', paddingLeft: '32px' }}
                                     />
                                 </div>
