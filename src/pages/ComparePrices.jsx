@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Search, Store, ShoppingCart } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
+import StoreLogo from '../components/StoreLogo';
 
 const ComparePrices = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -89,7 +90,7 @@ const ComparePrices = () => {
                             borderBottom: '1px solid var(--color-border)',
                             paddingBottom: 'var(--spacing-sm)'
                         }}>
-                            <Store size={24} className="text-primary" />
+                            <StoreLogo storeName={store} size={40} />
                             <h2 style={{ margin: 0, fontSize: '1.4rem' }}>{store}</h2>
                             <span className="badge badge-secondary" style={{ marginLeft: 'auto' }}>
                                 {items.length} items
@@ -134,7 +135,7 @@ const ComparePrices = () => {
                                         color: 'var(--color-primary)',
                                         marginTop: 'auto'
                                     }}>
-                                        {item.price}
+                                        ${item.price}
                                     </div>
                                 </div>
                             ))}

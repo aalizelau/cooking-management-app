@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, DollarSign, MapPin, Store, Edit, Save, X, ShoppingCart, Trash2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import EmojiPicker from 'emoji-picker-react';
+import StoreLogo from '../components/StoreLogo';
+import { SUPERMARKETS } from '../utils/stores';
 
 const IngredientDetail = ({ id: propId }) => {
     const { id: paramId } = useParams();
@@ -21,7 +23,8 @@ const IngredientDetail = ({ id: propId }) => {
         category: '',
         emoji: '',
         defaultLocation: '',
-        stockStatus: ''
+        stockStatus: '',
+        history: []
     });
     const emojiPickerRef = useRef(null);
 
@@ -34,7 +37,8 @@ const IngredientDetail = ({ id: propId }) => {
                 category: found.category,
                 emoji: found.emoji || '',
                 defaultLocation: found.defaultLocation,
-                stockStatus: found.stockStatus
+                stockStatus: found.stockStatus,
+                history: found.history || []
             });
         }
     }, [id, ingredients]);
@@ -80,7 +84,8 @@ const IngredientDetail = ({ id: propId }) => {
             category: editForm.category,
             emoji: editForm.emoji,
             defaultLocation: editForm.defaultLocation,
-            stockStatus: editForm.stockStatus
+            stockStatus: editForm.stockStatus,
+            history: editForm.history
         });
         setIsEditing(false);
         setShowEmojiPicker(false);
@@ -92,10 +97,27 @@ const IngredientDetail = ({ id: propId }) => {
             category: ingredient.category,
             emoji: ingredient.emoji || '',
             defaultLocation: ingredient.defaultLocation,
-            stockStatus: ingredient.stockStatus
+            stockStatus: ingredient.stockStatus,
+            history: ingredient.history || []
         });
         setIsEditing(false);
         setShowEmojiPicker(false);
+    };
+
+    const handleHistoryChange = (entryId, field, value) => {
+        setEditForm({
+            ...editForm,
+            history: editForm.history.map(entry =>
+                entry.id === entryId ? { ...entry, [field]: value } : entry
+            )
+        });
+    };
+
+    const handleDeleteHistoryEntry = (entryId) => {
+        setEditForm({
+            ...editForm,
+            history: editForm.history.filter(entry => entry.id !== entryId)
+        });
     };
 
     const handleDelete = async () => {
@@ -332,26 +354,97 @@ const IngredientDetail = ({ id: propId }) => {
                     <div>
                         <h3>Price History</h3>
                         <div style={{ marginTop: 'var(--spacing-md)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
-                            {(ingredient.history || []).length === 0 ? (
-                                <p style={{ color: 'var(--color-muted)' }}>No price history yet.</p>
+                            {isEditing ? (
+                                editForm.history.length === 0 ? (
+                                    <p style={{ color: 'var(--color-muted)' }}>No price history yet.</p>
+                                ) : (
+                                    editForm.history.map(entry => (
+                                        <div key={entry.id} style={{
+                                            padding: 'var(--spacing-sm)',
+                                            border: '1px solid var(--color-border)',
+                                            borderRadius: 'var(--radius-sm)',
+                                            display: 'flex',
+                                            gap: 'var(--spacing-sm)',
+                                            alignItems: 'center'
+                                        }}>
+                                            <div style={{ flex: 1 }}>
+                                                <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.8rem', fontWeight: '600' }}>Store</label>
+                                                <select
+                                                    value={entry.store}
+                                                    onChange={e => handleHistoryChange(entry.id, 'store', e.target.value)}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '8px',
+                                                        borderRadius: 'var(--radius-sm)',
+                                                        border: '1px solid var(--color-border)',
+                                                        backgroundColor: 'white'
+                                                    }}
+                                                >
+                                                    <option value="" disabled>Select Store</option>
+                                                    {SUPERMARKETS.map(store => (
+                                                        <option key={store} value={store}>{store}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div style={{ width: '120px' }}>
+                                                <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.8rem', fontWeight: '600' }}>Price</label>
+                                                <input
+                                                    value={entry.price}
+                                                    onChange={e => handleHistoryChange(entry.id, 'price', e.target.value)}
+                                                    type="number"
+                                                    step="0.01"
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteHistoryEntry(entry.id)}
+                                                className="btn btn-outline"
+                                                style={{
+                                                    marginTop: '20px',
+                                                    padding: '8px',
+                                                    minWidth: 'auto',
+                                                    color: 'var(--color-danger)',
+                                                    borderColor: 'var(--color-danger)'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.backgroundColor = 'var(--color-danger)';
+                                                    e.currentTarget.style.color = 'white';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '';
+                                                    e.currentTarget.style.color = 'var(--color-danger)';
+                                                }}
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    ))
+                                )
                             ) : (
-                                (ingredient.history || []).map(entry => (
-                                    <div key={entry.id} style={{
-                                        padding: 'var(--spacing-sm)',
-                                        border: '1px solid var(--color-border)',
-                                        borderRadius: 'var(--radius-sm)',
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center'
-                                    }}>
-                                        <div>
-                                            <div style={{ fontWeight: 'bold' }}>{entry.store}</div>
+                                (ingredient.history || []).length === 0 ? (
+                                    <p style={{ color: 'var(--color-muted)' }}>No price history yet.</p>
+                                ) : (
+                                    (ingredient.history || []).map(entry => (
+                                        <div key={entry.id} style={{
+                                            padding: 'var(--spacing-sm)',
+                                            border: '1px solid var(--color-border)',
+                                            borderRadius: 'var(--radius-sm)',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            gap: 'var(--spacing-sm)'
+                                        }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+                                                <StoreLogo storeName={entry.store} size={32} />
+                                                <div style={{ fontWeight: 'bold' }}>{entry.store}</div>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 'bold', color: 'var(--color-primary)' }}>
+                                                ${entry.price}
+                                            </div>
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 'bold', color: 'var(--color-primary)' }}>
-                                            {entry.price}
-                                        </div>
-                                    </div>
-                                ))
+                                    ))
+                                )
                             )}
                         </div>
                     </div>
@@ -363,12 +456,23 @@ const IngredientDetail = ({ id: propId }) => {
                                 <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem' }}>Store</label>
                                 <div style={{ position: 'relative' }}>
                                     <Store size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)' }} />
-                                    <input
+                                    <select
                                         value={newEntry.store}
                                         onChange={e => setNewEntry({ ...newEntry, store: e.target.value })}
-                                        placeholder="e.g. Costco"
-                                        style={{ width: '100%', paddingLeft: '32px' }}
-                                    />
+                                        style={{
+                                            width: '100%',
+                                            paddingLeft: '32px',
+                                            height: '40px',
+                                            borderRadius: 'var(--radius-sm)',
+                                            border: '1px solid var(--color-border)',
+                                            backgroundColor: 'white'
+                                        }}
+                                    >
+                                        <option value="" disabled>Select Store</option>
+                                        {SUPERMARKETS.map(store => (
+                                            <option key={store} value={store}>{store}</option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
 
