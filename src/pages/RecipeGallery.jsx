@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import RecipeCard from '../components/RecipeCard';
 
 const RecipeGallery = () => {
     const { recipes, addRecipe } = useApp();
-    const [activeTab, setActiveTab] = useState('All');
-    const [searchQuery, setSearchQuery] = useState('');
+    const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem('recipe_activeTab') || 'Done');
+    const [searchQuery, setSearchQuery] = useState(() => sessionStorage.getItem('recipe_searchQuery') || '');
+
+    // Persist state to sessionStorage
+    useEffect(() => {
+        sessionStorage.setItem('recipe_activeTab', activeTab);
+        sessionStorage.setItem('recipe_searchQuery', searchQuery);
+    }, [activeTab, searchQuery]);
 
     const filteredRecipes = recipes.filter(recipe => {
         const matchesSearch = recipe.title.toLowerCase().includes(searchQuery.toLowerCase());
