@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit2, Save, X, Plus, Trash2, CheckCircle, AlertCircle, Upload, Image } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { uploadRecipeImage } from '../lib/supabase';
+import { uploadRecipeImage, syncRecipeIngredients } from '../lib/supabase';
 
 const RecipeDetail = () => {
     const { id } = useParams();
@@ -28,9 +28,19 @@ const RecipeDetail = () => {
 
     if (!recipe) return <div>Recipe not found</div>;
 
-    const handleSave = () => {
-        updateRecipe(recipe.id, editedRecipe);
-        setIsEditing(false);
+    const handleSave = async () => {
+        try {
+            // Update recipe in database
+            await updateRecipe(recipe.id, editedRecipe);
+
+            // Sync ingredient links to junction table
+            await syncRecipeIngredients(recipe.id, editedRecipe.linkedIngredientIds || []);
+
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Failed to save recipe:', error);
+            alert('Failed to save recipe. Please try again.');
+        }
     };
 
     const handleCancel = () => {

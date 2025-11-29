@@ -13,7 +13,8 @@ import {
     fetchRecipes,
     createRecipe,
     updateRecipe as updateRecipeDB,
-    deleteRecipe
+    deleteRecipe,
+    syncRecipeIngredients
 } from '../lib/supabase';
 
 const AppContext = createContext();
@@ -2431,6 +2432,12 @@ export const AppProvider = ({ children }) => {
         setSyncing(true);
         try {
             const newRecipe = await createRecipe(recipe);
+
+            // Sync ingredient links if provided
+            if (recipe.linkedIngredientIds && recipe.linkedIngredientIds.length > 0) {
+                await syncRecipeIngredients(newRecipe.id, recipe.linkedIngredientIds);
+            }
+
             setRecipes(prev => [newRecipe, ...prev]);
         } catch (err) {
             console.error('Failed to create recipe:', err);

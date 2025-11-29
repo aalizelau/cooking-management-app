@@ -441,6 +441,70 @@ export async function deleteRecipeImage(imageUrl) {
 }
 
 /**
+ * Fetch ingredient IDs linked to a specific recipe
+ */
+export async function fetchRecipeIngredients(recipeId) {
+    const { data, error } = await supabase
+        .from('recipe_ingredients')
+        .select('ingredient_id, quantity')
+        .eq('recipe_id', recipeId);
+
+    if (error) {
+        console.error('Error fetching recipe ingredients:', error);
+        throw error;
+    }
+
+    // Return array of ingredient IDs
+    return data.map(item => item.ingredient_id);
+}
+
+/**
+ * Sync recipe ingredients - replaces all existing links with new ones
+ */
+export async function syncRecipeIngredients(recipeId, ingredientIds) {
+    try {
+        // First, delete all existing links for this recipe
+        const { error: deleteError } = await supabase
+            .from('recipe_ingredients')
+            .delete()
+            .eq('recipe_id', recipeId);
+
+        if (deleteError) {
+            console.error('Error deleting old recipe ingredients:', deleteError);
+            throw deleteError;
+        }
+
+        // If no ingredients to link, we're done
+        if (!ingredientIds || ingredientIds.length === 0) {
+            console.log('✅ All recipe ingredients removed');
+            return true;
+        }
+
+        // Insert new links
+        const linksToInsert = ingredientIds.map(ingredientId => ({
+            recipe_id: recipeId,
+            ingredient_id: ingredientId,
+            quantity: null // Can be enhanced later
+        }));
+
+        const { error: insertError } = await supabase
+            .from('recipe_ingredients')
+            .insert(linksToInsert);
+
+        if (insertError) {
+            console.error('Error inserting recipe ingredients:', insertError);
+            throw insertError;
+        }
+
+        console.log(`✅ Synced ${ingredientIds.length} ingredients to recipe ${recipeId}`);
+        return true;
+    } catch (error) {
+        console.error('Failed to sync recipe ingredients:', error);
+        throw error;
+    }
+}
+
+/**
  * Fetch all recipes from Supabase
  */
 export async function fetchRecipes() {
@@ -454,7 +518,20 @@ export async function fetchRecipes() {
         throw error;
     }
 
-    return data.map(transformRecipeFromDB);
+    // Fetch ingredient links for all recipes
+    const recipesWithIngredients = await Promise.all(
+        data.map(async (recipe) => {
+            try {
+                const ingredientIds = await fetchRecipeIngredients(recipe.id);
+                return transformRecipeFromDB(recipe, ingredientIds);
+            } catch (err) {
+                console.error(`Failed to fetch ingredients for recipe ${recipe.id}:`, err);
+                return transformRecipeFromDB(recipe, []);
+            }
+        })
+    );
+
+    return recipesWithIngredients;
 }
 
 /**
@@ -542,15 +619,16 @@ export async function deleteRecipe(id) {
 /**
  * Transform recipe from database format to app format
  */
-function transformRecipeFromDB(dbRecipe) {
+function transformRecipeFromDB(dbRecipe, linkedIngredientIds = []) {
     return {
         id: dbRecipe.id,
         title: dbRecipe.title,
         status: dbRecipe.status,
         image: dbRecipe.cover_image_url, // Map cover_image_url to image for frontend compatibility
         description: "", // Description column removed, returning empty string
-        ingredients: [], // To be populated if we fetch relations
-        linkedIngredientIds: [] // To be populated if we fetch relations
+        ingredients: [], // Text ingredients (if we add later)
+        steps: [], // Recipe steps (if we add later)
+        linkedIngredientIds: linkedIngredientIds // Now populated from junction table!
     };
 }
 
