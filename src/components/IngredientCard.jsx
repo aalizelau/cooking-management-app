@@ -4,7 +4,7 @@ import { useApp } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 
 const IngredientCard = ({ ingredient }) => {
-    const { updateIngredient, addToCart, cart } = useApp();
+    const { updateIngredient, addToCart, removeFromCart, cart } = useApp();
     const navigate = useNavigate();
     const isInCart = cart.includes(ingredient.id);
 
@@ -13,9 +13,13 @@ const IngredientCard = ({ ingredient }) => {
         updateIngredient(ingredient.id, { stockStatus: 'Out of Stock' });
     };
 
-    const handleAddToCart = (e) => {
+    const handleToggleCart = (e) => {
         e.stopPropagation(); // Prevent card click navigation
-        addToCart(ingredient.id);
+        if (isInCart) {
+            removeFromCart(ingredient.id);
+        } else {
+            addToCart(ingredient.id);
+        }
     };
 
     const handleCardClick = () => {
@@ -85,10 +89,9 @@ const IngredientCard = ({ ingredient }) => {
                     </button>
                 ) : (
                     <button
-                        onClick={handleAddToCart}
-                        disabled={isInCart}
+                        onClick={handleToggleCart}
                         className={`btn ${isInCart ? 'btn-secondary' : 'btn-outline'}`}
-                        title={isInCart ? "Added to cart" : "Add to Shopping Cart"}
+                        title={isInCart ? "Remove from cart" : "Add to Shopping Cart"}
                         style={{
                             padding: 'var(--spacing-xs)',
                             minWidth: 'auto',
@@ -98,8 +101,12 @@ const IngredientCard = ({ ingredient }) => {
                             transition: 'all 0.2s ease'
                         }}
                         onMouseEnter={(e) => {
-                            if (!isInCart) {
-                                e.currentTarget.style.transform = 'scale(1.1) rotate(-10deg)';
+                            e.currentTarget.style.transform = 'scale(1.1) rotate(-10deg)';
+                            if (isInCart) {
+                                e.currentTarget.style.color = 'var(--color-success)';
+                                e.currentTarget.style.borderColor = 'var(--color-success)';
+                                e.currentTarget.style.backgroundColor = '#f0fff4';
+                            } else {
                                 e.currentTarget.style.color = 'var(--color-primary)';
                                 e.currentTarget.style.borderColor = 'var(--color-primary)';
                                 e.currentTarget.style.backgroundColor = '#fff5f0';
