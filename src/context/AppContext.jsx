@@ -4,7 +4,12 @@ import {
     createIngredient,
     updateIngredient as updateIngredientDB,
     deleteIngredient,
-    subscribeToIngredients
+    subscribeToIngredients,
+    fetchCartItems,
+    addToCartDB,
+    removeFromCartDB,
+    clearCartDB,
+    subscribeToCart
 } from '../lib/supabase';
 
 const AppContext = createContext();
@@ -2165,22 +2170,20 @@ export const AppProvider = ({ children }) => {
         const saved = localStorage.getItem('recipes');
         return saved ? JSON.parse(saved) : INITIAL_RECIPES;
     });
-    const [cart, setCart] = useState(() => {
-        const saved = localStorage.getItem('cart');
-        return saved ? JSON.parse(saved) : [];
-    });
+    const [cart, setCart] = useState([]);
 
     // Loading and error states
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [syncing, setSyncing] = useState(false);
 
-    // Load ingredients from Supabase on mount
+    // Load ingredients and cart from Supabase on mount
     useEffect(() => {
         loadIngredientsFromSupabase();
+        loadCartFromSupabase();
     }, []);
 
-    // Subscribe to real-time updates from Supabase
+    // Subscribe to real-time updates from Supabase (ingredients)
     useEffect(() => {
         const unsubscribe = subscribeToIngredients((payload) => {
             console.log('Real-time update received:', payload.eventType);
@@ -2209,13 +2212,38 @@ export const AppProvider = ({ children }) => {
         };
     }, []);
 
-    // Persist recipes and cart to localStorage (keep these local for now)
+    // Subscribe to real-time updates from Supabase (cart)
+    useEffect(() => {
+        const unsubscribe = subscribeToCart((payload) => {
+            console.log('Cart real-time update:', payload.eventType);
+
+            if (payload.eventType === 'INSERT') {
+                const ingredientId = payload.new.ingredient_id;
+                setCart(prev => {
+                    if (!prev.includes(ingredientId)) {
+                        return [...prev, ingredientId];
+                    }
+                    return prev;
+                });
+            } else if (payload.eventType === 'DELETE') {
+                const ingredientId = payload.old.ingredient_id;
+                setCart(prev => prev.filter(id => id !== ingredientId));
+            }
+        });
+
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
+    }, []);
+
+    // Persist recipes to localStorage
     useEffect(() => {
         localStorage.setItem('recipes', JSON.stringify(recipes));
     }, [recipes]);
 
+    // Cache cart to localStorage as backup
     useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cart));
+        localStorage.setItem('cart_cache', JSON.stringify(cart));
     }, [cart]);
 
     // Cache ingredients to localStorage as backup
@@ -2273,6 +2301,41 @@ export const AppProvider = ({ children }) => {
             }
         } finally {
             setLoading(false);
+        }
+    }
+
+    // Load cart from Supabase
+    async function loadCartFromSupabase() {
+        try {
+            // Try to fetch from Supabase
+            const cartIds = await fetchCartItems();
+
+            if (cartIds && cartIds.length > 0) {
+                console.log(`🛒 Loaded ${cartIds.length} items from cart`);
+                setCart(cartIds);
+            } else {
+                // If Supabase cart is empty, try localStorage cache
+                const cached = localStorage.getItem('cart_cache');
+                if (cached) {
+                    const parsedCache = JSON.parse(cached);
+                    console.log(`📦 Loaded ${parsedCache.length} cart items from cache`);
+                    setCart(parsedCache);
+                }
+            }
+        } catch (err) {
+            console.error('Failed to load cart from Supabase:', err);
+
+            // Fallback to localStorage cache
+            try {
+                const cached = localStorage.getItem('cart_cache');
+                if (cached) {
+                    const parsedCache = JSON.parse(cached);
+                    console.log(`📦 Fallback: Loaded ${parsedCache.length} cart items from cache`);
+                    setCart(parsedCache);
+                }
+            } catch (cacheErr) {
+                console.error('Failed to load cart from cache:', cacheErr);
+            }
         }
     }
 
@@ -2363,20 +2426,52 @@ export const AppProvider = ({ children }) => {
         setRecipes(prev => prev.map(rec => rec.id === id ? { ...rec, ...updates } : rec));
     };
 
-    const addToCart = (ingredientId) => {
+    const addToCart = async (ingredientId) => {
+        // Optimistically update UI
         setCart(prev => {
             if (!prev.includes(ingredientId)) {
                 return [...prev, ingredientId];
             }
             return prev;
         });
+
+        // Sync to Supabase
+        try {
+            await addToCartDB(ingredientId);
+            console.log('✅ Added to cart in Supabase');
+        } catch (err) {
+            console.error('Failed to add to cart in Supabase:', err);
+            // Keep the optimistic update even if Supabase fails
+        }
     };
 
-    const removeFromCart = (ingredientId) => {
+    const removeFromCart = async (ingredientId) => {
+        // Optimistically update UI
         setCart(prev => prev.filter(id => id !== ingredientId));
+
+        // Sync to Supabase
+        try {
+            await removeFromCartDB(ingredientId);
+            console.log('✅ Removed from cart in Supabase');
+        } catch (err) {
+            console.error('Failed to remove from cart in Supabase:', err);
+            // Keep the optimistic update even if Supabase fails
+        }
     };
 
-    const clearCart = () => setCart([]);
+    const clearCart = async () => {
+        // Optimistically update UI
+        setCart([]);
+
+        // Sync to Supabase
+        try {
+            await clearCartDB();
+            console.log('✅ Cart cleared in Supabase');
+        } catch (err) {
+            console.error('Failed to clear cart in Supabase:', err);
+            // Keep the optimistic update even if Supabase fails
+        }
+    };
 
     // Refresh ingredients from Supabase
     const refreshIngredients = () => {

@@ -227,3 +227,128 @@ function transformToDB(appIngredient) {
 
     return dbIngredient;
 }
+
+/**
+ * Shopping Cart helper functions
+ */
+
+// Get or create a unique device ID
+function getDeviceId() {
+    let deviceId = localStorage.getItem('device_id');
+    if (!deviceId) {
+        deviceId = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('device_id', deviceId);
+    }
+    return deviceId;
+}
+
+/**
+ * Fetch all cart items from Supabase
+ */
+export async function fetchCartItems() {
+    const { data, error } = await supabase
+        .from('shopping_cart')
+        .select('ingredient_id')
+        .order('added_at', { ascending: true });
+
+    if (error) {
+        console.error('Error fetching cart items:', error);
+        throw error;
+    }
+
+    // Return array of ingredient IDs
+    return data.map(item => item.ingredient_id);
+}
+
+/**
+ * Add an item to the cart
+ */
+export async function addToCartDB(ingredientId) {
+    const deviceId = getDeviceId();
+
+    // Check if item already exists in cart
+    const { data: existing } = await supabase
+        .from('shopping_cart')
+        .select('id')
+        .eq('ingredient_id', ingredientId)
+        .maybeSingle();
+
+    if (existing) {
+        console.log('Item already in cart');
+        return true;
+    }
+
+    const { error } = await supabase
+        .from('shopping_cart')
+        .insert([{
+            ingredient_id: ingredientId,
+            device_id: deviceId
+        }]);
+
+    if (error) {
+        console.error('Error adding to cart:', error);
+        throw error;
+    }
+
+    return true;
+}
+
+/**
+ * Remove an item from the cart
+ */
+export async function removeFromCartDB(ingredientId) {
+    const { error } = await supabase
+        .from('shopping_cart')
+        .delete()
+        .eq('ingredient_id', ingredientId);
+
+    if (error) {
+        console.error('Error removing from cart:', error);
+        throw error;
+    }
+
+    return true;
+}
+
+/**
+ * Clear all items from the cart
+ */
+export async function clearCartDB() {
+    const { error } = await supabase
+        .from('shopping_cart')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
+
+    if (error) {
+        console.error('Error clearing cart:', error);
+        throw error;
+    }
+
+    return true;
+}
+
+/**
+ * Subscribe to real-time changes on shopping_cart table
+ */
+export function subscribeToCart(callback) {
+    const subscription = supabase
+        .channel('cart_changes')
+        .on(
+            'postgres_changes',
+            {
+                event: '*',
+                schema: 'public',
+                table: 'shopping_cart'
+            },
+            (payload) => {
+                console.log('Cart real-time update:', payload);
+                callback(payload);
+            }
+        )
+        .subscribe();
+
+    // Return unsubscribe function
+    return () => {
+        subscription.unsubscribe();
+    };
+}
