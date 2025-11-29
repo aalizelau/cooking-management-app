@@ -69,6 +69,25 @@ const ShoppingCart = () => {
         setSearchQuery('');
     };
 
+    const CATEGORY_ORDER = [
+        '原材料',
+        '水果',
+        '零食',
+        '半成品',
+        '調味料',
+        '無食材類型'
+    ];
+
+    const sortCategories = (a, b) => {
+        const indexA = CATEGORY_ORDER.indexOf(a);
+        const indexB = CATEGORY_ORDER.indexOf(b);
+
+        if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        return a.localeCompare(b);
+    };
+
     return (
         <div style={{ display: 'flex', height: 'calc(100vh - 80px)', gap: 'var(--spacing-md)' }}>
             {/* Left Panel: Shopping List */}
@@ -167,7 +186,7 @@ const ShoppingCart = () => {
                     </div>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)', paddingBottom: '100px' }}>
-                        {Object.keys(groupedCartItems).sort().map(category => (
+                        {Object.keys(groupedCartItems).sort(sortCategories).map(category => (
                             <div key={category}>
                                 <h4 style={{
                                     fontSize: '1rem',

@@ -116,6 +116,25 @@ const InventoryDashboard = () => {
         });
     };
 
+    const CATEGORY_ORDER = [
+        '原材料',
+        '水果',
+        '零食',
+        '半成品',
+        '調味料',
+        '無食材類型'
+    ];
+
+    const sortCategories = (a, b) => {
+        const indexA = CATEGORY_ORDER.indexOf(a);
+        const indexB = CATEGORY_ORDER.indexOf(b);
+
+        if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        return a.localeCompare(b);
+    };
+
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
@@ -286,7 +305,7 @@ const InventoryDashboard = () => {
                         No ingredients found.
                     </div>
                 ) : (
-                    Object.keys(groupedIngredients).sort().map(groupKey => (
+                    Object.keys(groupedIngredients).sort(sortCategories).map(groupKey => (
                         <div key={groupKey}>
                             <h4 style={{
                                 fontSize: '1rem',
