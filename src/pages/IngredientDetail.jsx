@@ -18,7 +18,8 @@ const IngredientDetail = ({ id: propId }) => {
         name: '',
         category: '',
         emoji: '',
-        defaultLocation: ''
+        defaultLocation: '',
+        stockStatus: ''
     });
     const emojiPickerRef = useRef(null);
 
@@ -30,7 +31,8 @@ const IngredientDetail = ({ id: propId }) => {
                 name: found.name,
                 category: found.category,
                 emoji: found.emoji || '',
-                defaultLocation: found.defaultLocation
+                defaultLocation: found.defaultLocation,
+                stockStatus: found.stockStatus
             });
         }
     }, [id, ingredients]);
@@ -75,7 +77,8 @@ const IngredientDetail = ({ id: propId }) => {
             name: editForm.name,
             category: editForm.category,
             emoji: editForm.emoji,
-            defaultLocation: editForm.defaultLocation
+            defaultLocation: editForm.defaultLocation,
+            stockStatus: editForm.stockStatus
         });
         setIsEditing(false);
         setShowEmojiPicker(false);
@@ -86,7 +89,8 @@ const IngredientDetail = ({ id: propId }) => {
             name: ingredient.name,
             category: ingredient.category,
             emoji: ingredient.emoji || '',
-            defaultLocation: ingredient.defaultLocation
+            defaultLocation: ingredient.defaultLocation,
+            stockStatus: ingredient.stockStatus
         });
         setIsEditing(false);
         setShowEmojiPicker(false);
@@ -191,6 +195,30 @@ const IngredientDetail = ({ id: propId }) => {
                                     <small style={{ color: 'var(--color-muted)', fontSize: '0.85rem' }}>
                                         Items will return to this location when restocked
                                     </small>
+                                </div>
+                                <div>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer' }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={editForm.stockStatus === 'In Stock'}
+                                            onChange={e => setEditForm({
+                                                ...editForm,
+                                                stockStatus: e.target.checked ? 'In Stock' : 'Out of Stock'
+                                            })}
+                                            style={{
+                                                width: '20px',
+                                                height: '20px',
+                                                cursor: 'pointer',
+                                                accentColor: 'var(--color-success)'
+                                            }}
+                                        />
+                                        <span style={{
+                                            color: editForm.stockStatus === 'In Stock' ? 'var(--color-success)' : 'var(--color-danger)',
+                                            fontWeight: 'bold'
+                                        }}>
+                                            {editForm.stockStatus === 'In Stock' ? 'In Stock' : 'Out of Stock'}
+                                        </span>
+                                    </label>
                                 </div>
                             </div>
                         ) : (
