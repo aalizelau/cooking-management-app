@@ -1,11 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
-const AppContext = createContext();
-
-export const useApp = () => useContext(AppContext);
-
-// Mock Data
-const INITIAL_INGREDIENTS = [
+[
     {
         "id": "101",
         "name": "鷄胸肉",
@@ -24,20 +17,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "In Stock",
         "location": "冷藏",
         "defaultLocation": "冷藏",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "6CAD一盒",
-                "store": "WholeFood",
-                "location": "冷藏"
-            },
-            {
-                "date": "2025-11-29",
-                "price": "7CAD/盒",
-                "store": "T&T",
-                "location": "冷藏"
-            }
-        ]
+        "history": []
     },
     {
         "id": "103",
@@ -47,14 +27,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "In Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "10CAD/包",
-                "store": "SaveOnFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "104",
@@ -74,14 +47,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "1.8/lb",
-                "store": "metro",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "107",
@@ -111,20 +77,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "5CAD/4個",
-                "store": "SaveOnFood",
-                "location": "常溫"
-            },
-            {
-                "date": "2025-11-29",
-                "price": "2cad 一個",
-                "store": "metro",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "110",
@@ -134,14 +87,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "In Stock",
         "location": "冷藏",
         "defaultLocation": "冷藏",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "6CAD一盒",
-                "store": "SaveOnFood",
-                "location": "冷藏"
-            }
-        ]
+        "history": []
     },
     {
         "id": "111",
@@ -241,20 +187,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "5CAD/1個",
-                "store": "WholeFood",
-                "location": "常溫"
-            },
-            {
-                "date": "2025-11-29",
-                "price": "8CAD一個",
-                "store": "SaveOnFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "121",
@@ -334,14 +267,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "3.5CAD 一綑",
-                "store": "SaveOnFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "129",
@@ -381,14 +307,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "In Stock",
         "location": "冷藏",
         "defaultLocation": "冷藏",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "3.7CAD/6個",
-                "store": "SaveOnFood",
-                "location": "冷藏"
-            }
-        ]
+        "history": []
     },
     {
         "id": "133",
@@ -568,26 +487,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "3根3CAD",
-                "store": "metro",
-                "location": "常溫"
-            },
-            {
-                "date": "2025-11-29",
-                "price": "4根9CAD",
-                "store": "IGA",
-                "location": "常溫"
-            },
-            {
-                "date": "2025-11-29",
-                "price": "8CAD/4個",
-                "store": "SaveOnFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "151",
@@ -637,26 +537,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "6CAD一盒",
-                "store": "SaveOnFood",
-                "location": "常溫"
-            },
-            {
-                "date": "2025-11-29",
-                "price": "19/lb",
-                "store": "WholeFood",
-                "location": "常溫"
-            },
-            {
-                "date": "2025-11-29",
-                "price": "13CAD/bag",
-                "store": "T&T",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "158",
@@ -686,26 +567,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "2CAD一盒",
-                "store": "walmart",
-                "location": "常溫"
-            },
-            {
-                "date": "2025-11-29",
-                "price": "3CAD一盒",
-                "store": "metro",
-                "location": "常溫"
-            },
-            {
-                "date": "2025-11-29",
-                "price": "4CAD/盒",
-                "store": "SaveOnFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "161",
@@ -1025,14 +887,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "8CAD/300g",
-                "store": "T&T",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "193",
@@ -1062,20 +917,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "34.9/kg",
-                "store": "WholeFood",
-                "location": "常溫"
-            },
-            {
-                "date": "2025-11-29",
-                "price": "3.49/100g",
-                "store": "SaveOnFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "196",
@@ -1125,20 +967,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "7CAD/ 3x80g",
-                "store": "walmart",
-                "location": "常溫"
-            },
-            {
-                "date": "2025-11-29",
-                "price": "18CAD",
-                "store": "Costco",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "202",
@@ -1288,32 +1117,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "$7.67/kg = 3.48/lb",
-                "store": "T&T",
-                "location": "常溫"
-            },
-            {
-                "date": "2025-11-29",
-                "price": "$ 8.8/kg",
-                "store": "metro",
-                "location": "常溫"
-            },
-            {
-                "date": "2025-11-29",
-                "price": "6CAD/lb",
-                "store": "IGA",
-                "location": "常溫"
-            },
-            {
-                "date": "2025-11-29",
-                "price": "5.5CAD/lb",
-                "store": "SaveOnFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "218",
@@ -1423,14 +1227,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "In Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "3.5CAD",
-                "store": "SaveOnFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "231",
@@ -1450,14 +1247,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "12CAD/lb",
-                "store": "WholeFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "234",
@@ -1487,14 +1277,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "3.7CAD一個",
-                "store": "WholeFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "237",
@@ -1504,14 +1287,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "9CAD一盒",
-                "store": "SaveOnFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "238",
@@ -1521,14 +1297,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "15CAD",
-                "store": "WholeFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "239",
@@ -1538,14 +1307,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "2CAD/lb",
-                "store": "SaveOnFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "240",
@@ -1575,14 +1337,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "In Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "4CAD/450ML",
-                "store": "SaveOnFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "243",
@@ -1592,14 +1347,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "9CAD/1盒",
-                "store": "SaveOnFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "244",
@@ -1609,14 +1357,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "In Stock",
         "location": "冷藏",
         "defaultLocation": "冷藏",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "1.8CAD/300g",
-                "store": "SaveOnFood",
-                "location": "冷藏"
-            }
-        ]
+        "history": []
     },
     {
         "id": "245",
@@ -1626,14 +1367,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "4CAD/500g",
-                "store": "WholeFood",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "246",
@@ -1693,14 +1427,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "In Stock",
         "location": "急凍",
         "defaultLocation": "急凍",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "15CAD",
-                "store": "T&T",
-                "location": "急凍"
-            }
-        ]
+        "history": []
     },
     {
         "id": "252",
@@ -1710,14 +1437,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "In Stock",
         "location": "急凍",
         "defaultLocation": "急凍",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "5CAD",
-                "store": "T&T",
-                "location": "急凍"
-            }
-        ]
+        "history": []
     },
     {
         "id": "253",
@@ -1767,14 +1487,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "5CAD/lb",
-                "store": "T&T",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "258",
@@ -1794,14 +1507,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "5CAD/bag",
-                "store": "T&T",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "260",
@@ -1821,14 +1527,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "7CAD/90g",
-                "store": "T&T",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "262",
@@ -1838,14 +1537,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "4CAD/180g",
-                "store": "T&T",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "263",
@@ -1995,14 +1687,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "24CAD/kg; 11CAD/0.5kg",
-                "store": "T&T",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "278",
@@ -2012,14 +1697,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "In Stock",
         "location": "冷藏",
         "defaultLocation": "冷藏",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "4.37/kg; 1.5CAD/ 2個",
-                "store": "T&T",
-                "location": "冷藏"
-            }
-        ]
+        "history": []
     },
     {
         "id": "279",
@@ -2029,14 +1707,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "Out of Stock",
         "location": "常溫",
         "defaultLocation": "常溫",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "2.5CAD/ 1個",
-                "store": "T&T",
-                "location": "常溫"
-            }
-        ]
+        "history": []
     },
     {
         "id": "280",
@@ -2076,14 +1747,7 @@ const INITIAL_INGREDIENTS = [
         "stockStatus": "In Stock",
         "location": "冷藏",
         "defaultLocation": "冷藏",
-        "history": [
-            {
-                "date": "2025-11-29",
-                "price": "12CAD/個(330g)",
-                "store": "SaveOnFood",
-                "location": "冷藏"
-            }
-        ]
+        "history": []
     },
     {
         "id": "284",
@@ -2126,107 +1790,3 @@ const INITIAL_INGREDIENTS = [
         "history": []
     }
 ]
-;
-
-const INITIAL_RECIPES = [
-    {
-        id: '1',
-        title: 'Fluffy Pancakes',
-        image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=800&q=80',
-        status: 'Want to Try',
-        description: 'Classic fluffy pancakes for a perfect breakfast.',
-        ingredients: ['2 cups flour', '2 eggs', '1.5 cups milk', '2 tbsp butter'],
-        steps: ['Mix dry ingredients', 'Mix wet ingredients', 'Combine', 'Cook on griddle'],
-        linkedIngredientIds: ['1', '2', '3', '4']
-    },
-    {
-        id: '2',
-        title: 'Scrambled Eggs',
-        image: 'https://images.unsplash.com/photo-1525351484163-7529414395d8?auto=format&fit=crop&w=800&q=80',
-        status: 'Done',
-        description: 'Creamy and soft scrambled eggs.',
-        ingredients: ['3 eggs', '1 tbsp butter', 'Salt', 'Pepper'],
-        steps: ['Beat eggs', 'Melt butter', 'Cook gently'],
-        linkedIngredientIds: ['2', '4']
-    }
-];
-
-export const AppProvider = ({ children }) => {
-    // Load from localStorage or use initial data
-    const [ingredients, setIngredients] = useState(() => {
-        const saved = localStorage.getItem('ingredients');
-        return saved ? JSON.parse(saved) : INITIAL_INGREDIENTS;
-    });
-
-    const [recipes, setRecipes] = useState(() => {
-        const saved = localStorage.getItem('recipes');
-        return saved ? JSON.parse(saved) : INITIAL_RECIPES;
-    });
-
-    const [cart, setCart] = useState(() => {
-        const saved = localStorage.getItem('cart');
-        return saved ? JSON.parse(saved) : [];
-    });
-
-    // Persist to localStorage
-    useEffect(() => {
-        localStorage.setItem('ingredients', JSON.stringify(ingredients));
-    }, [ingredients]);
-
-    useEffect(() => {
-        localStorage.setItem('recipes', JSON.stringify(recipes));
-    }, [recipes]);
-
-    useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cart));
-    }, [cart]);
-
-    // Actions
-    const addIngredient = (ingredient) => {
-        setIngredients(prev => [...prev, { ...ingredient, id: Date.now().toString() }]);
-    };
-
-    const updateIngredient = (id, updates) => {
-        setIngredients(prev => prev.map(ing => ing.id === id ? { ...ing, ...updates } : ing));
-    };
-
-    const addRecipe = (recipe) => {
-        setRecipes(prev => [...prev, { ...recipe, id: Date.now().toString() }]);
-    };
-
-    const updateRecipe = (id, updates) => {
-        setRecipes(prev => prev.map(rec => rec.id === id ? { ...rec, ...updates } : rec));
-    };
-
-    const addToCart = (ingredientId) => {
-        setCart(prev => {
-            if (!prev.includes(ingredientId)) {
-                return [...prev, ingredientId];
-            }
-            return prev;
-        });
-    };
-
-    const removeFromCart = (ingredientId) => {
-        setCart(prev => prev.filter(id => id !== ingredientId));
-    };
-
-    const clearCart = () => setCart([]);
-
-    return (
-        <AppContext.Provider value={{
-            ingredients,
-            recipes,
-            cart,
-            addIngredient,
-            updateIngredient,
-            addRecipe,
-            updateRecipe,
-            addToCart,
-            removeFromCart,
-            clearCart
-        }}>
-            {children}
-        </AppContext.Provider>
-    );
-};

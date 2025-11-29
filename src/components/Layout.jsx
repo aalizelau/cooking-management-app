@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { ChefHat, Package, ShoppingCart } from 'lucide-react';
+import { ChefHat, Package, ShoppingCart, TrendingUp } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 const Layout = () => {
@@ -34,6 +34,14 @@ const Layout = () => {
                         >
                             <Package size={20} />
                             Inventory
+                        </NavLink>
+                        <NavLink
+                            to="/compare"
+                            className={({ isActive }) => isActive ? 'btn btn-secondary' : 'btn btn-outline'}
+                            style={{ gap: 'var(--spacing-sm)' }}
+                        >
+                            <TrendingUp size={20} />
+                            Compare
                         </NavLink>
                         <NavLink
                             to="/shopping-cart"
