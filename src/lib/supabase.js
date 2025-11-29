@@ -352,3 +352,114 @@ export function subscribeToCart(callback) {
         subscription.unsubscribe();
     };
 }
+/**
+ * Recipe helper functions
+ */
+
+/**
+ * Fetch all recipes from Supabase
+ */
+export async function fetchRecipes() {
+    const { data, error } = await supabase
+        .from('recipes')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching recipes:', error);
+        throw error;
+    }
+
+    return data.map(transformRecipeFromDB);
+}
+
+/**
+ * Create a new recipe
+ */
+export async function createRecipe(recipe) {
+    const dbRecipe = transformRecipeToDB(recipe);
+
+    const { data, error } = await supabase
+        .from('recipes')
+        .insert([dbRecipe])
+        .select()
+        .single();
+
+    if (error) {
+        console.error('Error creating recipe:', error);
+        throw error;
+    }
+
+    return transformRecipeFromDB(data);
+}
+
+/**
+ * Update an existing recipe
+ */
+export async function updateRecipe(id, updates) {
+    const dbUpdates = transformRecipeToDB(updates);
+
+    const { data, error } = await supabase
+        .from('recipes')
+        .update(dbUpdates)
+        .eq('id', id)
+        .select()
+        .single();
+
+    if (error) {
+        console.error('Error updating recipe:', error);
+        throw error;
+    }
+
+    return transformRecipeFromDB(data);
+}
+
+/**
+ * Delete a recipe
+ */
+export async function deleteRecipe(id) {
+    const { error } = await supabase
+        .from('recipes')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        console.error('Error deleting recipe:', error);
+        throw error;
+    }
+
+    return true;
+}
+
+/**
+ * Transform recipe from database format to app format
+ */
+function transformRecipeFromDB(dbRecipe) {
+    return {
+        id: dbRecipe.id,
+        title: dbRecipe.title,
+        status: dbRecipe.status,
+        image: dbRecipe.cover_image_url, // Map cover_image_url to image for frontend compatibility
+        description: "", // Description column removed, returning empty string
+        ingredients: [], // To be populated if we fetch relations
+        linkedIngredientIds: [] // To be populated if we fetch relations
+    };
+}
+
+/**
+ * Transform recipe from app format to database format
+ */
+function transformRecipeToDB(appRecipe) {
+    const dbRecipe = {
+        title: appRecipe.title,
+        status: appRecipe.status,
+        cover_image_url: appRecipe.image
+    };
+
+    // Only include id if it exists (for updates)
+    if (appRecipe.id) {
+        dbRecipe.id = appRecipe.id;
+    }
+
+    return dbRecipe;
+}

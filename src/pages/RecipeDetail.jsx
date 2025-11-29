@@ -14,7 +14,8 @@ const RecipeDetail = () => {
     const [ingredientSearch, setIngredientSearch] = useState('');
 
     useEffect(() => {
-        const found = recipes.find(r => r.id === id);
+        // Convert id to number if recipes have numeric IDs
+        const found = recipes.find(r => r.id == id);
         if (found) {
             setRecipe(found);
             setEditedRecipe(found);
@@ -70,12 +71,22 @@ const RecipeDetail = () => {
             </button>
 
             <div className="card" style={{ overflow: 'hidden', padding: 0 }}>
-                <div style={{ height: '300px', position: 'relative' }}>
-                    <img
-                        src={recipe.image}
-                        alt={recipe.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
+                <div style={{ height: '300px', position: 'relative', backgroundColor: '#eee' }}>
+                    {recipe.image ? (
+                        <img
+                            src={recipe.image}
+                            alt={recipe.title}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.parentNode.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;">🍳</div>';
+                            }}
+                        />
+                    ) : (
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ fontSize: '3rem' }}>🍳</span>
+                        </div>
+                    )}
                     <div style={{
                         position: 'absolute',
                         bottom: 0,
@@ -104,10 +115,10 @@ const RecipeDetail = () => {
                                 <textarea
                                     value={editedRecipe.description}
                                     onChange={e => setEditedRecipe({ ...editedRecipe, description: e.target.value })}
-                                    style={{ width: '100%', minHeight: '80px', marginBottom: 'var(--spacing-md)' }}
+                                    style={{ width: '100%', minHeight: '80px', marginBottom: 'var(--spacing-md)', display: 'none' }} // Hidden in edit mode too as per request
                                 />
                             ) : (
-                                <p style={{ fontSize: '1.1rem', color: 'var(--color-text)', lineHeight: 1.6 }}>{recipe.description}</p>
+                                null // Description removed
                             )}
 
                             {!isEditing && (
@@ -203,7 +214,7 @@ const RecipeDetail = () => {
 
                                     <h4>Text Ingredients</h4>
                                     <textarea
-                                        value={editedRecipe.ingredients.join('\n')}
+                                        value={(editedRecipe.ingredients || []).join('\n')}
                                         onChange={e => setEditedRecipe({ ...editedRecipe, ingredients: e.target.value.split('\n') })}
                                         rows={5}
                                         style={{ width: '100%' }}
@@ -235,7 +246,7 @@ const RecipeDetail = () => {
                                     ))}
 
                                     {/* Show Text Ingredients if not linked */}
-                                    {recipe.ingredients.map((line, idx) => (
+                                    {(recipe.ingredients || []).map((line, idx) => (
                                         <li key={idx} style={{ padding: '4px 0', borderBottom: '1px solid #eee' }}>{line}</li>
                                     ))}
                                 </ul>
@@ -249,7 +260,7 @@ const RecipeDetail = () => {
                             </h3>
                             {isEditing ? (
                                 <textarea
-                                    value={editedRecipe.steps.join('\n')}
+                                    value={(editedRecipe.steps || []).join('\n')}
                                     onChange={e => setEditedRecipe({ ...editedRecipe, steps: e.target.value.split('\n') })}
                                     rows={10}
                                     style={{ width: '100%' }}
@@ -257,7 +268,7 @@ const RecipeDetail = () => {
                                 />
                             ) : (
                                 <ol style={{ paddingLeft: '20px' }}>
-                                    {recipe.steps.map((step, idx) => (
+                                    {(recipe.steps || []).map((step, idx) => (
                                         <li key={idx} style={{ marginBottom: '12px', lineHeight: 1.6 }}>{step}</li>
                                     ))}
                                 </ol>

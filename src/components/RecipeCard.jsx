@@ -28,12 +28,26 @@ const RecipeCard = ({ recipe }) => {
             onClick={() => navigate(`/recipes/${recipe.id}`)}
             style={{ cursor: 'pointer', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }}
         >
-            <div style={{ position: 'relative', height: '200px' }}>
-                <img
-                    src={recipe.image}
-                    alt={recipe.title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
+            <div style={{ position: 'relative', height: '200px', backgroundColor: '#eee' }}>
+                {recipe.image ? (
+                    <img
+                        src={recipe.image}
+                        alt={recipe.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.style.display = 'none';
+                            e.target.parentNode.style.display = 'flex';
+                            e.target.parentNode.style.alignItems = 'center';
+                            e.target.parentNode.style.justifyContent = 'center';
+                            e.target.parentNode.innerHTML = '<span style="color: #999; font-size: 2rem;">🍳</span>';
+                        }}
+                    />
+                ) : (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <span style={{ fontSize: '3rem' }}>🍳</span>
+                    </div>
+                )}
                 <div style={{
                     position: 'absolute',
                     top: '10px',
@@ -56,10 +70,6 @@ const RecipeCard = ({ recipe }) => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 'var(--spacing-sm)' }}>
                     <h3 style={{ fontSize: '1.2rem', margin: 0 }}>{recipe.title}</h3>
                 </div>
-
-                <p style={{ color: 'var(--color-muted)', fontSize: '0.9rem', marginBottom: 'var(--spacing-md)', flex: 1 }}>
-                    {recipe.description}
-                </p>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span className="badge" style={{ backgroundColor: '#f0f0f0', color: '#555' }}>

@@ -19,7 +19,6 @@ const RecipeGallery = () => {
             title: 'New Recipe',
             image: 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&w=800&q=80',
             status: 'New',
-            description: 'Description goes here...',
             ingredients: [],
             steps: [],
             linkedIngredientIds: []

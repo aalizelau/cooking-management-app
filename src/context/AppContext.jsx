@@ -9,7 +9,11 @@ import {
     addToCartDB,
     removeFromCartDB,
     clearCartDB,
-    subscribeToCart
+    subscribeToCart,
+    fetchRecipes,
+    createRecipe,
+    updateRecipe as updateRecipeDB,
+    deleteRecipe
 } from '../lib/supabase';
 
 const AppContext = createContext();
@@ -2166,10 +2170,7 @@ const INITIAL_RECIPES = [
 export const AppProvider = ({ children }) => {
     // State
     const [ingredients, setIngredients] = useState([]);
-    const [recipes, setRecipes] = useState(() => {
-        const saved = localStorage.getItem('recipes');
-        return saved ? JSON.parse(saved) : INITIAL_RECIPES;
-    });
+    const [recipes, setRecipes] = useState([]);
     const [cart, setCart] = useState([]);
 
     // Loading and error states
@@ -2236,10 +2237,7 @@ export const AppProvider = ({ children }) => {
         };
     }, []);
 
-    // Persist recipes to localStorage
-    useEffect(() => {
-        localStorage.setItem('recipes', JSON.stringify(recipes));
-    }, [recipes]);
+
 
     // Cache cart to localStorage as backup
     useEffect(() => {
@@ -2265,6 +2263,17 @@ export const AppProvider = ({ children }) => {
             if (data && data.length > 0) {
                 console.log(`✅ Loaded ${data.length} ingredients from Supabase`);
                 setIngredients(data);
+
+                // Also load recipes
+                try {
+                    const recipesData = await fetchRecipes();
+                    if (recipesData && recipesData.length > 0) {
+                        console.log(`✅ Loaded ${recipesData.length} recipes from Supabase`);
+                        setRecipes(recipesData);
+                    }
+                } catch (recipeErr) {
+                    console.error('Failed to load recipes from Supabase:', recipeErr);
+                }
             } else {
                 // If Supabase is empty, try localStorage cache
                 console.log('⚠️ No data in Supabase, checking localStorage cache...');
@@ -2418,12 +2427,31 @@ export const AppProvider = ({ children }) => {
         }
     };
 
-    const addRecipe = (recipe) => {
-        setRecipes(prev => [...prev, { ...recipe, id: Date.now().toString() }]);
+    const addRecipe = async (recipe) => {
+        setSyncing(true);
+        try {
+            const newRecipe = await createRecipe(recipe);
+            setRecipes(prev => [newRecipe, ...prev]);
+        } catch (err) {
+            console.error('Failed to create recipe:', err);
+            // Fallback to local state if DB fails (optional, but better to show error)
+            alert('Failed to create recipe');
+        } finally {
+            setSyncing(false);
+        }
     };
 
-    const updateRecipe = (id, updates) => {
-        setRecipes(prev => prev.map(rec => rec.id === id ? { ...rec, ...updates } : rec));
+    const updateRecipe = async (id, updates) => {
+        setSyncing(true);
+        try {
+            const updatedRecipe = await updateRecipeDB(id, updates);
+            setRecipes(prev => prev.map(rec => rec.id === id ? updatedRecipe : rec));
+        } catch (err) {
+            console.error('Failed to update recipe:', err);
+            alert('Failed to update recipe');
+        } finally {
+            setSyncing(false);
+        }
     };
 
     const addToCart = async (ingredientId) => {
