@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, DollarSign, MapPin, Store, Edit, Save, X } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import EmojiPicker from 'emoji-picker-react';
 
 const IngredientDetail = ({ id: propId }) => {
     const { id: paramId } = useParams();
@@ -12,12 +13,14 @@ const IngredientDetail = ({ id: propId }) => {
     const [ingredient, setIngredient] = useState(null);
     const [newEntry, setNewEntry] = useState({ price: '', store: '' });
     const [isEditing, setIsEditing] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [editForm, setEditForm] = useState({
         name: '',
         category: '',
         emoji: '',
         defaultLocation: ''
     });
+    const emojiPickerRef = useRef(null);
 
     useEffect(() => {
         const found = ingredients.find(i => i.id === id);
@@ -31,6 +34,22 @@ const IngredientDetail = ({ id: propId }) => {
             });
         }
     }, [id, ingredients]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+                setShowEmojiPicker(false);
+            }
+        };
+
+        if (showEmojiPicker) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showEmojiPicker]);
 
     if (!ingredient) return <div>Ingredient not found</div>;
 
@@ -59,6 +78,7 @@ const IngredientDetail = ({ id: propId }) => {
             defaultLocation: editForm.defaultLocation
         });
         setIsEditing(false);
+        setShowEmojiPicker(false);
     };
 
     const handleCancel = () => {
@@ -69,6 +89,7 @@ const IngredientDetail = ({ id: propId }) => {
             defaultLocation: ingredient.defaultLocation
         });
         setIsEditing(false);
+        setShowEmojiPicker(false);
     };
 
     return (
@@ -84,12 +105,52 @@ const IngredientDetail = ({ id: propId }) => {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Emoji</label>
-                                    <input
-                                        value={editForm.emoji}
-                                        onChange={e => setEditForm({ ...editForm, emoji: e.target.value })}
-                                        placeholder="🍎 (Enter emoji)"
-                                        style={{ width: '100px', fontSize: '1.5rem' }}
-                                    />
+                                    <div style={{ position: 'relative' }} ref={emojiPickerRef}>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                            style={{
+                                                width: '80px',
+                                                height: '80px',
+                                                fontSize: '2.5rem',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                border: '2px solid var(--color-border)',
+                                                borderRadius: 'var(--radius-sm)',
+                                                backgroundColor: 'var(--color-bg-secondary)',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.borderColor = 'var(--color-primary)';
+                                                e.currentTarget.style.transform = 'scale(1.05)';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.borderColor = 'var(--color-border)';
+                                                e.currentTarget.style.transform = 'scale(1)';
+                                            }}
+                                        >
+                                            {editForm.emoji || '➕'}
+                                        </button>
+                                        {showEmojiPicker && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: '85px',
+                                                left: 0,
+                                                zIndex: 1000
+                                            }}>
+                                                <EmojiPicker
+                                                    onEmojiClick={(emojiObject) => {
+                                                        setEditForm({ ...editForm, emoji: emojiObject.emoji });
+                                                        setShowEmojiPicker(false);
+                                                    }}
+                                                    width={350}
+                                                    height={400}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Name</label>
