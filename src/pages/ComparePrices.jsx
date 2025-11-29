@@ -101,7 +101,7 @@ const ComparePrices = () => {
                             {items.map((item, index) => (
                                 <div
                                     key={`${item.id}-${index}`}
-                                    onClick={() => navigate(`/inventory/${item.id}`)}
+                                    onClick={() => navigate(`/inventory/${item.id}`, { state: { from: 'compare' } })}
                                     style={{
                                         backgroundColor: 'var(--color-bg-secondary)',
                                         padding: 'var(--spacing-md)',

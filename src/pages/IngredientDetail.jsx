@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Plus, DollarSign, MapPin, Store, Edit, Save, X, ShoppingCart, Trash2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import EmojiPicker from 'emoji-picker-react';
@@ -10,8 +10,14 @@ const IngredientDetail = ({ id: propId }) => {
     const { id: paramId } = useParams();
     const id = propId || paramId;
     const navigate = useNavigate();
+    const location = useLocation();
+    const backPath = location.state?.from === 'compare' ? '/compare' : '/inventory';
+    const backLabel = location.state?.from === 'compare' ? 'Back to Compare' : 'Back to Inventory';
+
     const { ingredients, updateIngredient, deleteIngredient, addToCart, removeFromCart, cart } = useApp();
     const isInCart = cart.includes(id);
+
+
 
     const [ingredient, setIngredient] = useState(null);
     const [newEntry, setNewEntry] = useState({ price: '', store: '' });
@@ -138,8 +144,8 @@ const IngredientDetail = ({ id: propId }) => {
 
     return (
         <div>
-            <button className="btn btn-outline" onClick={() => navigate('/inventory')} style={{ marginBottom: 'var(--spacing-md)' }}>
-                <ArrowLeft size={16} style={{ marginRight: '8px' }} /> Back to Inventory
+            <button className="btn btn-outline" onClick={() => navigate(backPath)} style={{ marginBottom: 'var(--spacing-md)' }}>
+                <ArrowLeft size={16} style={{ marginRight: '8px' }} /> {backLabel}
             </button>
 
             <div className="card">
