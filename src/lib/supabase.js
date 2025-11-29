@@ -357,6 +357,27 @@ export function subscribeToCart(callback) {
  */
 
 /**
+ * Helper function to extract storage file path from a Supabase Storage URL
+ * @param {string} imageUrl - Full Supabase Storage URL
+ * @returns {string|null} - The file path (e.g., "covers/123.jpg") or null if not a storage URL
+ */
+function extractStoragePathFromUrl(imageUrl) {
+    if (!imageUrl || typeof imageUrl !== 'string') {
+        return null;
+    }
+
+    // Check if it's a Supabase Storage URL
+    const storagePattern = /\/storage\/v1\/object\/public\/recipe-images\/(.+)$/;
+    const match = imageUrl.match(storagePattern);
+
+    if (match && match[1]) {
+        return match[1]; // Returns "covers/filename.jpg"
+    }
+
+    return null; // Not a storage URL (could be Base64 or external URL)
+}
+
+/**
  * Upload recipe cover image to Supabase Storage
  * @param {File} file - The image file to upload
  * @param {string} recipeId - The recipe ID to use in the filename
@@ -389,6 +410,34 @@ export async function uploadRecipeImage(file, recipeId) {
         .getPublicUrl(filePath);
 
     return publicUrl;
+}
+
+/**
+ * Delete a recipe image from Supabase Storage
+ * @param {string} imageUrl - The full URL of the image to delete
+ * @returns {Promise<boolean>} - True if deleted, false if skipped
+ */
+export async function deleteRecipeImage(imageUrl) {
+    const filePath = extractStoragePathFromUrl(imageUrl);
+
+    // Only delete if it's a storage URL
+    if (!filePath) {
+        console.log('Not a storage URL, skipping deletion:', imageUrl);
+        return false;
+    }
+
+    const { error } = await supabase.storage
+        .from('recipe-images')
+        .remove([filePath]);
+
+    if (error) {
+        console.error('Error deleting image from storage:', error);
+        // Don't throw - we still want to delete the recipe even if image deletion fails
+        return false;
+    }
+
+    console.log('✅ Image deleted from storage:', filePath);
+    return true;
 }
 
 /**
@@ -450,20 +499,44 @@ export async function updateRecipe(id, updates) {
 }
 
 /**
- * Delete a recipe
+ * Delete a recipe and its associated image from storage
  */
 export async function deleteRecipe(id) {
-    const { error } = await supabase
-        .from('recipes')
-        .delete()
-        .eq('id', id);
+    try {
+        // First, fetch the recipe to get the image URL
+        const { data: recipe, error: fetchError } = await supabase
+            .from('recipes')
+            .select('cover_image_url')
+            .eq('id', id)
+            .single();
 
-    if (error) {
-        console.error('Error deleting recipe:', error);
+        if (fetchError) {
+            console.error('Error fetching recipe before deletion:', fetchError);
+            throw fetchError;
+        }
+
+        // Delete the image from storage if it exists
+        if (recipe && recipe.cover_image_url) {
+            await deleteRecipeImage(recipe.cover_image_url);
+        }
+
+        // Then delete the recipe from the database
+        const { error: deleteError } = await supabase
+            .from('recipes')
+            .delete()
+            .eq('id', id);
+
+        if (deleteError) {
+            console.error('Error deleting recipe from database:', deleteError);
+            throw deleteError;
+        }
+
+        console.log('✅ Recipe and associated image deleted successfully');
+        return true;
+    } catch (error) {
+        console.error('Failed to delete recipe:', error);
         throw error;
     }
-
-    return true;
 }
 
 /**
