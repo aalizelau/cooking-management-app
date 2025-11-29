@@ -240,11 +240,32 @@ const ShoppingCart = () => {
                                                 >
                                                     {isChecked ? <CheckSquare size={24} /> : <Square size={24} />}
                                                 </div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)', flex: 1 }}>
                                                     {ing.emoji && <span style={{ fontSize: '1.25rem' }}>{ing.emoji}</span>}
-                                                    <h3 style={{ textDecoration: isChecked ? 'line-through' : 'none', margin: 0 }}>
-                                                        {ing.name}
-                                                    </h3>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+                                                        <h3 style={{ textDecoration: isChecked ? 'line-through' : 'none', margin: 0 }}>
+                                                            {ing.name}
+                                                        </h3>
+                                                        {ing.history && ing.history.length > 0 && (
+                                                            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                                                                {[...new Set(ing.history.map(h => h.store))].map((store, idx) => (
+                                                                    <span
+                                                                        key={idx}
+                                                                        style={{
+                                                                            fontSize: '0.75rem',
+                                                                            padding: '2px 8px',
+                                                                            borderRadius: '12px',
+                                                                            backgroundColor: '#f0f0f0',
+                                                                            color: '#666',
+                                                                            fontWeight: '500'
+                                                                        }}
+                                                                    >
+                                                                        {store}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                         );
