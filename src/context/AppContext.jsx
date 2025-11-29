@@ -1,4 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import {
+    fetchIngredients,
+    createIngredient,
+    updateIngredient as updateIngredientDB,
+    deleteIngredient,
+    subscribeToIngredients
+} from '../lib/supabase';
 
 const AppContext = createContext();
 
@@ -2126,7 +2133,7 @@ const INITIAL_INGREDIENTS = [
         "history": []
     }
 ]
-;
+    ;
 
 const INITIAL_RECIPES = [
     {
@@ -2152,27 +2159,57 @@ const INITIAL_RECIPES = [
 ];
 
 export const AppProvider = ({ children }) => {
-    // Load from localStorage or use initial data
-    const [ingredients, setIngredients] = useState(() => {
-        const saved = localStorage.getItem('ingredients');
-        return saved ? JSON.parse(saved) : INITIAL_INGREDIENTS;
-    });
-
+    // State
+    const [ingredients, setIngredients] = useState([]);
     const [recipes, setRecipes] = useState(() => {
         const saved = localStorage.getItem('recipes');
         return saved ? JSON.parse(saved) : INITIAL_RECIPES;
     });
-
     const [cart, setCart] = useState(() => {
         const saved = localStorage.getItem('cart');
         return saved ? JSON.parse(saved) : [];
     });
 
-    // Persist to localStorage
-    useEffect(() => {
-        localStorage.setItem('ingredients', JSON.stringify(ingredients));
-    }, [ingredients]);
+    // Loading and error states
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [syncing, setSyncing] = useState(false);
 
+    // Load ingredients from Supabase on mount
+    useEffect(() => {
+        loadIngredientsFromSupabase();
+    }, []);
+
+    // Subscribe to real-time updates from Supabase
+    useEffect(() => {
+        const unsubscribe = subscribeToIngredients((payload) => {
+            console.log('Real-time update received:', payload.eventType);
+
+            if (payload.eventType === 'INSERT') {
+                const newIngredient = transformFromDB(payload.new);
+                setIngredients(prev => {
+                    // Avoid duplicates
+                    if (prev.some(ing => ing.id === newIngredient.id)) {
+                        return prev;
+                    }
+                    return [...prev, newIngredient];
+                });
+            } else if (payload.eventType === 'UPDATE') {
+                const updatedIngredient = transformFromDB(payload.new);
+                setIngredients(prev =>
+                    prev.map(ing => ing.id === updatedIngredient.id ? updatedIngredient : ing)
+                );
+            } else if (payload.eventType === 'DELETE') {
+                setIngredients(prev => prev.filter(ing => ing.id !== payload.old.id));
+            }
+        });
+
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
+    }, []);
+
+    // Persist recipes and cart to localStorage (keep these local for now)
     useEffect(() => {
         localStorage.setItem('recipes', JSON.stringify(recipes));
     }, [recipes]);
@@ -2181,13 +2218,141 @@ export const AppProvider = ({ children }) => {
         localStorage.setItem('cart', JSON.stringify(cart));
     }, [cart]);
 
+    // Cache ingredients to localStorage as backup
+    useEffect(() => {
+        if (ingredients.length > 0) {
+            localStorage.setItem('ingredients_cache', JSON.stringify(ingredients));
+        }
+    }, [ingredients]);
+
+    // Load ingredients from Supabase
+    async function loadIngredientsFromSupabase() {
+        try {
+            setLoading(true);
+            setError(null);
+
+            // Try to fetch from Supabase
+            const data = await fetchIngredients();
+
+            if (data && data.length > 0) {
+                console.log(`✅ Loaded ${data.length} ingredients from Supabase`);
+                setIngredients(data);
+            } else {
+                // If Supabase is empty, try localStorage cache
+                console.log('⚠️ No data in Supabase, checking localStorage cache...');
+                const cached = localStorage.getItem('ingredients_cache');
+                if (cached) {
+                    const parsedCache = JSON.parse(cached);
+                    console.log(`📦 Loaded ${parsedCache.length} ingredients from cache`);
+                    setIngredients(parsedCache);
+                } else {
+                    // Use initial data as last resort
+                    console.log('📋 Using initial data');
+                    setIngredients(INITIAL_INGREDIENTS);
+                }
+            }
+        } catch (err) {
+            console.error('Failed to load ingredients from Supabase:', err);
+            setError(err.message);
+
+            // Fallback to localStorage cache
+            try {
+                const cached = localStorage.getItem('ingredients_cache');
+                if (cached) {
+                    const parsedCache = JSON.parse(cached);
+                    console.log(`📦 Fallback: Loaded ${parsedCache.length} ingredients from cache`);
+                    setIngredients(parsedCache);
+                } else {
+                    // Use initial data as last resort
+                    console.log('📋 Fallback: Using initial data');
+                    setIngredients(INITIAL_INGREDIENTS);
+                }
+            } catch (cacheErr) {
+                console.error('Failed to load from cache:', cacheErr);
+                setIngredients(INITIAL_INGREDIENTS);
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
+
     // Actions
-    const addIngredient = (ingredient) => {
-        setIngredients(prev => [...prev, { ...ingredient, id: Date.now().toString() }]);
+    const addIngredient = async (ingredient) => {
+        try {
+            setSyncing(true);
+
+            // Generate ID if not provided
+            const newIngredient = {
+                ...ingredient,
+                id: ingredient.id || Date.now().toString()
+            };
+
+            // Optimistically update UI
+            setIngredients(prev => [...prev, newIngredient]);
+
+            // Sync to Supabase
+            try {
+                await createIngredient(newIngredient);
+                console.log('✅ Ingredient created in Supabase');
+            } catch (err) {
+                console.error('Failed to create ingredient in Supabase:', err);
+                // Keep the optimistic update even if Supabase fails
+                // It will be in localStorage cache
+            }
+        } catch (err) {
+            console.error('Failed to add ingredient:', err);
+            throw err;
+        } finally {
+            setSyncing(false);
+        }
     };
 
-    const updateIngredient = (id, updates) => {
-        setIngredients(prev => prev.map(ing => ing.id === id ? { ...ing, ...updates } : ing));
+    const updateIngredient = async (id, updates) => {
+        try {
+            setSyncing(true);
+
+            // Optimistically update UI
+            setIngredients(prev =>
+                prev.map(ing => ing.id === id ? { ...ing, ...updates } : ing)
+            );
+
+            // Sync to Supabase
+            try {
+                await updateIngredientDB(id, updates);
+                console.log('✅ Ingredient updated in Supabase');
+            } catch (err) {
+                console.error('Failed to update ingredient in Supabase:', err);
+                // Keep the optimistic update even if Supabase fails
+            }
+        } catch (err) {
+            console.error('Failed to update ingredient:', err);
+            throw err;
+        } finally {
+            setSyncing(false);
+        }
+    };
+
+    const deleteIngredientAction = async (id) => {
+        try {
+            setSyncing(true);
+
+            // Optimistically update UI
+            setIngredients(prev => prev.filter(ing => ing.id !== id));
+
+            // Sync to Supabase
+            try {
+                await deleteIngredient(id);
+                console.log('✅ Ingredient deleted from Supabase');
+            } catch (err) {
+                console.error('Failed to delete ingredient from Supabase:', err);
+                // Keep the optimistic update even if Supabase fails
+            }
+        } catch (err) {
+            console.error('Failed to delete ingredient:', err);
+            throw err;
+        } finally {
+            setSyncing(false);
+        }
     };
 
     const addRecipe = (recipe) => {
@@ -2213,20 +2378,43 @@ export const AppProvider = ({ children }) => {
 
     const clearCart = () => setCart([]);
 
+    // Refresh ingredients from Supabase
+    const refreshIngredients = () => {
+        loadIngredientsFromSupabase();
+    };
+
     return (
         <AppContext.Provider value={{
             ingredients,
             recipes,
             cart,
+            loading,
+            error,
+            syncing,
             addIngredient,
             updateIngredient,
+            deleteIngredient: deleteIngredientAction,
             addRecipe,
             updateRecipe,
             addToCart,
             removeFromCart,
-            clearCart
+            clearCart,
+            refreshIngredients
         }}>
             {children}
         </AppContext.Provider>
     );
 };
+
+// Helper function to transform from database format to app format
+function transformFromDB(dbIngredient) {
+    return {
+        id: dbIngredient.id,
+        name: dbIngredient.name,
+        category: dbIngredient.category,
+        emoji: dbIngredient.emoji,
+        stockStatus: dbIngredient.stock_status,
+        defaultLocation: dbIngredient.default_location,
+        history: dbIngredient.history || []
+    };
+}
