@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Search, X } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import IngredientCard from '../components/IngredientCard';
+import EmojiPicker from 'emoji-picker-react';
 
 const InventoryDashboard = () => {
     const { ingredients, addIngredient } = useApp();
@@ -13,6 +14,10 @@ const InventoryDashboard = () => {
     const [filterLocation, setFilterLocation] = useState(() => sessionStorage.getItem('inventory_filterLocation') || 'All');
     const [searchQuery, setSearchQuery] = useState(() => sessionStorage.getItem('inventory_searchQuery') || '');
 
+    const [isAdding, setIsAdding] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const emojiPickerRef = useRef(null);
+
     useEffect(() => {
         sessionStorage.setItem('inventory_stockTab', stockTab);
         sessionStorage.setItem('inventory_groupByTab', groupByTab);
@@ -21,15 +26,30 @@ const InventoryDashboard = () => {
         sessionStorage.setItem('inventory_searchQuery', searchQuery);
     }, [stockTab, groupByTab, filterCategory, filterLocation, searchQuery]);
 
-    const [isAdding, setIsAdding] = useState(false);
+    // Handle click outside emoji picker
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+                setShowEmojiPicker(false);
+            }
+        };
+
+        if (showEmojiPicker) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showEmojiPicker]);
 
     // New Ingredient State
     const [newIngredient, setNewIngredient] = useState({
         name: '',
         emoji: '',
-        category: 'General',
+        category: '無食材類型',
         stockStatus: 'In Stock',
-        location: 'Room Temp'
+        location: '常溫'
     });
 
     const categories = ['All', ...new Set(ingredients.map(i => i.category))];
@@ -38,16 +58,14 @@ const InventoryDashboard = () => {
     // Helper function to get default location based on category
     const getDefaultLocationForCategory = (category) => {
         const categoryDefaults = {
-            'Dairy': 'Refrigerated',
-            'Fruits': 'Refrigerated',
-            'Vegetables': 'Refrigerated',
-            'Meat': 'Frozen',
-            'Pantry': 'Room Temp',
-            'Snacks': 'Room Temp',
-            'Beverages': 'Room Temp',
-            'General': 'Room Temp'
+            '原材料': '冷藏',
+            '水果': '冷藏',
+            '零食': '常溫',
+            '半成品': '急凍',
+            '調味料': '冷藏',
+            '無食材類型': '常溫'
         };
-        return categoryDefaults[category] || 'Room Temp';
+        return categoryDefaults[category] || '常溫';
     };
 
     // Count ingredients for each tab
@@ -118,8 +136,9 @@ const InventoryDashboard = () => {
             history: []
         });
 
-        setNewIngredient({ name: '', emoji: '', category: 'General', stockStatus: 'In Stock', location: 'Room Temp' });
+        setNewIngredient({ name: '', emoji: '', category: '無食材類型', stockStatus: 'In Stock', location: '常溫' });
         setIsAdding(false);
+        setShowEmojiPicker(false);
     };
 
     // Handler to update location when category changes
@@ -176,48 +195,137 @@ const InventoryDashboard = () => {
             {isAdding && (
                 <div className="card" style={{ marginBottom: 'var(--spacing-md)', border: '2px solid var(--color-primary)' }}>
                     <h3>Add New Ingredient</h3>
-                    <form onSubmit={handleAdd} style={{ display: 'grid', gap: 'var(--spacing-md)', marginTop: 'var(--spacing-sm)' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr', gap: 'var(--spacing-md)' }}>
-                            <input
-                                placeholder="🍎"
-                                value={newIngredient.emoji}
-                                onChange={e => setNewIngredient({ ...newIngredient, emoji: e.target.value })}
-                                style={{ fontSize: '1.5rem', textAlign: 'center' }}
-                                maxLength={2}
-                            />
-                            <input
-                                placeholder="Name (e.g. Milk)"
-                                value={newIngredient.name}
-                                onChange={e => setNewIngredient({ ...newIngredient, name: e.target.value })}
-                                autoFocus
-                            />
-                            <input
-                                placeholder="Category (e.g. Dairy)"
+                    <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)', marginTop: 'var(--spacing-md)' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: 'var(--spacing-md)' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Emoji</label>
+                                <div style={{ position: 'relative' }} ref={emojiPickerRef}>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                        style={{
+                                            width: '80px',
+                                            height: '80px',
+                                            fontSize: '2.5rem',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            border: '2px solid var(--color-border)',
+                                            borderRadius: 'var(--radius-sm)',
+                                            backgroundColor: 'var(--color-bg-secondary)',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.borderColor = 'var(--color-primary)';
+                                            e.currentTarget.style.transform = 'scale(1.05)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.borderColor = 'var(--color-border)';
+                                            e.currentTarget.style.transform = 'scale(1)';
+                                        }}
+                                    >
+                                        {newIngredient.emoji || '➕'}
+                                    </button>
+                                    {showEmojiPicker && (
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: '85px',
+                                            left: 0,
+                                            zIndex: 1000
+                                        }}>
+                                            <EmojiPicker
+                                                onEmojiClick={(emojiObject) => {
+                                                    setNewIngredient({ ...newIngredient, emoji: emojiObject.emoji });
+                                                    setShowEmojiPicker(false);
+                                                }}
+                                                width={350}
+                                                height={400}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Name</label>
+                                <input
+                                    placeholder="e.g. Milk, Chicken, Rice"
+                                    value={newIngredient.name}
+                                    onChange={e => setNewIngredient({ ...newIngredient, name: e.target.value })}
+                                    style={{ width: '100%', fontSize: '1.2rem', height: '80px' }}
+                                    autoFocus
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Category</label>
+                            <select
                                 value={newIngredient.category}
                                 onChange={e => handleCategoryChange(e.target.value)}
-                            />
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
-                            <select
-                                value={newIngredient.stockStatus}
-                                onChange={e => setNewIngredient({ ...newIngredient, stockStatus: e.target.value })}
+                                style={{ width: '100%' }}
                             >
-                                <option value="In Stock">In Stock</option>
-                                <option value="Out of Stock">Out of Stock</option>
+                                <option value="原材料">🥬 原材料 (Raw Materials)</option>
+                                <option value="水果">🍎 水果 (Fruits)</option>
+                                <option value="零食">🍪 零食 (Snacks)</option>
+                                <option value="半成品">📦 半成品 (Semi-finished)</option>
+                                <option value="調味料">🧂 調味料 (Seasonings)</option>
+                                <option value="無食材類型">🍴 無食材類型 (Uncategorized)</option>
                             </select>
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Default Location</label>
                             <select
                                 value={newIngredient.location}
                                 onChange={e => setNewIngredient({ ...newIngredient, location: e.target.value })}
                                 disabled={newIngredient.stockStatus === 'Out of Stock'}
+                                style={{ width: '100%' }}
                             >
-                                <option value="Refrigerated">Refrigerated</option>
-                                <option value="Frozen">Frozen</option>
-                                <option value="Room Temp">Room Temp</option>
+                                <option value="冷藏">🧊 冷藏 (Refrigerated)</option>
+                                <option value="急凍">❄️ 急凍 (Frozen)</option>
+                                <option value="常溫">🌡️ 常溫 (Room Temp)</option>
                             </select>
+                            <small style={{ color: 'var(--color-muted)', fontSize: '0.85rem' }}>
+                                Items will return to this location when restocked
+                            </small>
                         </div>
-                        <div style={{ display: 'flex', justifySelf: 'end', gap: 'var(--spacing-sm)' }}>
-                            <button type="button" className="btn btn-outline" onClick={() => setIsAdding(false)}>Cancel</button>
-                            <button type="submit" className="btn btn-primary">Save Item</button>
+                        <div>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={newIngredient.stockStatus === 'In Stock'}
+                                    onChange={e => setNewIngredient({
+                                        ...newIngredient,
+                                        stockStatus: e.target.checked ? 'In Stock' : 'Out of Stock'
+                                    })}
+                                    style={{
+                                        width: '20px',
+                                        height: '20px',
+                                        cursor: 'pointer',
+                                        accentColor: 'var(--color-success)'
+                                    }}
+                                />
+                                <span style={{
+                                    color: newIngredient.stockStatus === 'In Stock' ? 'var(--color-success)' : 'var(--color-danger)',
+                                    fontWeight: 'bold'
+                                }}>
+                                    {newIngredient.stockStatus === 'In Stock' ? 'In Stock' : 'Out of Stock'}
+                                </span>
+                            </label>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--spacing-sm)', marginTop: 'var(--spacing-sm)' }}>
+                            <button
+                                type="button"
+                                className="btn btn-outline"
+                                onClick={() => {
+                                    setIsAdding(false);
+                                    setShowEmojiPicker(false);
+                                }}
+                            >
+                                <X size={18} style={{ marginRight: '6px' }} /> Cancel
+                            </button>
+                            <button type="submit" className="btn btn-primary">
+                                <Plus size={18} style={{ marginRight: '6px' }} /> Save Item
+                            </button>
                         </div>
                     </form>
                 </div>
