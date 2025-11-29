@@ -72,8 +72,8 @@ const RecipeGallery = () => {
 
             <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                gap: 'var(--spacing-lg)'
+                gridTemplateColumns: 'repeat(5, 1fr)',
+                gap: 'var(--spacing-md)'
             }}>
                 {filteredRecipes.map(recipe => (
                     <RecipeCard key={recipe.id} recipe={recipe} />

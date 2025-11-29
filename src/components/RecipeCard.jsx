@@ -28,7 +28,7 @@ const RecipeCard = ({ recipe }) => {
             onClick={() => navigate(`/recipes/${recipe.id}`)}
             style={{ cursor: 'pointer', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }}
         >
-            <div style={{ position: 'relative', height: '200px', backgroundColor: '#eee' }}>
+            <div style={{ position: 'relative', height: '140px', backgroundColor: '#eee' }}>
                 {recipe.image ? (
                     <img
                         src={recipe.image}
@@ -40,43 +40,41 @@ const RecipeCard = ({ recipe }) => {
                             e.target.parentNode.style.display = 'flex';
                             e.target.parentNode.style.alignItems = 'center';
                             e.target.parentNode.style.justifyContent = 'center';
-                            e.target.parentNode.innerHTML = '<span style="color: #999; font-size: 2rem;">🍳</span>';
+                            e.target.parentNode.innerHTML = '<span style="color: #999; font-size: 1.5rem;">🍳</span>';
                         }}
                     />
                 ) : (
                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: '3rem' }}>🍳</span>
+                        <span style={{ fontSize: '2rem' }}>🍳</span>
                     </div>
                 )}
                 <div style={{
                     position: 'absolute',
-                    top: '10px',
-                    right: '10px',
+                    top: '8px',
+                    right: '8px',
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    padding: '4px 8px',
+                    padding: '3px 6px',
                     borderRadius: 'var(--radius-full)',
-                    fontSize: '0.8rem',
+                    fontSize: '0.7rem',
                     fontWeight: 'bold',
                     color: availabilityColor,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '4px'
+                    gap: '3px'
                 }}>
-                    {availability}% Available
+                    {availability}%
                 </div>
             </div>
 
-            <div style={{ padding: 'var(--spacing-md)', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 'var(--spacing-sm)' }}>
-                    <h3 style={{ fontSize: '1.2rem', margin: 0 }}>{recipe.title}</h3>
-                </div>
+            <div style={{ padding: 'var(--spacing-sm)', flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
+                <h3 style={{ fontSize: '0.95rem', margin: 0, lineHeight: '1.3' }}>{recipe.title}</h3>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="badge" style={{ backgroundColor: '#f0f0f0', color: '#555' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
+                    <span className="badge" style={{ backgroundColor: '#f0f0f0', color: '#555', fontSize: '0.7rem', padding: '2px 6px' }}>
                         {recipe.status}
                     </span>
-                    <div style={{ display: 'flex', gap: '4px', fontSize: '0.8rem', color: 'var(--color-muted)' }}>
-                        {totalLinked} ingredients
+                    <div style={{ fontSize: '0.7rem', color: 'var(--color-muted)' }}>
+                        {totalLinked} items
                     </div>
                 </div>
             </div>
