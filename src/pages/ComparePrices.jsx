@@ -98,15 +98,29 @@ const ComparePrices = () => {
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 'var(--spacing-md)' }}>
                             {items.map((item, index) => (
-                                <div key={`${item.id}-${index}`} style={{
-                                    backgroundColor: 'var(--color-bg-secondary)',
-                                    padding: 'var(--spacing-md)',
-                                    borderRadius: 'var(--radius-sm)',
-                                    border: '1px solid var(--color-border)',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '8px'
-                                }}>
+                                <div
+                                    key={`${item.id}-${index}`}
+                                    onClick={() => navigate(`/inventory/${item.id}`)}
+                                    style={{
+                                        backgroundColor: 'var(--color-bg-secondary)',
+                                        padding: 'var(--spacing-md)',
+                                        borderRadius: 'var(--radius-sm)',
+                                        border: '1px solid var(--color-border)',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '8px',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = 'none';
+                                    }}
+                                >
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                             <span style={{ fontSize: '1.5rem' }}>{item.emoji}</span>
@@ -122,14 +136,6 @@ const ComparePrices = () => {
                                     }}>
                                         {item.price}
                                     </div>
-
-                                    <button
-                                        className="btn btn-sm btn-outline"
-                                        onClick={() => navigate(`/inventory/${item.id}`)}
-                                        style={{ width: '100%', marginTop: '8px' }}
-                                    >
-                                        View Details
-                                    </button>
                                 </div>
                             ))}
                         </div>
