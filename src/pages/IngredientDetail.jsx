@@ -14,7 +14,7 @@ const IngredientDetail = ({ id: propId }) => {
     const backPath = location.state?.from === 'compare' ? '/compare' : '/inventory';
     const backLabel = location.state?.from === 'compare' ? 'Back to Compare' : 'Back to Inventory';
 
-    const { ingredients, updateIngredient, deleteIngredient, addToCart, removeFromCart, cart } = useApp();
+    const { ingredients, updateIngredient, deleteIngredient, addToCart, removeFromCart, cart, recipes } = useApp();
     const isInCart = cart.includes(id);
 
 
@@ -503,54 +503,118 @@ const IngredientDetail = ({ id: propId }) => {
                 </div>
             </div>
 
+            {/* Linked Recipes Section */}
+            <div className="card" style={{ marginTop: 'var(--spacing-lg)' }}>
+                <h3>Linked Recipes</h3>
+                <div style={{ marginTop: 'var(--spacing-md)' }}>
+                    {recipes.filter(r => (r.linkedIngredientIds || []).includes(ingredient.id)).length === 0 ? (
+                        <p style={{ color: 'var(--color-muted)' }}>No recipes linked to this ingredient yet.</p>
+                    ) : (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 'var(--spacing-md)' }}>
+                            {recipes.filter(r => (r.linkedIngredientIds || []).includes(ingredient.id)).map(recipe => (
+                                <div
+                                    key={recipe.id}
+                                    onClick={() => navigate(`/recipes/${recipe.id}`)}
+                                    style={{
+                                        border: '1px solid var(--color-border)',
+                                        borderRadius: 'var(--radius-md)',
+                                        overflow: 'hidden',
+                                        cursor: 'pointer',
+                                        transition: 'transform 0.2s ease',
+                                        backgroundColor: 'white'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                >
+                                    <div style={{ height: '120px', backgroundColor: '#eee', position: 'relative' }}>
+                                        {recipe.image ? (
+                                            <img
+                                                src={recipe.image}
+                                                alt={recipe.title}
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                onError={(e) => {
+                                                    e.target.style.display = 'none';
+                                                    e.target.parentNode.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;">🍳</div>';
+                                                }}
+                                            />
+                                        ) : (
+                                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <span style={{ fontSize: '2rem' }}>🍳</span>
+                                            </div>
+                                        )}
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: '8px',
+                                            right: '8px',
+                                            backgroundColor: 'rgba(255,255,255,0.9)',
+                                            padding: '2px 6px',
+                                            borderRadius: '4px',
+                                            fontSize: '0.7rem',
+                                            fontWeight: 'bold'
+                                        }}>
+                                            {recipe.status}
+                                        </div>
+                                    </div>
+                                    <div style={{ padding: 'var(--spacing-sm)' }}>
+                                        <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{recipe.title}</h4>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+
             {/* Delete Confirmation Modal */}
-            {showDeleteConfirm && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 1000
-                }}>
-                    <div className="card" style={{
-                        maxWidth: '400px',
-                        width: '90%',
-                        padding: 'var(--spacing-lg)',
-                        backgroundColor: 'white'
+            {
+                showDeleteConfirm && (
+                    <div style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 1000
                     }}>
-                        <h3 style={{ marginTop: 0, marginBottom: 'var(--spacing-md)' }}>Delete Ingredient?</h3>
-                        <p style={{ marginBottom: 'var(--spacing-lg)', color: 'var(--color-text)' }}>
-                            Are you sure you want to delete <strong>{ingredient.name}</strong>? This action cannot be undone.
-                        </p>
-                        <div style={{ display: 'flex', gap: 'var(--spacing-sm)', justifyContent: 'flex-end' }}>
-                            <button
-                                className="btn btn-outline"
-                                onClick={() => setShowDeleteConfirm(false)}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className="btn"
-                                onClick={handleDelete}
-                                style={{
-                                    backgroundColor: 'var(--color-danger)',
-                                    color: 'white',
-                                    borderColor: 'var(--color-danger)'
-                                }}
-                            >
-                                <Trash2 size={18} style={{ marginRight: '6px' }} />
-                                Delete
-                            </button>
+                        <div className="card" style={{
+                            maxWidth: '400px',
+                            width: '90%',
+                            padding: 'var(--spacing-lg)',
+                            backgroundColor: 'white'
+                        }}>
+                            <h3 style={{ marginTop: 0, marginBottom: 'var(--spacing-md)' }}>Delete Ingredient?</h3>
+                            <p style={{ marginBottom: 'var(--spacing-lg)', color: 'var(--color-text)' }}>
+                                Are you sure you want to delete <strong>{ingredient.name}</strong>? This action cannot be undone.
+                            </p>
+                            <div style={{ display: 'flex', gap: 'var(--spacing-sm)', justifyContent: 'flex-end' }}>
+                                <button
+                                    className="btn btn-outline"
+                                    onClick={() => setShowDeleteConfirm(false)}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    className="btn"
+                                    onClick={handleDelete}
+                                    style={{
+                                        backgroundColor: 'var(--color-danger)',
+                                        color: 'white',
+                                        borderColor: 'var(--color-danger)'
+                                    }}
+                                >
+                                    <Trash2 size={18} style={{ marginRight: '6px' }} />
+                                    Delete
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };
 
