@@ -206,14 +206,19 @@ const RecipeDetail = () => {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 'var(--spacing-lg)' }}>
                         <div style={{ flex: 1 }}>
                             {isEditing ? (
-                                <textarea
-                                    value={editedRecipe.description}
-                                    onChange={e => setEditedRecipe({ ...editedRecipe, description: e.target.value })}
-                                    style={{ width: '100%', minHeight: '80px', marginBottom: 'var(--spacing-md)', display: 'none' }} // Hidden in edit mode too as per request
-                                />
-                            ) : (
-                                null // Description removed
-                            )}
+                                <div style={{ marginBottom: 'var(--spacing-md)' }}>
+                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Status</label>
+                                    <select
+                                        value={editedRecipe.status}
+                                        onChange={e => setEditedRecipe({ ...editedRecipe, status: e.target.value })}
+                                        style={{ width: '100%', maxWidth: '300px' }}
+                                    >
+                                        <option value="Done">Done</option>
+                                        <option value="Half-done">Half-done</option>
+                                        <option value="New">New</option>
+                                    </select>
+                                </div>
+                            ) : null}
 
                             {!isEditing && (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)', marginTop: 'var(--spacing-md)' }}>
