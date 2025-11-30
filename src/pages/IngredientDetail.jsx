@@ -352,19 +352,15 @@ const IngredientDetail = ({ id: propId }) => {
                     </div>
                     <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)', alignItems: 'flex-end' }}>
                         {isEditing ? (
-                            <div style={{ display: 'flex', gap: 'var(--spacing-xs)' }}>
-                                <button className="btn btn-outline" onClick={handleCancel}>
-                                    <X size={18} /> Cancel
-                                </button>
-                                <button className="btn btn-primary" onClick={handleSave}>
-                                    <Save size={18} /> Save
-                                </button>
-                            </div>
-                        ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
-                                <button className="btn btn-outline" onClick={() => setIsEditing(true)}>
-                                    <Edit size={18} /> Edit
-                                </button>
+                            <div style={{ display: 'flex', gap: 'var(--spacing-xs)', flexDirection: 'column', alignItems: 'flex-end' }}>
+                                <div style={{ display: 'flex', gap: 'var(--spacing-xs)' }}>
+                                    <button className="btn btn-outline" onClick={handleCancel}>
+                                        <X size={18} /> Cancel
+                                    </button>
+                                    <button className="btn btn-primary" onClick={handleSave}>
+                                        <Save size={18} /> Save
+                                    </button>
+                                </div>
                                 <button
                                     className="btn btn-outline"
                                     onClick={() => setShowDeleteConfirm(true)}
@@ -373,7 +369,10 @@ const IngredientDetail = ({ id: propId }) => {
                                         borderColor: 'var(--color-danger)',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '6px'
+                                        gap: '6px',
+                                        marginTop: 'var(--spacing-sm)',
+                                        fontSize: '0.85rem',
+                                        padding: '4px 8px'
                                     }}
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.backgroundColor = 'var(--color-danger)';
@@ -384,7 +383,13 @@ const IngredientDetail = ({ id: propId }) => {
                                         e.currentTarget.style.color = 'var(--color-danger)';
                                     }}
                                 >
-                                    <Trash2 size={18} /> Delete
+                                    <Trash2 size={16} /> Delete Ingredient
+                                </button>
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
+                                <button className="btn btn-outline" onClick={() => setIsEditing(true)}>
+                                    <Edit size={18} /> Edit
                                 </button>
                             </div>
                         )}
