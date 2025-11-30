@@ -15,6 +15,7 @@ const RecipeDetail = () => {
     const [ingredientSearch, setIngredientSearch] = useState('');
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [uploadingImage, setUploadingImage] = useState(false);
+    const [imageError, setImageError] = useState(false);
     const fileInputRef = useRef(null);
 
     useEffect(() => {
@@ -23,6 +24,7 @@ const RecipeDetail = () => {
         if (found) {
             setRecipe(found);
             setEditedRecipe(found);
+            setImageError(false); // Reset error state when recipe changes
         }
     }, [id, recipes]);
 
@@ -46,6 +48,7 @@ const RecipeDetail = () => {
     const handleCancel = () => {
         setEditedRecipe(recipe);
         setIsEditing(false);
+        setImageError(false);
     };
 
     const handleDelete = async () => {
@@ -62,6 +65,7 @@ const RecipeDetail = () => {
         if (file) {
             try {
                 setUploadingImage(true);
+                setImageError(false); // Reset error on new upload
 
                 // Upload to Supabase Storage
                 const publicUrl = await uploadRecipeImage(file, recipe.id);
@@ -81,6 +85,7 @@ const RecipeDetail = () => {
 
     const handleImageUrlChange = (url) => {
         setEditedRecipe({ ...editedRecipe, image: url });
+        setImageError(false); // Reset error on URL change
     };
 
     const toggleLinkedIngredient = (ingId) => {
@@ -121,15 +126,12 @@ const RecipeDetail = () => {
 
             <div className="card" style={{ overflow: 'hidden', padding: 0 }}>
                 <div style={{ height: '300px', position: 'relative', backgroundColor: '#eee' }}>
-                    {editedRecipe?.image ? (
+                    {!imageError && editedRecipe?.image ? (
                         <img
                             src={editedRecipe.image}
                             alt={editedRecipe.title}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.parentNode.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;">🍳</div>';
-                            }}
+                            onError={() => setImageError(true)}
                         />
                     ) : (
                         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

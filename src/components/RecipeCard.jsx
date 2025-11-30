@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 const RecipeCard = ({ recipe }) => {
     const { ingredients } = useApp();
     const navigate = useNavigate();
+    const [imageError, setImageError] = React.useState(false);
 
     // Calculate Availability
     const linkedIngredients = recipe.linkedIngredientIds || [];
@@ -29,19 +30,12 @@ const RecipeCard = ({ recipe }) => {
             style={{ cursor: 'pointer', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }}
         >
             <div style={{ position: 'relative', height: '140px', backgroundColor: '#eee' }}>
-                {recipe.image ? (
+                {!imageError && recipe.image ? (
                     <img
                         src={recipe.image}
                         alt={recipe.title}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.style.display = 'none';
-                            e.target.parentNode.style.display = 'flex';
-                            e.target.parentNode.style.alignItems = 'center';
-                            e.target.parentNode.style.justifyContent = 'center';
-                            e.target.parentNode.innerHTML = '<span style="color: #999; font-size: 1.5rem;">🍳</span>';
-                        }}
+                        onError={() => setImageError(true)}
                     />
                 ) : (
                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
