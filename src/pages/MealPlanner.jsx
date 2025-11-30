@@ -10,18 +10,10 @@ const MealPlanner = () => {
     const [loading, setLoading] = useState(false);
     const [draggedRecipe, setDraggedRecipe] = useState(null);
 
-    // Calculate start of the week (Monday)
-    const getMonday = (d) => {
-        d = new Date(d);
-        const day = d.getDay();
-        const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
-        return new Date(d.setDate(diff));
-    };
-
-    const startOfWeek = getMonday(currentDate);
+    // Calculate week days centered on currentDate
     const weekDays = Array.from({ length: 7 }, (_, i) => {
-        const d = new Date(startOfWeek);
-        d.setDate(d.getDate() + i);
+        const d = new Date(currentDate);
+        d.setDate(d.getDate() - 3 + i); // Start 3 days before current date
         return d;
     });
 
