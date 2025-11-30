@@ -4,8 +4,11 @@ import { useApp } from '../context/AppContext';
 import IngredientCard from '../components/IngredientCard';
 import EmojiPicker from 'emoji-picker-react';
 
+import { useNavigate } from 'react-router-dom';
+
 const InventoryDashboard = () => {
     const { ingredients, addIngredient } = useApp();
+    const navigate = useNavigate();
 
     // State with persistence
     const [stockTab, setStockTab] = useState(() => sessionStorage.getItem('inventory_stockTab') || 'in-stock');
@@ -123,22 +126,30 @@ const InventoryDashboard = () => {
         ? groupByCategory(currentStockIngredients)
         : groupByLocation(currentStockIngredients);
 
-    const handleAdd = (e) => {
+    const handleAdd = async (e) => {
         e.preventDefault();
         if (!newIngredient.name) return;
 
         const defaultLocation = getDefaultLocationForCategory(newIngredient.category);
 
-        addIngredient({
-            ...newIngredient,
-            defaultLocation: defaultLocation,
-            location: newIngredient.stockStatus === 'Out of Stock' ? defaultLocation : newIngredient.location,
-            history: []
-        });
+        try {
+            const addedIngredient = await addIngredient({
+                ...newIngredient,
+                defaultLocation: defaultLocation,
+                location: newIngredient.stockStatus === 'Out of Stock' ? defaultLocation : newIngredient.location,
+                history: []
+            });
 
-        setNewIngredient({ name: '', emoji: '', category: '無食材類型', stockStatus: 'In Stock', location: '常溫' });
-        setIsAdding(false);
-        setShowEmojiPicker(false);
+            setNewIngredient({ name: '', emoji: '', category: '無食材類型', stockStatus: 'In Stock', location: '常溫' });
+            setIsAdding(false);
+            setShowEmojiPicker(false);
+
+            if (addedIngredient && addedIngredient.id) {
+                navigate(`/inventory/${addedIngredient.id}`);
+            }
+        } catch (error) {
+            console.error("Failed to add ingredient", error);
+        }
     };
 
     // Handler to update location when category changes

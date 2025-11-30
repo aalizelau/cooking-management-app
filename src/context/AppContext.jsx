@@ -150,7 +150,7 @@ export const AppProvider = ({ children }) => {
                     const parsedCache = JSON.parse(cached);
                     console.log(`📦 Loaded ${parsedCache.length} ingredients from cache`);
                     setIngredients(parsedCache);
-                } 
+                }
             }
         } catch (err) {
             console.error('Failed to load ingredients from Supabase:', err);
@@ -163,7 +163,7 @@ export const AppProvider = ({ children }) => {
                     const parsedCache = JSON.parse(cached);
                     console.log(`📦 Fallback: Loaded ${parsedCache.length} ingredients from cache`);
                     setIngredients(parsedCache);
-                } 
+                }
             } catch (cacheErr) {
                 console.error('Failed to load from cache:', cacheErr);
             }
@@ -230,6 +230,7 @@ export const AppProvider = ({ children }) => {
                 // Keep the optimistic update even if Supabase fails
                 // It will be in localStorage cache
             }
+            return newIngredient;
         } catch (err) {
             console.error('Failed to add ingredient:', err);
             throw err;
