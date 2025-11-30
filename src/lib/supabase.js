@@ -717,6 +717,7 @@ function transformRecipeFromDB(dbRecipe, linkedIngredientIds = []) {
         description: "", // Description column removed, returning empty string
         ingredients: [], // Text ingredients (if we add later)
         steps: dbRecipe.instructions || [], // Map DB instructions to frontend steps
+        instructionSections: dbRecipe.instruction_sections || [], // New sections support
         thoughts: dbRecipe.thoughts || "", // Map thoughts
         linkedIngredientIds: linkedIngredientIds // Now populated from junction table!
     };
@@ -731,6 +732,7 @@ function transformRecipeToDB(appRecipe) {
         status: appRecipe.status,
         cover_image_url: appRecipe.image,
         instructions: appRecipe.steps, // Map frontend steps to DB instructions
+        instruction_sections: appRecipe.instructionSections, // New sections support
         thoughts: appRecipe.thoughts
     };
 

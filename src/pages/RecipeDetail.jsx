@@ -23,7 +23,16 @@ const RecipeDetail = () => {
         const found = recipes.find(r => r.id == id);
         if (found) {
             setRecipe(found);
-            setEditedRecipe(found);
+
+            // Initialize instruction sections for editing
+            let sections = found.instructionSections || [];
+            if (sections.length === 0 && found.steps && found.steps.length > 0) {
+                sections = [{ title: "Instructions", steps: found.steps }];
+            } else if (sections.length === 0) {
+                sections = [{ title: "Instructions", steps: [] }];
+            }
+
+            setEditedRecipe({ ...found, instructionSections: sections });
             setImageError(false); // Reset error state when recipe changes
         }
     }, [id, recipes]);
@@ -107,6 +116,31 @@ const RecipeDetail = () => {
         ing.name.toLowerCase().includes(ingredientSearch.toLowerCase()) &&
         !editedRecipe.linkedIngredientIds?.includes(ing.id)
     );
+
+    const handleSectionChange = (index, field, value) => {
+        const newSections = [...editedRecipe.instructionSections];
+        if (field === 'steps') {
+            newSections[index][field] = value.split('\n');
+        } else {
+            newSections[index][field] = value;
+        }
+        setEditedRecipe({ ...editedRecipe, instructionSections: newSections });
+    };
+
+    const handleAddSection = () => {
+        setEditedRecipe({
+            ...editedRecipe,
+            instructionSections: [
+                ...editedRecipe.instructionSections,
+                { title: "New Method", steps: [] }
+            ]
+        });
+    };
+
+    const handleDeleteSection = (index) => {
+        const newSections = editedRecipe.instructionSections.filter((_, i) => i !== index);
+        setEditedRecipe({ ...editedRecipe, instructionSections: newSections });
+    };
 
     // Calculate Availability for View Mode
     const linkedIngredientsData = (recipe.linkedIngredientIds || []).map(linkId => {
@@ -214,9 +248,9 @@ const RecipeDetail = () => {
                                         style={{ width: '100%', maxWidth: '300px' }}
                                     >
                                         <option value="Done">Done</option>
+                                        <option value="Side">Side</option>
                                         <option value="Half-done">Half-done</option>
                                         <option value="New">New</option>
-                                        <option value="Side">Side</option>
                                     </select>
                                 </div>
                             ) : null}
@@ -404,19 +438,53 @@ const RecipeDetail = () => {
                                 Instructions
                             </h3>
                             {isEditing ? (
-                                <textarea
-                                    value={(editedRecipe.steps || []).join('\n')}
-                                    onChange={e => setEditedRecipe({ ...editedRecipe, steps: e.target.value.split('\n') })}
-                                    rows={10}
-                                    style={{ width: '100%' }}
-                                    placeholder="One step per line"
-                                />
-                            ) : (
-                                <ol style={{ paddingLeft: '20px' }}>
-                                    {(recipe.steps || []).map((step, idx) => (
-                                        <li key={idx} style={{ marginBottom: '12px', lineHeight: 1.6 }}>{step}</li>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
+                                    {(editedRecipe.instructionSections || []).map((section, idx) => (
+                                        <div key={idx} style={{ padding: 'var(--spacing-md)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', backgroundColor: '#f9f9f9' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--spacing-sm)' }}>
+                                                <input
+                                                    value={section.title}
+                                                    onChange={(e) => handleSectionChange(idx, 'title', e.target.value)}
+                                                    style={{ fontWeight: 'bold', fontSize: '1.1rem', width: '70%', padding: '4px' }}
+                                                    placeholder="Method Title (e.g. Air Fryer)"
+                                                />
+                                                <button
+                                                    onClick={() => handleDeleteSection(idx)}
+                                                    className="btn btn-outline"
+                                                    style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger)', padding: '4px 8px' }}
+                                                    disabled={(editedRecipe.instructionSections || []).length === 1}
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                            <textarea
+                                                value={(section.steps || []).join('\n')}
+                                                onChange={(e) => handleSectionChange(idx, 'steps', e.target.value)}
+                                                rows={8}
+                                                style={{ width: '100%' }}
+                                                placeholder="One step per line"
+                                            />
+                                        </div>
                                     ))}
-                                </ol>
+                                    <button onClick={handleAddSection} className="btn btn-outline" style={{ borderStyle: 'dashed' }}>
+                                        <Plus size={18} style={{ marginRight: '8px' }} /> Add Cooking Method
+                                    </button>
+                                </div>
+                            ) : (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
+                                    {(recipe.instructionSections && recipe.instructionSections.length > 0 ? recipe.instructionSections : [{ title: "Instructions", steps: recipe.steps || [] }]).map((section, idx) => (
+                                        <div key={idx}>
+                                            {(recipe.instructionSections?.length > 1 || section.title !== "Instructions") && (
+                                                <h4 style={{ margin: '0 0 var(--spacing-sm) 0', color: 'var(--color-primary)' }}>{section.title}</h4>
+                                            )}
+                                            <ol style={{ paddingLeft: '20px', marginTop: 0 }}>
+                                                {(section.steps || []).map((step, stepIdx) => (
+                                                    <li key={stepIdx} style={{ marginBottom: '12px', lineHeight: 1.6 }}>{step}</li>
+                                                ))}
+                                            </ol>
+                                        </div>
+                                    ))}
+                                </div>
                             )}
                         </div>
                     </div>
