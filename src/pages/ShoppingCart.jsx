@@ -5,13 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import IngredientDetail from './IngredientDetail'; // Import IngredientDetail for the side panel
 
 const ShoppingCart = () => {
-    const { cart, ingredients, removeFromCart, updateIngredient, clearCart, addToCart } = useApp();
+    const { cart, ingredients, removeFromCart, updateIngredient, clearCart, addToCart, toggleCartItemChecked } = useApp();
     const navigate = useNavigate();
-    const [checkedItems, setCheckedItems] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedIngredientId, setSelectedIngredientId] = useState(null); // Track selected ingredient for side panel
 
-    const cartIngredients = ingredients.filter(ing => cart.includes(ing.id));
+    const cartIngredients = ingredients.filter(ing =>
+        cart.some(item => item.ingredientId === ing.id)
+    );
 
     // Group cart ingredients by category
     const groupByCategory = (ingredientsList) => {
@@ -28,26 +29,24 @@ const ShoppingCart = () => {
     const groupedCartItems = groupByCategory(cartIngredients);
 
     const toggleCheck = (id) => {
-        if (checkedItems.includes(id)) {
-            setCheckedItems(checkedItems.filter(item => item !== id));
-        } else {
-            setCheckedItems([...checkedItems, id]);
-        }
+        toggleCartItemChecked(id);
     };
 
     const handleRestock = () => {
+        // Get checked items
+        const checkedItems = cart.filter(item => item.isChecked);
+
         // Move checked items to In Stock using their default location
-        checkedItems.forEach(id => {
-            const ingredient = ingredients.find(ing => ing.id === id);
-            updateIngredient(id, {
+        checkedItems.forEach(item => {
+            const ingredient = ingredients.find(ing => ing.id === item.ingredientId);
+            updateIngredient(item.ingredientId, {
                 stockStatus: 'In Stock',
                 location: ingredient.defaultLocation || 'Room Temp' // Fallback to Room Temp if no default
             });
-            removeFromCart(id);
+            removeFromCart(item.ingredientId);
         });
 
         // Reset UI
-        setCheckedItems([]);
         setSelectedIngredientId(null); // Close side panel if the selected item is removed
 
         // If cart is empty, go back to inventory
@@ -60,7 +59,7 @@ const ShoppingCart = () => {
     const searchResults = searchQuery.length > 0
         ? ingredients.filter(ing =>
             ing.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-            !cart.includes(ing.id)
+            !cart.some(item => item.ingredientId === ing.id)
         )
         : [];
 
@@ -213,7 +212,8 @@ const ShoppingCart = () => {
                                 </h4>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
                                     {groupedCartItems[category].map(ing => {
-                                        const isChecked = checkedItems.includes(ing.id);
+                                        const cartItem = cart.find(item => item.ingredientId === ing.id);
+                                        const isChecked = cartItem?.isChecked || false;
                                         const isSelected = selectedIngredientId === ing.id;
                                         return (
                                             <div
@@ -302,7 +302,7 @@ const ShoppingCart = () => {
                 </div>
             )}
 
-            {checkedItems.length > 0 && (
+            {cart.filter(item => item.isChecked).length > 0 && (
                 <div style={{
                     position: 'fixed',
                     bottom: '20px',
@@ -321,7 +321,7 @@ const ShoppingCart = () => {
                     zIndex: 100
                 }}>
                     <div>
-                        <span style={{ fontWeight: 'bold' }}>{checkedItems.length} items selected</span>
+                        <span style={{ fontWeight: 'bold' }}>{cart.filter(item => item.isChecked).length} items selected</span>
                         <div style={{ fontSize: '0.85rem', marginTop: '4px', opacity: 0.9 }}>
                             Will be moved to their default locations
                         </div>

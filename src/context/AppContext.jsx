@@ -8,6 +8,7 @@ import {
     fetchCartItems,
     addToCartDB,
     removeFromCartDB,
+    updateCartItemChecked,
     clearCartDB,
     subscribeToCart,
     fetchRecipes,
@@ -73,16 +74,29 @@ export const AppProvider = ({ children }) => {
             console.log('Cart real-time update:', payload.eventType);
 
             if (payload.eventType === 'INSERT') {
-                const ingredientId = payload.new.ingredient_id;
+                const newItem = {
+                    ingredientId: payload.new.ingredient_id,
+                    isChecked: payload.new.is_checked || false
+                };
                 setCart(prev => {
-                    if (!prev.includes(ingredientId)) {
-                        return [...prev, ingredientId];
+                    if (!prev.some(item => item.ingredientId === newItem.ingredientId)) {
+                        return [...prev, newItem];
                     }
                     return prev;
                 });
+            } else if (payload.eventType === 'UPDATE') {
+                const updatedItem = {
+                    ingredientId: payload.new.ingredient_id,
+                    isChecked: payload.new.is_checked || false
+                };
+                setCart(prev =>
+                    prev.map(item =>
+                        item.ingredientId === updatedItem.ingredientId ? updatedItem : item
+                    )
+                );
             } else if (payload.eventType === 'DELETE') {
                 const ingredientId = payload.old.ingredient_id;
-                setCart(prev => prev.filter(id => id !== ingredientId));
+                setCart(prev => prev.filter(item => item.ingredientId !== ingredientId));
             }
         });
 
@@ -162,11 +176,11 @@ export const AppProvider = ({ children }) => {
     async function loadCartFromSupabase() {
         try {
             // Try to fetch from Supabase
-            const cartIds = await fetchCartItems();
+            const cartItems = await fetchCartItems();
 
-            if (cartIds && cartIds.length > 0) {
-                console.log(`🛒 Loaded ${cartIds.length} items from cart`);
-                setCart(cartIds);
+            if (cartItems && cartItems.length > 0) {
+                console.log(`🛒 Loaded ${cartItems.length} items from cart`);
+                setCart(cartItems);
             } else {
                 // If Supabase cart is empty, try localStorage cache
                 const cached = localStorage.getItem('cart_cache');
@@ -330,8 +344,8 @@ export const AppProvider = ({ children }) => {
     const addToCart = async (ingredientId) => {
         // Optimistically update UI
         setCart(prev => {
-            if (!prev.includes(ingredientId)) {
-                return [...prev, ingredientId];
+            if (!prev.some(item => item.ingredientId === ingredientId)) {
+                return [...prev, { ingredientId, isChecked: false }];
             }
             return prev;
         });
@@ -348,7 +362,7 @@ export const AppProvider = ({ children }) => {
 
     const removeFromCart = async (ingredientId) => {
         // Optimistically update UI
-        setCart(prev => prev.filter(id => id !== ingredientId));
+        setCart(prev => prev.filter(item => item.ingredientId !== ingredientId));
 
         // Sync to Supabase
         try {
@@ -356,6 +370,30 @@ export const AppProvider = ({ children }) => {
             console.log('✅ Removed from cart in Supabase');
         } catch (err) {
             console.error('Failed to remove from cart in Supabase:', err);
+            // Keep the optimistic update even if Supabase fails
+        }
+    };
+
+    const toggleCartItemChecked = async (ingredientId) => {
+        // Optimistically update UI
+        setCart(prev =>
+            prev.map(item =>
+                item.ingredientId === ingredientId
+                    ? { ...item, isChecked: !item.isChecked }
+                    : item
+            )
+        );
+
+        // Find the new checked state
+        const item = cart.find(item => item.ingredientId === ingredientId);
+        const newCheckedState = item ? !item.isChecked : true;
+
+        // Sync to Supabase
+        try {
+            await updateCartItemChecked(ingredientId, newCheckedState);
+            console.log('✅ Updated cart item checked state in Supabase');
+        } catch (err) {
+            console.error('Failed to update cart item checked state in Supabase:', err);
             // Keep the optimistic update even if Supabase fails
         }
     };
@@ -395,6 +433,7 @@ export const AppProvider = ({ children }) => {
             deleteRecipe: deleteRecipeAction,
             addToCart,
             removeFromCart,
+            toggleCartItemChecked,
             clearCart,
             refreshIngredients
         }}>

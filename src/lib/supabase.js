@@ -248,7 +248,7 @@ function getDeviceId() {
 export async function fetchCartItems() {
     const { data, error } = await supabase
         .from('shopping_cart')
-        .select('ingredient_id')
+        .select('ingredient_id, is_checked')
         .order('added_at', { ascending: true });
 
     if (error) {
@@ -256,8 +256,11 @@ export async function fetchCartItems() {
         throw error;
     }
 
-    // Return array of ingredient IDs
-    return data.map(item => item.ingredient_id);
+    // Return array of cart items with checked state
+    return data.map(item => ({
+        ingredientId: item.ingredient_id,
+        isChecked: item.is_checked || false
+    }));
 }
 
 /**
@@ -282,7 +285,8 @@ export async function addToCartDB(ingredientId) {
         .from('shopping_cart')
         .insert([{
             ingredient_id: ingredientId,
-            device_id: deviceId
+            device_id: deviceId,
+            is_checked: false
         }]);
 
     if (error) {
@@ -304,6 +308,23 @@ export async function removeFromCartDB(ingredientId) {
 
     if (error) {
         console.error('Error removing from cart:', error);
+        throw error;
+    }
+
+    return true;
+}
+
+/**
+ * Update the checked state of a cart item
+ */
+export async function updateCartItemChecked(ingredientId, isChecked) {
+    const { error } = await supabase
+        .from('shopping_cart')
+        .update({ is_checked: isChecked })
+        .eq('ingredient_id', ingredientId);
+
+    if (error) {
+        console.error('Error updating cart item checked state:', error);
         throw error;
     }
 
