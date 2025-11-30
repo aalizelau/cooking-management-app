@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { ChefHat, Package, ShoppingCart, TrendingUp } from 'lucide-react';
+import { ChefHat, Package, ShoppingCart, TrendingUp, Calendar } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 const Layout = () => {
@@ -26,6 +26,14 @@ const Layout = () => {
                         >
                             <ChefHat size={20} />
                             Recipes
+                        </NavLink>
+                        <NavLink
+                            to="/meal-planner"
+                            className={({ isActive }) => isActive ? 'btn btn-secondary' : 'btn btn-outline'}
+                            style={{ gap: 'var(--spacing-sm)' }}
+                        >
+                            <Calendar size={20} />
+                            Planner
                         </NavLink>
                         <NavLink
                             to="/inventory"

@@ -638,6 +638,62 @@ export async function deleteRecipe(id) {
 }
 
 /**
+ * Meal Plan helper functions
+ */
+
+/**
+ * Fetch meal plan for a date range
+ */
+export async function fetchMealPlan(startDate, endDate) {
+    const { data, error } = await supabase
+        .from('meal_plan')
+        .select('*')
+        .gte('date', startDate)
+        .lte('date', endDate);
+
+    if (error) {
+        console.error('Error fetching meal plan:', error);
+        throw error;
+    }
+
+    return data;
+}
+
+/**
+ * Add or update a meal plan entry
+ */
+export async function upsertMealPlan(date, slot, recipeId) {
+    const { data, error } = await supabase
+        .from('meal_plan')
+        .upsert({ date, slot, recipe_id: recipeId }, { onConflict: 'date, slot' })
+        .select()
+        .single();
+
+    if (error) {
+        console.error('Error upserting meal plan:', error);
+        throw error;
+    }
+
+    return data;
+}
+
+/**
+ * Delete a meal plan entry
+ */
+export async function deleteMealPlan(id) {
+    const { error } = await supabase
+        .from('meal_plan')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        console.error('Error deleting meal plan:', error);
+        throw error;
+    }
+    return true;
+}
+
+/**
  * Transform recipe from database format to app format
  */
 function transformRecipeFromDB(dbRecipe, linkedIngredientIds = []) {

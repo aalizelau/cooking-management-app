@@ -8,6 +8,7 @@ import ShoppingCart from './pages/ShoppingCart';
 import RecipeDetail from './pages/RecipeDetail';
 import IngredientDetail from './pages/IngredientDetail';
 import ComparePrices from './pages/ComparePrices';
+import MealPlanner from './pages/MealPlanner';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route index element={<Navigate to="/recipes" replace />} />
             <Route path="recipes" element={<RecipeGallery />} />
             <Route path="recipes/:id" element={<RecipeDetail />} />
+            <Route path="meal-planner" element={<MealPlanner />} />
             <Route path="inventory" element={<InventoryDashboard />} />
             <Route path="shopping-cart" element={<ShoppingCart />} />
             <Route path="compare" element={<ComparePrices />} /> {/* Added ComparePrices route */}
