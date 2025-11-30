@@ -4,7 +4,7 @@ import { useApp } from '../context/AppContext';
 import RecipeCard from '../components/RecipeCard';
 
 const RecipeGallery = () => {
-    const { recipes, addRecipe } = useApp();
+    const { recipes, addRecipe, ingredients } = useApp();
     const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem('recipe_activeTab') || 'Done');
     const [searchQuery, setSearchQuery] = useState(() => sessionStorage.getItem('recipe_searchQuery') || '');
 
@@ -18,6 +18,20 @@ const RecipeGallery = () => {
         const matchesSearch = recipe.title.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesTab = activeTab === 'All' || recipe.status === activeTab;
         return matchesSearch && matchesTab;
+    });
+
+    // Sort by availability (100% at top)
+    const sortedRecipes = [...filteredRecipes].sort((a, b) => {
+        const getAvailability = (r) => {
+            const linked = r.linkedIngredientIds || [];
+            if (linked.length === 0) return 0;
+            const inStock = linked.filter(id => {
+                const ing = ingredients.find(i => i.id === id);
+                return ing && ing.stockStatus === 'In Stock';
+            }).length;
+            return (inStock / linked.length) * 100;
+        };
+        return getAvailability(b) - getAvailability(a);
     });
 
     const handleCreateRecipe = () => {
@@ -81,7 +95,7 @@ const RecipeGallery = () => {
                 gridTemplateColumns: 'repeat(5, 1fr)',
                 gap: 'var(--spacing-md)'
             }}>
-                {filteredRecipes.map(recipe => (
+                {sortedRecipes.map(recipe => (
                     <RecipeCard key={recipe.id} recipe={recipe} />
                 ))}
             </div>
