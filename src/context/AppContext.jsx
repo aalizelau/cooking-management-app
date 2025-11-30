@@ -2452,6 +2452,14 @@ export const AppProvider = ({ children }) => {
         setSyncing(true);
         try {
             const updatedRecipe = await updateRecipeDB(id, updates);
+
+            // Preserve linkedIngredientIds from the input updates if they exist
+            // This is necessary because updateRecipeDB returns the recipe from the 'recipes' table
+            // which doesn't include the joined ingredients data
+            if (updates.linkedIngredientIds) {
+                updatedRecipe.linkedIngredientIds = updates.linkedIngredientIds;
+            }
+
             setRecipes(prev => prev.map(rec => rec.id === id ? updatedRecipe : rec));
         } catch (err) {
             console.error('Failed to update recipe:', err);
