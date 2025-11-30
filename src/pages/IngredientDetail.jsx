@@ -316,11 +316,46 @@ const IngredientDetail = ({ id: propId }) => {
                                     {ingredient.emoji && <span style={{ fontSize: '2rem' }}>{ingredient.emoji}</span>}
                                     <h1 style={{ margin: 0 }}>{ingredient.name}</h1>
                                 </div>
-                                <div style={{ display: 'flex', gap: 'var(--spacing-xs)' }}>
-                                    <span className="badge" style={{ backgroundColor: '#f0f0f0', color: '#555' }}>{ingredient.category}</span>
-                                    <span className="badge" style={{ backgroundColor: '#eef2ff', color: '#4f46e5' }}>
-                                        📍 {ingredient.defaultLocation}
+                                <div style={{ display: 'flex', gap: 'var(--spacing-sm)' }}>
+                                    <span className="badge" style={{ backgroundColor: 'var(--color-tag-bg)', color: 'var(--color-text)' }}>{ingredient.category}</span>
+                                    <span className="badge" style={{ backgroundColor: 'var(--color-tag-bg)', color: 'var(--color-text)' }}>
+                                        {ingredient.defaultLocation}
                                     </span>
+                                    {!isEditing && (
+                                        <>
+                                            <span
+                                                className="badge"
+                                                onClick={() => updateIngredient(ingredient.id, {
+                                                    stockStatus: ingredient.stockStatus === 'In Stock' ? 'Out of Stock' : 'In Stock'
+                                                })}
+                                                style={{
+                                                    backgroundColor: ingredient.stockStatus === 'In Stock' ? 'var(--color-primary)' : 'var(--color-tag-bg)',
+                                                    color: ingredient.stockStatus === 'In Stock' ? '#fff' : 'var(--color-text)',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px'
+                                                }}
+                                            >
+                                                {ingredient.stockStatus === 'In Stock' ? 'In Stock' : 'Out of Stock'}
+                                            </span>
+                                            <span
+                                                className="badge"
+                                                onClick={() => isInCart ? removeFromCart(ingredient.id) : addToCart(ingredient.id)}
+                                                style={{
+                                                    backgroundColor: isInCart ? 'var(--color-primary)' : 'var(--color-tag-bg)',
+                                                    color: isInCart ? '#fff' : 'var(--color-text)',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px'
+                                                }}
+                                            >
+                                                {/* <ShoppingCart size={12} /> */}
+                                                {isInCart ? 'In Cart' : 'Add to Cart'}
+                                            </span>
+                                        </>
+                                    )}
                                 </div>
                                 {(ingredient.shelfLifeDays || ingredient.boughtDate || ingredient.storageTips) && (
                                     <div style={{ marginTop: 'var(--spacing-md)', padding: 'var(--spacing-md)', backgroundColor: '#f9fafb', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
@@ -393,41 +428,7 @@ const IngredientDetail = ({ id: propId }) => {
                                 </button>
                             </div>
                         )}
-                        {!isEditing && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
-                                <button
-                                    onClick={() => updateIngredient(ingredient.id, {
-                                        stockStatus: ingredient.stockStatus === 'In Stock' ? 'Out of Stock' : 'In Stock'
-                                    })}
-                                    className="btn"
-                                    style={{
-                                        backgroundColor: ingredient.stockStatus === 'In Stock' ? 'var(--color-success)' : '#fff',
-                                        color: ingredient.stockStatus === 'In Stock' ? '#fff' : 'var(--color-danger)',
-                                        border: `1px solid ${ingredient.stockStatus === 'In Stock' ? 'var(--color-success)' : 'var(--color-danger)'}`,
-                                        minWidth: '120px'
-                                    }}
-                                >
-                                    {ingredient.stockStatus}
-                                </button>
 
-                                <button
-                                    onClick={() => isInCart ? removeFromCart(ingredient.id) : addToCart(ingredient.id)}
-                                    className="btn btn-outline"
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        backgroundColor: isInCart ? 'var(--color-success)' : '#fff',
-                                        color: isInCart ? '#fff' : 'var(--color-danger)',
-                                        borderColor: isInCart ? 'var(--color-success)' : 'var(--color-danger)',
-                                        minWidth: '120px'
-                                    }}
-                                >
-                                    <ShoppingCart size={16} />
-                                    {isInCart ? 'In Cart' : 'Add to Cart'}
-                                </button>
-                            </div>
-                        )}
                     </div>
                 </div>
 
