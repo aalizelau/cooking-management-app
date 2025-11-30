@@ -60,18 +60,28 @@ The following files were modified:
   - Now uses `isChecked` from cart items in context
   - Updated all references to use new cart structure
 
+- **`src/pages/IngredientDetail.jsx`**:
+  - Fixed `isInCart` check to use `cart.some()` instead of `cart.includes()`
+  - Add/Remove from cart buttons now work correctly
+
+- **`src/components/IngredientCard.jsx`**:
+  - Fixed `isInCart` check to use `cart.some()` instead of `cart.includes()`
+  - Shopping cart icon now displays correctly
+
 ## Testing Checklist
 
 After deploying:
 
 - [ ] Run the SQL migration in Supabase
 - [ ] Deploy the updated code
-- [ ] Test adding items to cart
-- [ ] Test checking/unchecking items
+- [ ] Test adding items to cart from inventory page (IngredientCard component)
+- [ ] Test adding/removing items to cart from ingredient detail page
+- [ ] Test adding items to cart via search in shopping cart page
+- [ ] Test checking/unchecking items in shopping cart
 - [ ] **Test persistence**: Check items, refresh page, verify they remain checked
 - [ ] Test restocking checked items
 - [ ] Test real-time sync (open app in two tabs, check item in one, verify it updates in the other)
-- [ ] Test search and add functionality
+- [ ] Verify cart badge count displays correctly in header
 
 ## Rollback Plan
 

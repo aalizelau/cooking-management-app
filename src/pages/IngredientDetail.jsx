@@ -15,7 +15,7 @@ const IngredientDetail = ({ id: propId }) => {
     const backLabel = location.state?.from === 'compare' ? 'Back to Compare' : 'Back to Inventory';
 
     const { ingredients, updateIngredient, deleteIngredient, addToCart, removeFromCart, cart, recipes } = useApp();
-    const isInCart = cart.includes(id);
+    const isInCart = cart.some(item => item.ingredientId === id);
 
 
 

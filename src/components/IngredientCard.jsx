@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 const IngredientCard = ({ ingredient }) => {
     const { updateIngredient, addToCart, removeFromCart, cart } = useApp();
     const navigate = useNavigate();
-    const isInCart = cart.includes(ingredient.id);
+    const isInCart = cart.some(item => item.ingredientId === ingredient.id);
 
     const handleConsume = (e) => {
         e.stopPropagation(); // Prevent card click navigation
