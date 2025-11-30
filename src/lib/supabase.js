@@ -209,7 +209,10 @@ function transformFromDB(dbIngredient) {
         emoji: dbIngredient.emoji,
         stockStatus: dbIngredient.stock_status,
         defaultLocation: dbIngredient.default_location,
-        history: dbIngredient.history || []
+        history: dbIngredient.history || [],
+        storageTips: dbIngredient.storage_tips,
+        shelfLifeDays: dbIngredient.shelf_life_days,
+        boughtDate: dbIngredient.bought_date
     };
 }
 
@@ -223,7 +226,10 @@ function transformToDB(appIngredient) {
         emoji: appIngredient.emoji,
         stock_status: appIngredient.stockStatus,
         default_location: appIngredient.defaultLocation,
-        history: appIngredient.history || []
+        history: appIngredient.history || [],
+        storage_tips: appIngredient.storageTips,
+        shelf_life_days: appIngredient.shelfLifeDays,
+        bought_date: appIngredient.boughtDate
     };
 
     // Only include id if it exists (for updates)

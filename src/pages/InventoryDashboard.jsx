@@ -507,9 +507,39 @@ const InventoryDashboard = () => {
                                 gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
                                 gap: 'var(--spacing-sm)'
                             }}>
-                                {groupedIngredients[groupKey].map(ing => (
-                                    <IngredientCard key={ing.id} ingredient={ing} onCardClick={() => setSearchQuery('')} />
-                                ))}
+                                {groupedIngredients[groupKey]
+                                    .sort((a, b) => {
+                                        // Helper to get days left
+                                        const getDaysLeft = (ing) => {
+                                            if (!ing.shelfLifeDays || !ing.boughtDate) return null;
+                                            const bought = new Date(ing.boughtDate);
+                                            const expiry = new Date(bought);
+                                            expiry.setDate(bought.getDate() + ing.shelfLifeDays);
+                                            const today = new Date();
+                                            today.setHours(0, 0, 0, 0);
+                                            expiry.setHours(0, 0, 0, 0);
+                                            return (expiry - today) / (1000 * 60 * 60 * 24);
+                                        };
+
+                                        const daysA = getDaysLeft(a);
+                                        const daysB = getDaysLeft(b);
+
+                                        // If both have expiry, sort by days left (ascending)
+                                        if (daysA !== null && daysB !== null) {
+                                            return daysA - daysB;
+                                        }
+
+                                        // If only A has expiry, it comes first
+                                        if (daysA !== null) return -1;
+                                        // If only B has expiry, it comes first
+                                        if (daysB !== null) return 1;
+
+                                        // Otherwise sort alphabetically
+                                        return a.name.localeCompare(b.name);
+                                    })
+                                    .map(ing => (
+                                        <IngredientCard key={ing.id} ingredient={ing} onCardClick={() => setSearchQuery('')} />
+                                    ))}
                             </div>
                         </div>
                     ))

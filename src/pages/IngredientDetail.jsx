@@ -30,7 +30,10 @@ const IngredientDetail = ({ id: propId }) => {
         emoji: '',
         defaultLocation: '',
         stockStatus: '',
-        history: []
+        history: [],
+        storageTips: '',
+        shelfLifeDays: '',
+        boughtDate: ''
     });
     const emojiPickerRef = useRef(null);
 
@@ -44,7 +47,10 @@ const IngredientDetail = ({ id: propId }) => {
                 emoji: found.emoji || '',
                 defaultLocation: found.defaultLocation,
                 stockStatus: found.stockStatus,
-                history: found.history || []
+                history: found.history || [],
+                storageTips: found.storageTips || '',
+                shelfLifeDays: found.shelfLifeDays || '',
+                boughtDate: found.boughtDate || ''
             });
         }
     }, [id, ingredients]);
@@ -91,7 +97,10 @@ const IngredientDetail = ({ id: propId }) => {
             emoji: editForm.emoji,
             defaultLocation: editForm.defaultLocation,
             stockStatus: editForm.stockStatus,
-            history: editForm.history
+            history: editForm.history,
+            storageTips: editForm.storageTips,
+            shelfLifeDays: editForm.shelfLifeDays,
+            boughtDate: editForm.boughtDate
         });
         setIsEditing(false);
         setShowEmojiPicker(false);
@@ -104,7 +113,10 @@ const IngredientDetail = ({ id: propId }) => {
             emoji: ingredient.emoji || '',
             defaultLocation: ingredient.defaultLocation,
             stockStatus: ingredient.stockStatus,
-            history: ingredient.history || []
+            history: ingredient.history || [],
+            storageTips: ingredient.storageTips || '',
+            shelfLifeDays: ingredient.shelfLifeDays || '',
+            boughtDate: ingredient.boughtDate || ''
         });
         setIsEditing(false);
         setShowEmojiPicker(false);
@@ -264,6 +276,39 @@ const IngredientDetail = ({ id: propId }) => {
                                         </span>
                                     </label>
                                 </div>
+                                <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 'var(--spacing-md)', marginTop: 'var(--spacing-sm)' }}>
+                                    <h4 style={{ marginBottom: 'var(--spacing-sm)' }}>Expiry Tracking</h4>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
+                                        <div>
+                                            <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>保質期 (Shelf Life Days)</label>
+                                            <input
+                                                type="number"
+                                                value={editForm.shelfLifeDays || ''}
+                                                onChange={e => setEditForm({ ...editForm, shelfLifeDays: parseInt(e.target.value) || '' })}
+                                                placeholder="e.g. 7"
+                                                style={{ width: '100%' }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Bought Date</label>
+                                            <input
+                                                type="date"
+                                                value={editForm.boughtDate || ''}
+                                                onChange={e => setEditForm({ ...editForm, boughtDate: e.target.value })}
+                                                style={{ width: '100%' }}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div style={{ marginTop: 'var(--spacing-md)' }}>
+                                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>一般儲存時限 (Storage Tips)</label>
+                                        <input
+                                            value={editForm.storageTips || ''}
+                                            onChange={e => setEditForm({ ...editForm, storageTips: e.target.value })}
+                                            placeholder="e.g. Keep refrigerated, consume within 3 days"
+                                            style={{ width: '100%' }}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         ) : (
                             <div>
@@ -277,6 +322,31 @@ const IngredientDetail = ({ id: propId }) => {
                                         📍 {ingredient.defaultLocation}
                                     </span>
                                 </div>
+                                {(ingredient.shelfLifeDays || ingredient.boughtDate || ingredient.storageTips) && (
+                                    <div style={{ marginTop: 'var(--spacing-md)', padding: 'var(--spacing-md)', backgroundColor: '#f9fafb', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
+                                        <h4 style={{ margin: '0 0 var(--spacing-sm) 0', fontSize: '0.9rem', color: 'var(--color-muted)', textTransform: 'uppercase' }}>Expiry Tracking</h4>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
+                                            {ingredient.shelfLifeDays && (
+                                                <div>
+                                                    <div style={{ fontSize: '0.8rem', color: 'var(--color-muted)' }}>Shelf Life</div>
+                                                    <div style={{ fontWeight: '600' }}>{ingredient.shelfLifeDays} days</div>
+                                                </div>
+                                            )}
+                                            {ingredient.boughtDate && (
+                                                <div>
+                                                    <div style={{ fontSize: '0.8rem', color: 'var(--color-muted)' }}>Bought Date</div>
+                                                    <div style={{ fontWeight: '600' }}>{new Date(ingredient.boughtDate).toLocaleDateString()}</div>
+                                                </div>
+                                            )}
+                                        </div>
+                                        {ingredient.storageTips && (
+                                            <div style={{ marginTop: 'var(--spacing-sm)', paddingTop: 'var(--spacing-sm)', borderTop: '1px solid #eee' }}>
+                                                <div style={{ fontSize: '0.8rem', color: 'var(--color-muted)' }}>Storage Tips</div>
+                                                <div>{ingredient.storageTips}</div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

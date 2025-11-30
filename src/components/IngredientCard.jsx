@@ -55,7 +55,34 @@ const IngredientCard = ({ ingredient }) => {
                         {ingredient.emoji}
                     </span>
                 )}
-                <h3 style={{ fontSize: '1rem', margin: 0 }}>{ingredient.name}</h3>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <h3 style={{ fontSize: '1rem', margin: 0 }}>{ingredient.name}</h3>
+                    {ingredient.stockStatus === 'In Stock' && ingredient.shelfLifeDays && ingredient.boughtDate && (
+                        (() => {
+                            const bought = new Date(ingredient.boughtDate);
+                            const expiry = new Date(bought);
+                            expiry.setDate(bought.getDate() + ingredient.shelfLifeDays);
+
+                            const today = new Date();
+                            // Reset time part for accurate day calculation
+                            today.setHours(0, 0, 0, 0);
+                            expiry.setHours(0, 0, 0, 0);
+
+                            const diffTime = expiry - today;
+                            const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                            let color = 'var(--color-muted)';
+                            if (daysLeft < 0) color = 'var(--color-danger)';
+                            else if (daysLeft <= 3) color = '#e67e22'; // Orange for warning
+
+                            return (
+                                <span style={{ fontSize: '0.75rem', color: color, fontWeight: '600' }}>
+                                    {daysLeft < 0 ? `${Math.abs(daysLeft)} days expired` : `${daysLeft} days left`}
+                                </span>
+                            );
+                        })()
+                    )}
+                </div>
             </div>
 
             <div>
