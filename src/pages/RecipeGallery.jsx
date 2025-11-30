@@ -34,17 +34,41 @@ const RecipeGallery = () => {
         return getAvailability(b) - getAvailability(a);
     });
 
-    const handleCreateRecipe = () => {
-        const newRecipe = {
-            title: 'New Recipe',
-            image: 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&w=800&q=80',
+    const [isCreating, setIsCreating] = useState(false);
+    const [newRecipeForm, setNewRecipeForm] = useState({
+        title: '',
+        status: 'New',
+        image: ''
+    });
+
+    const handleCreateClick = () => {
+        setIsCreating(true);
+        setNewRecipeForm({
+            title: '',
             status: 'New',
+            image: ''
+        });
+    };
+
+    const handleSaveNewRecipe = async () => {
+        if (!newRecipeForm.title.trim()) {
+            alert('Please enter a recipe title');
+            return;
+        }
+
+        const newRecipe = {
+            ...newRecipeForm,
             ingredients: [],
             steps: [],
             linkedIngredientIds: []
         };
-        addRecipe(newRecipe);
-        // In a real app, we'd probably navigate to the edit page immediately
+
+        await addRecipe(newRecipe);
+        setIsCreating(false);
+    };
+
+    const handleCancelCreate = () => {
+        setIsCreating(false);
     };
 
     const tabs = ['Done', 'Half-done', 'New', 'All'];
@@ -61,10 +85,75 @@ const RecipeGallery = () => {
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
                 <h2>Recipes</h2>
-                <button className="btn btn-primary" onClick={handleCreateRecipe}>
+                <button className="btn btn-primary" onClick={handleCreateClick}>
                     <Plus size={20} /> New Recipe
                 </button>
             </div>
+
+            {isCreating && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        backgroundColor: 'white',
+                        padding: 'var(--spacing-lg)',
+                        borderRadius: 'var(--radius-lg)',
+                        width: '100%',
+                        maxWidth: '500px',
+                        boxShadow: 'var(--shadow-lg)'
+                    }}>
+                        <h3 style={{ marginBottom: 'var(--spacing-md)' }}>Create New Recipe</h3>
+
+                        <div style={{ marginBottom: 'var(--spacing-md)' }}>
+                            <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: '600' }}>Title</label>
+                            <input
+                                autoFocus
+                                value={newRecipeForm.title}
+                                onChange={e => setNewRecipeForm({ ...newRecipeForm, title: e.target.value })}
+                                placeholder="Recipe Title"
+                                style={{ width: '100%' }}
+                            />
+                        </div>
+
+                        <div style={{ marginBottom: 'var(--spacing-md)' }}>
+                            <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: '600' }}>Status</label>
+                            <select
+                                value={newRecipeForm.status}
+                                onChange={e => setNewRecipeForm({ ...newRecipeForm, status: e.target.value })}
+                                style={{ width: '100%' }}
+                            >
+                                <option value="New">New</option>
+                                <option value="Half-done">Half-done</option>
+                                <option value="Done">Done</option>
+                            </select>
+                        </div>
+
+                        <div style={{ marginBottom: 'var(--spacing-lg)' }}>
+                            <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: '600' }}>Image URL (Optional)</label>
+                            <input
+                                value={newRecipeForm.image}
+                                onChange={e => setNewRecipeForm({ ...newRecipeForm, image: e.target.value })}
+                                placeholder="https://..."
+                                style={{ width: '100%' }}
+                            />
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--spacing-md)' }}>
+                            <button className="btn btn-outline" onClick={handleCancelCreate}>Cancel</button>
+                            <button className="btn btn-primary" onClick={handleSaveNewRecipe}>Create Recipe</button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div style={{ position: 'relative', marginBottom: 'var(--spacing-md)' }}>
                 <Search size={18} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)' }} />
