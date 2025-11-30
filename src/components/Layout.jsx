@@ -17,7 +17,10 @@ const Layout = () => {
                 zIndex: 10
             }}>
                 <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <h1 style={{ fontSize: 'var(--font-size-lg)', color: 'var(--color-primary)', fontFamily: 'var(--font-display)', fontWeight: 400 }}>🍳 Alize's Kitchen</h1>
+                    <h1 style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--color-primary)', fontFamily: 'var(--font-display)', fontWeight: 400, margin: 0 }}>
+                        <span style={{ fontSize: '32px' }}>🍳</span>
+                        <span style={{ fontSize: '28px' }}>Alize's Kitchen</span>
+                    </h1>
                     <nav style={{ display: 'flex', gap: 'var(--spacing-md)' }}>
                         <NavLink
                             to="/recipes"
