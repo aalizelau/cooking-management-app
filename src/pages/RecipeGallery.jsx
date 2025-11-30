@@ -49,6 +49,14 @@ const RecipeGallery = () => {
 
     const tabs = ['Done', 'Half-done', 'New', 'All'];
 
+    const getTabCount = (tab) => {
+        return recipes.filter(recipe => {
+            const matchesSearch = recipe.title.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesStatus = tab === 'All' || recipe.status === tab;
+            return matchesSearch && matchesStatus;
+        }).length;
+    };
+
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
@@ -85,7 +93,7 @@ const RecipeGallery = () => {
                             whiteSpace: 'nowrap'
                         }}
                     >
-                        {tab}
+                        {tab} <span style={{ opacity: 0.8, fontSize: '0.9em', marginLeft: '4px' }}>({getTabCount(tab)})</span>
                     </button>
                 ))}
             </div>
