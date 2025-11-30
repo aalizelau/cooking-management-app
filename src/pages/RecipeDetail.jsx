@@ -7,7 +7,7 @@ import { uploadRecipeImage, syncRecipeIngredients } from '../lib/supabase';
 const RecipeDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { recipes, updateRecipe, deleteRecipe, ingredients } = useApp();
+    const { recipes, updateRecipe, deleteRecipe, ingredients, cart, addToCart } = useApp();
 
     const [recipe, setRecipe] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -346,26 +346,48 @@ const RecipeDetail = () => {
                             ) : (
                                 <ul style={{ listStyle: 'none' }}>
                                     {/* Show Linked Ingredients Status */}
-                                    {linkedIngredientsData.map(ing => (
-                                        <li key={ing.id} style={{
-                                            padding: '8px',
-                                            marginBottom: '8px',
-                                            backgroundColor: ing.stockStatus === 'In Stock' ? '#e6f4ea' : '#fff0f0',
-                                            borderRadius: 'var(--radius-sm)',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center'
-                                        }}>
-                                            <span>{ing.name}</span>
-                                            <span style={{
-                                                fontSize: '0.8rem',
-                                                fontWeight: 'bold',
-                                                color: ing.stockStatus === 'In Stock' ? 'var(--color-success)' : 'var(--color-danger)'
+                                    {linkedIngredientsData.map(ing => {
+                                        const isInCart = cart.some(item => item.ingredientId === ing.id);
+                                        return (
+                                            <li key={ing.id} style={{
+                                                padding: '8px',
+                                                marginBottom: '8px',
+                                                backgroundColor: ing.stockStatus === 'In Stock' ? '#e6f4ea' : '#fff0f0',
+                                                borderRadius: 'var(--radius-sm)',
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center'
                                             }}>
-                                                {ing.stockStatus}
-                                            </span>
-                                        </li>
-                                    ))}
+                                                <span>{ing.name}</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <span style={{
+                                                        fontSize: '0.8rem',
+                                                        fontWeight: 'bold',
+                                                        color: ing.stockStatus === 'In Stock' ? 'var(--color-success)' : 'var(--color-danger)'
+                                                    }}>
+                                                        {ing.stockStatus}
+                                                    </span>
+                                                    {ing.stockStatus !== 'In Stock' && (
+                                                        <button
+                                                            onClick={() => !isInCart && addToCart(ing.id)}
+                                                            disabled={isInCart}
+                                                            style={{
+                                                                padding: '4px 8px',
+                                                                fontSize: '0.75rem',
+                                                                backgroundColor: isInCart ? 'var(--color-success)' : 'var(--color-primary)',
+                                                                color: 'white',
+                                                                borderRadius: '4px',
+                                                                cursor: isInCart ? 'default' : 'pointer',
+                                                                opacity: isInCart ? 0.8 : 1
+                                                            }}
+                                                        >
+                                                            {isInCart ? 'In Cart' : 'Add to Cart'}
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </li>
+                                        );
+                                    })}
 
                                     {/* Show Text Ingredients if not linked */}
                                     {(recipe.ingredients || []).map((line, idx) => (
