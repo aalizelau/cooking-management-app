@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckSquare, Square, ShoppingBag, Search, Plus, X } from 'lucide-react';
+import { CheckSquare, Square, ShoppingBag, Search, Plus, X, Store } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import IngredientDetail from './IngredientDetail'; // Import IngredientDetail for the side panel
@@ -9,10 +9,27 @@ const ShoppingCart = () => {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedIngredientId, setSelectedIngredientId] = useState(null); // Track selected ingredient for side panel
+    const [selectedStore, setSelectedStore] = useState('all'); // Store filter
 
     const cartIngredients = ingredients.filter(ing =>
         cart.some(item => item.ingredientId === ing.id)
     );
+
+    // Get all unique stores from cart ingredients
+    const allStores = [...new Set(
+        cartIngredients.flatMap(ing =>
+            ing.history && ing.history.length > 0
+                ? ing.history.map(h => h.store)
+                : []
+        )
+    )].sort();
+
+    // Filter cart ingredients by selected store
+    const filteredCartIngredients = selectedStore === 'all'
+        ? cartIngredients
+        : cartIngredients.filter(ing =>
+            ing.history && ing.history.some(h => h.store === selectedStore)
+        );
 
     // Group cart ingredients by category
     const groupByCategory = (ingredientsList) => {
@@ -26,7 +43,7 @@ const ShoppingCart = () => {
         return grouped;
     };
 
-    const groupedCartItems = groupByCategory(cartIngredients);
+    const groupedCartItems = groupByCategory(filteredCartIngredients);
 
     const toggleCheck = (id) => {
         toggleCartItemChecked(id);
@@ -91,7 +108,16 @@ const ShoppingCart = () => {
         <div style={{ display: 'flex', height: 'calc(100vh - 80px)', gap: 'var(--spacing-md)' }}>
             {/* Left Panel: Shopping List */}
             <div style={{ flex: 1, overflowY: 'auto', paddingRight: 'var(--spacing-sm)' }}>
-                <h2>Shopping Cart ({cart.length})</h2>
+                <h2>
+                    Shopping Cart
+                    {selectedStore !== 'all' ? (
+                        <span>
+                            {' '}({filteredCartIngredients.length} of {cart.length})
+                        </span>
+                    ) : (
+                        <span> ({cart.length})</span>
+                    )}
+                </h2>
 
                 {/* Search Bar */}
                 <div style={{ position: 'relative', marginTop: 'var(--spacing-md)', marginBottom: 'var(--spacing-md)' }}>
@@ -173,6 +199,44 @@ const ShoppingCart = () => {
                         </div>
                     )}
                 </div>
+
+                {/* Store Filter */}
+                {allStores.length > 0 && (
+                    <div style={{ marginBottom: 'var(--spacing-md)' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-xs)' }}>
+                            <button
+                                onClick={() => setSelectedStore('all')}
+                                className={selectedStore === 'all' ? 'btn btn-primary' : 'btn btn-outline'}
+                                style={{
+                                    fontSize: '0.85rem',
+                                    padding: '6px 12px',
+                                    minWidth: 'auto'
+                                }}
+                            >
+                                All ({cartIngredients.length})
+                            </button>
+                            {allStores.map(store => {
+                                const storeCount = cartIngredients.filter(ing =>
+                                    ing.history && ing.history.some(h => h.store === store)
+                                ).length;
+                                return (
+                                    <button
+                                        key={store}
+                                        onClick={() => setSelectedStore(store)}
+                                        className={selectedStore === store ? 'btn btn-primary' : 'btn btn-outline'}
+                                        style={{
+                                            fontSize: '0.85rem',
+                                            padding: '6px 12px',
+                                            minWidth: 'auto'
+                                        }}
+                                    >
+                                        {store} ({storeCount})
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
 
                 {cart.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: 'var(--spacing-xl)' }}>
