@@ -1,10 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+
 :root {
   /* Colors */
-  --color-bg: #fdfbf7; /* Creamy white */
-  --color-text: #2c2c2c; /* Soft black */
-  --color-primary: #e07a5f; /* Terracotta */
-  --color-secondary: #81b29a; /* Sage green */
-  --color-accent: #f2cc8f; /* Soft yellow */
+  --color-bg: #fdfbf7;
+  /* Creamy white */
+  --color-text: #2c2c2c;
+  /* Soft black */
+  --color-primary: #e07a5f;
+  /* Terracotta */
+  --color-secondary: #81b29a;
+  /* Sage green */
+  --color-accent: #f2cc8f;
+  /* Soft yellow */
   --color-card-bg: #ffffff;
   --color-border: #e0e0e0;
   --color-muted: #888888;
@@ -20,6 +27,7 @@
 
   /* Typography */
   --font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-display: 'Lobster', cursive;
   --font-size-base: 16px;
   --font-size-lg: 1.25rem;
   --font-size-xl: 1.5rem;
@@ -63,14 +71,21 @@ button {
   font-family: inherit;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   font-family: inherit;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   padding: var(--spacing-sm);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
   line-height: 1.2;
 }
