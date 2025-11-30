@@ -216,6 +216,7 @@ const RecipeDetail = () => {
                                         <option value="Done">Done</option>
                                         <option value="Half-done">Half-done</option>
                                         <option value="New">New</option>
+                                        <option value="Side">Side</option>
                                     </select>
                                 </div>
                             ) : null}

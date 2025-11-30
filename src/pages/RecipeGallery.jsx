@@ -71,7 +71,7 @@ const RecipeGallery = () => {
         setIsCreating(false);
     };
 
-    const tabs = ['Done', 'Half-done', 'New', 'All'];
+
 
     const getTabCount = (tab) => {
         return recipes.filter(recipe => {
@@ -132,6 +132,7 @@ const RecipeGallery = () => {
                                 style={{ width: '100%' }}
                             >
                                 <option value="New">New</option>
+                                <option value="Side">Side</option>
                                 <option value="Half-done">Half-done</option>
                                 <option value="Done">Done</option>
                             </select>
@@ -166,7 +167,7 @@ const RecipeGallery = () => {
             </div>
 
             <div style={{ display: 'flex', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-lg)', overflowX: 'auto', paddingBottom: '4px' }}>
-                {tabs.map(tab => (
+                {['Done', 'Side', 'Half-done', 'New', 'All'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
