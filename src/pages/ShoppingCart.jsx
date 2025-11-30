@@ -15,11 +15,12 @@ const ShoppingCart = () => {
         cart.some(item => item.ingredientId === ing.id)
     );
 
-    // Get all unique stores from cart ingredients
+    // Get all unique stores from cart ingredients (exclude Metro and IGA)
+    const EXCLUDED_STORES = ['Metro', 'IGA'];
     const allStores = [...new Set(
         cartIngredients.flatMap(ing =>
             ing.history && ing.history.length > 0
-                ? ing.history.map(h => h.store)
+                ? ing.history.map(h => h.store).filter(store => !EXCLUDED_STORES.includes(store))
                 : []
         )
     )].sort();
@@ -119,124 +120,127 @@ const ShoppingCart = () => {
                     )}
                 </h2>
 
-                {/* Search Bar */}
-                <div style={{ position: 'relative', marginTop: 'var(--spacing-md)', marginBottom: 'var(--spacing-md)' }}>
-                    <div style={{ position: 'relative' }}>
-                        <Search size={20} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)' }} />
-                        <input
-                            placeholder="Search to add ingredients..."
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            style={{
-                                width: '100%',
-                                paddingLeft: '40px',
-                                paddingRight: '40px',
-                                height: '48px',
-                                fontSize: '1rem',
-                                borderRadius: 'var(--radius-lg)',
-                                border: '1px solid var(--color-border)',
-                                boxShadow: 'var(--shadow-sm)'
-                            }}
-                        />
-                        {searchQuery && (
-                            <button
-                                onClick={() => setSearchQuery('')}
-                                style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)' }}
-                            >
-                                <X size={18} />
-                            </button>
-                        )}
-                    </div>
+                {/* Search Bar and Store Filter - Combined */}
+                <div style={{ marginTop: 'var(--spacing-md)', marginBottom: 'var(--spacing-md)' }}>
+                    <div style={{ display: 'flex', gap: 'var(--spacing-sm)', alignItems: 'center', flexWrap: 'wrap' }}>
+                        {/* Search Bar */}
+                        <div style={{ position: 'relative', flex: '1 1 300px', minWidth: '200px' }}>
+                            <Search size={20} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)' }} />
+                            <input
+                                placeholder="Search to add ingredients..."
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    paddingLeft: '40px',
+                                    paddingRight: '40px',
+                                    height: '48px',
+                                    fontSize: '1rem',
+                                    borderRadius: 'var(--radius-lg)',
+                                    border: '1px solid var(--color-border)',
+                                    boxShadow: 'var(--shadow-sm)'
+                                }}
+                            />
+                            {searchQuery && (
+                                <button
+                                    onClick={() => setSearchQuery('')}
+                                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)' }}
+                                >
+                                    <X size={18} />
+                                </button>
+                            )}
 
-                    {searchQuery && (
-                        <div style={{
-                            position: 'absolute',
-                            top: 'calc(100% + 8px)',
-                            left: 0,
-                            right: 0,
-                            backgroundColor: 'var(--color-card-bg)',
-                            borderRadius: 'var(--radius-lg)',
-                            boxShadow: 'var(--shadow-lg)',
-                            zIndex: 50,
-                            maxHeight: '300px',
-                            overflowY: 'auto',
-                            border: '1px solid var(--color-border)'
-                        }}>
-                            {searchResults.length === 0 ? (
-                                <div style={{ padding: 'var(--spacing-md)', textAlign: 'center', color: 'var(--color-muted)' }}>
-                                    No ingredients found.
-                                </div>
-                            ) : (
-                                searchResults.map(ing => (
-                                    <div
-                                        key={ing.id}
-                                        onClick={() => handleAddToCart(ing.id)}
-                                        style={{
-                                            padding: 'var(--spacing-md)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between',
-                                            cursor: 'pointer',
-                                            borderBottom: '1px solid var(--color-border)',
-                                            transition: 'background-color 0.2s'
-                                        }}
-                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9f9f9'}
-                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                                    >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
-                                            {ing.emoji && <span style={{ fontSize: '1.2rem' }}>{ing.emoji}</span>}
-                                            <div>
-                                                <div style={{ fontWeight: '500' }}>{ing.name}</div>
-                                                <div style={{ fontSize: '0.8rem', color: 'var(--color-muted)' }}>
-                                                    {ing.stockStatus} • {ing.location}
-                                                </div>
-                                            </div>
+                            {searchQuery && (
+                                <div style={{
+                                    position: 'absolute',
+                                    top: 'calc(100% + 8px)',
+                                    left: 0,
+                                    right: 0,
+                                    backgroundColor: 'var(--color-card-bg)',
+                                    borderRadius: 'var(--radius-lg)',
+                                    boxShadow: 'var(--shadow-lg)',
+                                    zIndex: 50,
+                                    maxHeight: '300px',
+                                    overflowY: 'auto',
+                                    border: '1px solid var(--color-border)'
+                                }}>
+                                    {searchResults.length === 0 ? (
+                                        <div style={{ padding: 'var(--spacing-md)', textAlign: 'center', color: 'var(--color-muted)' }}>
+                                            No ingredients found.
                                         </div>
-                                        <Plus size={20} color="var(--color-primary)" />
-                                    </div>
-                                ))
+                                    ) : (
+                                        searchResults.map(ing => (
+                                            <div
+                                                key={ing.id}
+                                                onClick={() => handleAddToCart(ing.id)}
+                                                style={{
+                                                    padding: 'var(--spacing-md)',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    cursor: 'pointer',
+                                                    borderBottom: '1px solid var(--color-border)',
+                                                    transition: 'background-color 0.2s'
+                                                }}
+                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9f9f9'}
+                                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                            >
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+                                                    {ing.emoji && <span style={{ fontSize: '1.2rem' }}>{ing.emoji}</span>}
+                                                    <div>
+                                                        <div style={{ fontWeight: '500' }}>{ing.name}</div>
+                                                        <div style={{ fontSize: '0.8rem', color: 'var(--color-muted)' }}>
+                                                            {ing.stockStatus} • {ing.location}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <Plus size={20} color="var(--color-primary)" />
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
                             )}
                         </div>
-                    )}
-                </div>
 
-                {/* Store Filter */}
-                {allStores.length > 0 && (
-                    <div style={{ marginBottom: 'var(--spacing-md)' }}>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-xs)' }}>
-                            <button
-                                onClick={() => setSelectedStore('all')}
-                                className={selectedStore === 'all' ? 'btn btn-primary' : 'btn btn-outline'}
-                                style={{
-                                    fontSize: '0.85rem',
-                                    padding: '6px 12px',
-                                    minWidth: 'auto'
-                                }}
-                            >
-                                All ({cartIngredients.length})
-                            </button>
-                            {allStores.map(store => {
-                                const storeCount = cartIngredients.filter(ing =>
-                                    ing.history && ing.history.some(h => h.store === store)
-                                ).length;
-                                return (
-                                    <button
-                                        key={store}
-                                        onClick={() => setSelectedStore(store)}
-                                        className={selectedStore === store ? 'btn btn-primary' : 'btn btn-outline'}
-                                        style={{
-                                            fontSize: '0.85rem',
-                                            padding: '6px 12px',
-                                            minWidth: 'auto'
-                                        }}
-                                    >
-                                        {store} ({storeCount})
-                                    </button>
-                                );
-                            })}
-                        </div>
+                        {/* Store Filter Buttons */}
+                        {allStores.length > 0 && (
+                            <>
+                                <button
+                                    onClick={() => setSelectedStore('all')}
+                                    className={selectedStore === 'all' ? 'btn btn-primary' : 'btn btn-outline'}
+                                    style={{
+                                        fontSize: '0.85rem',
+                                        padding: '10px 16px',
+                                        minWidth: 'auto',
+                                        height: '48px'
+                                    }}
+                                >
+                                    All ({cartIngredients.length})
+                                </button>
+                                {allStores.map(store => {
+                                    const storeCount = cartIngredients.filter(ing =>
+                                        ing.history && ing.history.some(h => h.store === store)
+                                    ).length;
+                                    return (
+                                        <button
+                                            key={store}
+                                            onClick={() => setSelectedStore(store)}
+                                            className={selectedStore === store ? 'btn btn-primary' : 'btn btn-outline'}
+                                            style={{
+                                                fontSize: '0.85rem',
+                                                padding: '10px 16px',
+                                                minWidth: 'auto',
+                                                height: '48px'
+                                            }}
+                                        >
+                                            {store} ({storeCount})
+                                        </button>
+                                    );
+                                })}
+                            </>
+                        )}
                     </div>
-                )}
+                </div>
 
                 {cart.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: 'var(--spacing-xl)' }}>
