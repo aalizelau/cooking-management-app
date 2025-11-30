@@ -627,7 +627,8 @@ function transformRecipeFromDB(dbRecipe, linkedIngredientIds = []) {
         image: dbRecipe.cover_image_url, // Map cover_image_url to image for frontend compatibility
         description: "", // Description column removed, returning empty string
         ingredients: [], // Text ingredients (if we add later)
-        steps: [], // Recipe steps (if we add later)
+        steps: dbRecipe.instructions || [], // Map DB instructions to frontend steps
+        thoughts: dbRecipe.thoughts || "", // Map thoughts
         linkedIngredientIds: linkedIngredientIds // Now populated from junction table!
     };
 }
@@ -639,7 +640,9 @@ function transformRecipeToDB(appRecipe) {
     const dbRecipe = {
         title: appRecipe.title,
         status: appRecipe.status,
-        cover_image_url: appRecipe.image
+        cover_image_url: appRecipe.image,
+        instructions: appRecipe.steps, // Map frontend steps to DB instructions
+        thoughts: appRecipe.thoughts
     };
 
     // Only include id if it exists (for updates)

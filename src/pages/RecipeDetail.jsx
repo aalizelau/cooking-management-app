@@ -390,57 +390,86 @@ const RecipeDetail = () => {
                             )}
                         </div>
                     </div>
+
+                    {/* Thoughts / 感想 Section */}
+                    <div style={{ marginTop: 'var(--spacing-xl)' }}>
+                        <h3 style={{ borderBottom: '2px solid var(--color-accent)', paddingBottom: '8px', marginBottom: 'var(--spacing-md)' }}>
+                            感想 (Thoughts)
+                        </h3>
+                        {isEditing ? (
+                            <textarea
+                                value={editedRecipe.thoughts || ''}
+                                onChange={e => setEditedRecipe({ ...editedRecipe, thoughts: e.target.value })}
+                                rows={5}
+                                style={{ width: '100%' }}
+                                placeholder="Write your thoughts, tips, or memories about this recipe..."
+                            />
+                        ) : (
+                            <div style={{
+                                backgroundColor: '#f9f9f9',
+                                padding: 'var(--spacing-md)',
+                                borderRadius: 'var(--radius-md)',
+                                fontStyle: 'italic',
+                                whiteSpace: 'pre-wrap',
+                                color: recipe.thoughts ? 'inherit' : 'var(--color-muted)'
+                            }}>
+                                {recipe.thoughts || 'No thoughts recorded yet.'}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
             {/* Delete Confirmation Modal */}
-            {showDeleteConfirm && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 1000
-                }}>
-                    <div className="card" style={{
-                        maxWidth: '400px',
-                        width: '90%',
-                        padding: 'var(--spacing-lg)',
-                        backgroundColor: 'white'
+            {
+                showDeleteConfirm && (
+                    <div style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 1000
                     }}>
-                        <h3 style={{ marginTop: 0, marginBottom: 'var(--spacing-md)' }}>Delete Recipe?</h3>
-                        <p style={{ marginBottom: 'var(--spacing-lg)', color: 'var(--color-text)' }}>
-                            Are you sure you want to delete <strong>{recipe.title}</strong>? This action cannot be undone.
-                        </p>
-                        <div style={{ display: 'flex', gap: 'var(--spacing-sm)', justifyContent: 'flex-end' }}>
-                            <button
-                                className="btn btn-outline"
-                                onClick={() => setShowDeleteConfirm(false)}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className="btn"
-                                onClick={handleDelete}
-                                style={{
-                                    backgroundColor: 'var(--color-danger)',
-                                    color: 'white',
-                                    borderColor: 'var(--color-danger)'
-                                }}
-                            >
-                                <Trash2 size={18} style={{ marginRight: '6px' }} />
-                                Delete Recipe
-                            </button>
+                        <div className="card" style={{
+                            maxWidth: '400px',
+                            width: '90%',
+                            padding: 'var(--spacing-lg)',
+                            backgroundColor: 'white'
+                        }}>
+                            <h3 style={{ marginTop: 0, marginBottom: 'var(--spacing-md)' }}>Delete Recipe?</h3>
+                            <p style={{ marginBottom: 'var(--spacing-lg)', color: 'var(--color-text)' }}>
+                                Are you sure you want to delete <strong>{recipe.title}</strong>? This action cannot be undone.
+                            </p>
+                            <div style={{ display: 'flex', gap: 'var(--spacing-sm)', justifyContent: 'flex-end' }}>
+                                <button
+                                    className="btn btn-outline"
+                                    onClick={() => setShowDeleteConfirm(false)}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    className="btn"
+                                    onClick={handleDelete}
+                                    style={{
+                                        backgroundColor: 'var(--color-danger)',
+                                        color: 'white',
+                                        borderColor: 'var(--color-danger)'
+                                    }}
+                                >
+                                    <Trash2 size={18} style={{ marginRight: '6px' }} />
+                                    Delete Recipe
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };
 
