@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit2, Save, X, Plus, Trash2, CheckCircle, AlertCircle, Upload, Image } from 'lucide-react';
+import { ArrowLeft, Edit2, Save, X, Plus, Trash2, CheckCircle, AlertCircle, Upload, Image, ExternalLink } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { uploadRecipeImage, syncRecipeIngredients } from '../lib/supabase';
 
@@ -429,16 +429,24 @@ const RecipeDetail = () => {
                                 {(editedRecipe.instructionSections || []).map((section, idx) => (
                                     <div key={idx} style={{ padding: 'var(--spacing-md)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', backgroundColor: '#f9f9f9' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--spacing-sm)' }}>
-                                            <input
-                                                value={section.title}
-                                                onChange={(e) => handleSectionChange(idx, 'title', e.target.value)}
-                                                style={{ fontWeight: 'bold', fontSize: '1.1rem', width: '70%', padding: '4px' }}
-                                                placeholder="Method Title (e.g. Air Fryer)"
-                                            />
+                                            <div style={{ flex: 1, marginRight: 'var(--spacing-md)' }}>
+                                                <input
+                                                    value={section.title}
+                                                    onChange={(e) => handleSectionChange(idx, 'title', e.target.value)}
+                                                    style={{ fontWeight: 'bold', fontSize: '1.1rem', width: '100%', padding: '4px', marginBottom: '4px' }}
+                                                    placeholder="Method Title (e.g. Air Fryer)"
+                                                />
+                                                <input
+                                                    value={section.link || ''}
+                                                    onChange={(e) => handleSectionChange(idx, 'link', e.target.value)}
+                                                    style={{ fontSize: '0.9rem', width: '100%', padding: '4px', color: 'var(--color-primary)' }}
+                                                    placeholder="Reference Link (optional)"
+                                                />
+                                            </div>
                                             <button
                                                 onClick={() => handleDeleteSection(idx)}
                                                 className="btn btn-outline"
-                                                style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger)', padding: '4px 8px' }}
+                                                style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger)', padding: '4px 8px', height: 'fit-content' }}
                                                 disabled={(editedRecipe.instructionSections || []).length === 1}
                                             >
                                                 <Trash2 size={16} />
@@ -466,9 +474,23 @@ const RecipeDetail = () => {
                                         borderBottom: '2px solid var(--color-accent)',
                                         paddingBottom: '8px',
                                         marginBottom: 'var(--spacing-md)',
-                                        marginTop: 0
+                                        marginTop: 0,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px'
                                     }}>
                                         {section.title}
+                                        {section.link && (
+                                            <a
+                                                href={section.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{ color: 'var(--color-primary)', display: 'flex', alignItems: 'center' }}
+                                                title="Open Reference"
+                                            >
+                                                <ExternalLink size={18} />
+                                            </a>
+                                        )}
                                     </h3>
                                     <ol style={{ paddingLeft: '20px', marginTop: 0 }}>
                                         {(section.steps || []).map((step, stepIdx) => (
