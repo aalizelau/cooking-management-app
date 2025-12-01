@@ -492,11 +492,30 @@ const RecipeDetail = () => {
                                             </a>
                                         )}
                                     </h3>
-                                    <ol style={{ paddingLeft: '20px', marginTop: 0 }}>
+                                    <div style={{ marginTop: 0 }}>
                                         {(section.steps || []).map((step, stepIdx) => (
-                                            <li key={stepIdx} style={{ marginBottom: '12px', lineHeight: 1.6 }}>{step}</li>
+                                            <div key={stepIdx} style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+                                                <div style={{
+                                                    flexShrink: 0,
+                                                    width: '28px',
+                                                    height: '28px',
+                                                    borderRadius: '50%',
+                                                    backgroundColor: 'var(--color-primary)',
+                                                    color: 'white',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontSize: '0.9rem',
+                                                    fontWeight: 'bold',
+                                                    marginTop: '-2px',
+                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                                }}>
+                                                    {stepIdx + 1}
+                                                </div>
+                                                <div style={{ lineHeight: 1.6, flex: 1 }}>{step}</div>
+                                            </div>
                                         ))}
-                                    </ol>
+                                    </div>
                                 </div>
                             ))}
                         </div>
