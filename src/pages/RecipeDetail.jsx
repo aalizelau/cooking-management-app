@@ -143,9 +143,19 @@ const RecipeDetail = () => {
     };
 
     // Calculate Availability for View Mode
+    // Calculate Availability for View Mode
     const linkedIngredientsData = (recipe.linkedIngredientIds || []).map(linkId => {
         const ing = ingredients.find(i => i.id === linkId);
         return ing ? { ...ing, found: true } : { id: linkId, name: 'Unknown Ingredient', stockStatus: 'Unknown', found: false };
+    }).sort((a, b) => {
+        // Sort: Out of Stock first, then Low Stock, then In Stock
+        const getScore = (status) => {
+            if (status === 'Out of Stock') return 0;
+            if (status === 'Low Stock') return 1;
+            if (status === 'In Stock') return 2;
+            return 3; // Unknown
+        };
+        return getScore(a.stockStatus) - getScore(b.stockStatus);
     });
 
     const inStockCount = linkedIngredientsData.filter(i => i.stockStatus === 'In Stock').length;
