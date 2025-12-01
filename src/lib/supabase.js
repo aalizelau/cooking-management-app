@@ -212,7 +212,8 @@ function transformFromDB(dbIngredient) {
         history: dbIngredient.history || [],
         storageTips: dbIngredient.storage_tips,
         shelfLifeDays: dbIngredient.shelf_life_days,
-        boughtDate: dbIngredient.bought_date
+        boughtDate: dbIngredient.bought_date,
+        notes: dbIngredient.notes || ""
     };
 }
 
@@ -229,7 +230,8 @@ function transformToDB(appIngredient) {
         history: appIngredient.history || [],
         storage_tips: appIngredient.storageTips,
         shelf_life_days: appIngredient.shelfLifeDays,
-        bought_date: appIngredient.boughtDate
+        bought_date: appIngredient.boughtDate,
+        notes: appIngredient.notes
     };
 
     // Only include id if it exists (for updates)

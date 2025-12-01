@@ -33,7 +33,8 @@ const IngredientDetail = ({ id: propId }) => {
         history: [],
         storageTips: '',
         shelfLifeDays: '',
-        boughtDate: ''
+        boughtDate: '',
+        notes: ''
     });
     const emojiPickerRef = useRef(null);
 
@@ -50,7 +51,8 @@ const IngredientDetail = ({ id: propId }) => {
                 history: found.history || [],
                 storageTips: found.storageTips || '',
                 shelfLifeDays: found.shelfLifeDays || '',
-                boughtDate: found.boughtDate || ''
+                boughtDate: found.boughtDate || '',
+                notes: found.notes || ''
             });
         }
     }, [id, ingredients]);
@@ -100,7 +102,8 @@ const IngredientDetail = ({ id: propId }) => {
             history: editForm.history,
             storageTips: editForm.storageTips,
             shelfLifeDays: editForm.shelfLifeDays,
-            boughtDate: editForm.boughtDate
+            boughtDate: editForm.boughtDate,
+            notes: editForm.notes
         });
         setIsEditing(false);
         setShowEmojiPicker(false);
@@ -116,7 +119,8 @@ const IngredientDetail = ({ id: propId }) => {
             history: ingredient.history || [],
             storageTips: ingredient.storageTips || '',
             shelfLifeDays: ingredient.shelfLifeDays || '',
-            boughtDate: ingredient.boughtDate || ''
+            boughtDate: ingredient.boughtDate || '',
+            notes: ingredient.notes || ''
         });
         setIsEditing(false);
         setShowEmojiPicker(false);
@@ -308,6 +312,16 @@ const IngredientDetail = ({ id: propId }) => {
                                             style={{ width: '100%' }}
                                         />
                                     </div>
+                                    <div style={{ marginTop: 'var(--spacing-md)' }}>
+                                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>個人筆記 (Personal Notes)</label>
+                                        <textarea
+                                            value={editForm.notes || ''}
+                                            onChange={e => setEditForm({ ...editForm, notes: e.target.value })}
+                                            placeholder="e.g. 荷蘭豆是扁扁的豆角是長長的四季豆是比較短的"
+                                            rows={3}
+                                            style={{ width: '100%', resize: 'vertical' }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         ) : (
@@ -380,6 +394,12 @@ const IngredientDetail = ({ id: propId }) => {
                                                 <div>{ingredient.storageTips}</div>
                                             </div>
                                         )}
+                                    </div>
+                                )}
+                                {ingredient.notes && (
+                                    <div style={{ marginTop: 'var(--spacing-md)', padding: 'var(--spacing-md)', backgroundColor: '#fffbf0', borderRadius: 'var(--radius-md)', border: '1px solid #f0e5c8' }}>
+                                        <h4 style={{ margin: '0 0 var(--spacing-sm) 0', fontSize: '0.9rem', color: 'var(--color-muted)', textTransform: 'uppercase' }}>個人筆記 (Personal Notes)</h4>
+                                        <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{ingredient.notes}</div>
                                     </div>
                                 )}
                             </div>
