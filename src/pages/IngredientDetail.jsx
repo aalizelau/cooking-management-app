@@ -330,9 +330,9 @@ const IngredientDetail = ({ id: propId }) => {
                                     {ingredient.emoji && <span style={{ fontSize: '2rem' }}>{ingredient.emoji}</span>}
                                     <h1 style={{ margin: 0 }}>{ingredient.name}</h1>
                                 </div>
-                                <div style={{ display: 'flex', gap: 'var(--spacing-sm)' }}>
-                                    <span className="badge" style={{ backgroundColor: 'var(--color-tag-bg)', color: 'var(--color-text)' }}>{ingredient.category}</span>
-                                    <span className="badge" style={{ backgroundColor: 'var(--color-tag-bg)', color: 'var(--color-text)' }}>
+                                <div style={{ display: 'flex', gap: 'var(--spacing-sm)', flexWrap: 'wrap' }}>
+                                    <span className="badge" style={{ backgroundColor: 'var(--color-tag-bg)', color: 'var(--color-text)', whiteSpace: 'nowrap' }}>{ingredient.category}</span>
+                                    <span className="badge" style={{ backgroundColor: 'var(--color-tag-bg)', color: 'var(--color-text)', whiteSpace: 'nowrap' }}>
                                         {ingredient.defaultLocation}
                                     </span>
                                     {!isEditing && (
@@ -348,7 +348,8 @@ const IngredientDetail = ({ id: propId }) => {
                                                     cursor: 'pointer',
                                                     display: 'flex',
                                                     alignItems: 'center',
-                                                    gap: '4px'
+                                                    gap: '4px',
+                                                    whiteSpace: 'nowrap'
                                                 }}
                                             >
                                                 {ingredient.stockStatus === 'In Stock' ? 'In Stock' : 'Out of Stock'}
@@ -362,7 +363,8 @@ const IngredientDetail = ({ id: propId }) => {
                                                     cursor: 'pointer',
                                                     display: 'flex',
                                                     alignItems: 'center',
-                                                    gap: '4px'
+                                                    gap: '4px',
+                                                    whiteSpace: 'nowrap'
                                                 }}
                                             >
                                                 {/* <ShoppingCart size={12} /> */}
