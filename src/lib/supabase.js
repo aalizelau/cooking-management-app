@@ -227,12 +227,28 @@ function transformToDB(appIngredient) {
         emoji: appIngredient.emoji,
         stock_status: appIngredient.stockStatus,
         default_location: appIngredient.defaultLocation,
-        history: appIngredient.history || [],
-        storage_tips: appIngredient.storageTips,
-        shelf_life_days: appIngredient.shelfLifeDays,
-        bought_date: appIngredient.boughtDate,
-        notes: appIngredient.notes
+        history: appIngredient.history || []
     };
+
+    // Only include storage_tips if it has a value
+    if (appIngredient.storageTips) {
+        dbIngredient.storage_tips = appIngredient.storageTips;
+    }
+
+    // Only include shelf_life_days if it's a valid number (not empty string or null/undefined)
+    if (appIngredient.shelfLifeDays !== '' && appIngredient.shelfLifeDays !== null && appIngredient.shelfLifeDays !== undefined) {
+        dbIngredient.shelf_life_days = appIngredient.shelfLifeDays;
+    }
+
+    // Only include bought_date if it has a valid value (not empty string or null/undefined)
+    if (appIngredient.boughtDate && appIngredient.boughtDate !== '') {
+        dbIngredient.bought_date = appIngredient.boughtDate;
+    }
+
+    // Only include notes if it has a value
+    if (appIngredient.notes) {
+        dbIngredient.notes = appIngredient.notes;
+    }
 
     // Only include id if it exists (for updates)
     if (appIngredient.id) {

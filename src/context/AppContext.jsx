@@ -239,9 +239,17 @@ export const AppProvider = ({ children }) => {
         }
     };
 
-    const updateIngredient = async (id, updates) => {
+    const updateIngredient = async (id, updates, options = {}) => {
         try {
             setSyncing(true);
+
+            // Only auto-update boughtDate when explicitly requested (e.g., from cart restock)
+            if (options.shouldUpdateBoughtDate && updates.stockStatus === 'In Stock') {
+                const currentIngredient = ingredients.find(i => i.id === id);
+                if (currentIngredient && currentIngredient.stockStatus !== 'In Stock') {
+                    updates.boughtDate = new Date().toISOString();
+                }
+            }
 
             // Optimistically update UI
             setIngredients(prev =>

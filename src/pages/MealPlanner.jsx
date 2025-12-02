@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { fetchMealPlan, upsertMealPlan, deleteMealPlan } from '../lib/supabase';
-import { ChevronLeft, ChevronRight, Trash2, Calendar } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Trash2, Calendar, ChevronDown } from 'lucide-react';
 
 const MealPlanner = () => {
-    const { recipes } = useApp();
+    const { recipes, ingredients } = useApp();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [weekPlan, setWeekPlan] = useState([]);
     const [loading, setLoading] = useState(false);
     const [draggedRecipe, setDraggedRecipe] = useState(null);
+    const [expandedCategories, setExpandedCategories] = useState({});
 
     // Calculate week days centered on currentDate
     const weekDays = Array.from({ length: 7 }, (_, i) => {
@@ -24,6 +25,33 @@ const MealPlanner = () => {
     useEffect(() => {
         loadWeekPlan();
     }, [currentDate]);
+
+    // Helper to calculate availability score (0-1)
+    const getAvailabilityScore = (recipe) => {
+        if (!recipe.linkedIngredientIds || recipe.linkedIngredientIds.length === 0) return 0;
+        const inStockCount = recipe.linkedIngredientIds.reduce((count, id) => {
+            const ingredient = ingredients.find(i => i.id === id);
+            return count + (ingredient?.stockStatus === 'In Stock' ? 1 : 0);
+        }, 0);
+        return inStockCount / recipe.linkedIngredientIds.length;
+    };
+
+    // Group recipes by status and sort by availability
+    const groupedRecipes = [...recipes]
+        .sort((a, b) => getAvailabilityScore(b) - getAvailabilityScore(a))
+        .reduce((acc, recipe) => {
+            const status = recipe.status || 'Uncategorized';
+            if (!acc[status]) acc[status] = [];
+            acc[status].push(recipe);
+            return acc;
+        }, {});
+
+    const toggleCategory = (category) => {
+        setExpandedCategories(prev => ({
+            ...prev,
+            [category]: !prev[category]
+        }));
+    };
 
     const loadWeekPlan = async () => {
         setLoading(true);
@@ -204,24 +232,67 @@ const MealPlanner = () => {
             }}>
                 <h3 style={{ marginBottom: 'var(--spacing-md)' }}>Recipes</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
-                    {recipes.map(recipe => (
-                        <div
-                            key={recipe.id}
-                            draggable
-                            onDragStart={(e) => handleDragStart(e, recipe)}
-                            style={{
-                                padding: '10px',
-                                backgroundColor: 'white',
-                                border: '1px solid var(--color-border)',
-                                borderRadius: 'var(--radius-sm)',
-                                cursor: 'grab',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-                            }}
-                        >
-                            <div style={{ fontSize: '0.9rem', fontWeight: '500' }}>{recipe.title}</div>
+                    {Object.entries(groupedRecipes).map(([category, categoryRecipes]) => (
+                        <div key={category} style={{ marginBottom: 'var(--spacing-xs)' }}>
+                            <button
+                                onClick={() => toggleCategory(category)}
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    padding: '10px 12px',
+                                    backgroundColor: 'var(--color-bg-secondary, #f8f9fa)',
+                                    border: 'none',
+                                    borderRadius: 'var(--radius-sm)',
+                                    cursor: 'pointer',
+                                    fontWeight: '600',
+                                    fontSize: '0.9rem',
+                                    color: 'var(--color-text)',
+                                    marginBottom: '4px',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-bg-hover, #e9ecef)'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-bg-secondary, #f8f9fa)'}
+                            >
+                                <span>{category}</span>
+                                {expandedCategories[category] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                            </button>
+
+                            {expandedCategories[category] && (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)', paddingLeft: '8px', marginTop: '4px' }}>
+                                    {categoryRecipes.map(recipe => (
+                                        <div
+                                            key={recipe.id}
+                                            draggable
+                                            onDragStart={(e) => handleDragStart(e, recipe)}
+                                            style={{
+                                                padding: '10px',
+                                                backgroundColor: 'white',
+                                                border: '1px solid var(--color-border)',
+                                                borderRadius: 'var(--radius-sm)',
+                                                cursor: 'grab',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
+                                                boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                                                transition: 'transform 0.1s, box-shadow 0.1s'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.transform = 'translateY(-1px)';
+                                                e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.transform = 'none';
+                                                e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
+                                            }}
+                                        >
+
+                                            <div style={{ fontSize: '0.9rem', fontWeight: '500' }}>{recipe.title}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>

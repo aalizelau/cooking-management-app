@@ -60,7 +60,7 @@ const ShoppingCart = () => {
             updateIngredient(item.ingredientId, {
                 stockStatus: 'In Stock',
                 location: ingredient.defaultLocation || 'Room Temp' // Fallback to Room Temp if no default
-            });
+            }, { shouldUpdateBoughtDate: true }); // Auto-update bought date when restocking from cart
             removeFromCart(item.ingredientId);
         });
 
