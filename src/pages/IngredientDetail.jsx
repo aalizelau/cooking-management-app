@@ -5,6 +5,7 @@ import { useApp } from '../context/AppContext';
 import EmojiPicker from 'emoji-picker-react';
 import StoreLogo from '../components/StoreLogo';
 import { SUPERMARKETS } from '../utils/stores';
+import '../styles/IngredientDetail.css';
 
 const IngredientDetail = ({ id: propId }) => {
     const { id: paramId } = useParams();
@@ -159,7 +160,7 @@ const IngredientDetail = ({ id: propId }) => {
     };
 
     return (
-        <div>
+        <div className="ingredient-detail-container">
             <button className="btn btn-outline" onClick={() => navigate(backPath)} style={{ marginBottom: 'var(--spacing-md)' }}>
                 <ArrowLeft size={16} style={{ marginRight: '8px' }} /> {backLabel}
             </button>
@@ -454,7 +455,7 @@ const IngredientDetail = ({ id: propId }) => {
                     </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-xl)' }}>
+                <div className="price-history-grid">
                     <div>
                         <h3>Price History</h3>
                         <div style={{ marginTop: 'var(--spacing-md)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
@@ -463,14 +464,7 @@ const IngredientDetail = ({ id: propId }) => {
                                     <p style={{ color: 'var(--color-muted)' }}>No price history yet.</p>
                                 ) : (
                                     editForm.history.map(entry => (
-                                        <div key={entry.id} style={{
-                                            padding: 'var(--spacing-sm)',
-                                            border: '1px solid var(--color-border)',
-                                            borderRadius: 'var(--radius-sm)',
-                                            display: 'flex',
-                                            gap: 'var(--spacing-sm)',
-                                            alignItems: 'center'
-                                        }}>
+                                        <div key={entry.id} className="history-entry-edit">
                                             <div style={{ flex: 1 }}>
                                                 <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.8rem', fontWeight: '600' }}>Store</label>
                                                 <select
@@ -529,15 +523,7 @@ const IngredientDetail = ({ id: propId }) => {
                                     <p style={{ color: 'var(--color-muted)' }}>No price history yet.</p>
                                 ) : (
                                     (ingredient.history || []).map(entry => (
-                                        <div key={entry.id} style={{
-                                            padding: 'var(--spacing-sm)',
-                                            border: '1px solid var(--color-border)',
-                                            borderRadius: 'var(--radius-sm)',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            gap: 'var(--spacing-sm)'
-                                        }}>
+                                        <div key={entry.id} className="history-entry-card">
                                             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
                                                 <StoreLogo storeName={entry.store} size={32} />
                                                 <div style={{ fontWeight: 'bold' }}>{entry.store}</div>
@@ -557,7 +543,7 @@ const IngredientDetail = ({ id: propId }) => {
                         <form onSubmit={handleAddEntry} style={{ marginTop: 'var(--spacing-md)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
                             <div>
                                 <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem' }}>Store</label>
-                                <div style={{ position: 'relative' }}>
+                                <div className="store-select-wrapper">
                                     <Store size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)' }} />
                                     <select
                                         value={newEntry.store}
@@ -581,7 +567,7 @@ const IngredientDetail = ({ id: propId }) => {
 
                             <div>
                                 <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem' }}>Price (CAD)</label>
-                                <div style={{ position: 'relative' }}>
+                                <div className="price-input-wrapper">
                                     <DollarSign size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)' }} />
                                     <input
                                         value={newEntry.price}
