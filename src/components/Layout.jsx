@@ -1,82 +1,80 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { ChefHat, Package, ShoppingCart, TrendingUp, Calendar } from 'lucide-react';
+import { ChefHat, Package, ShoppingCart, TrendingUp, Calendar, Menu, X } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import '../styles/Layout.css';
 
 const Layout = () => {
     const { cart } = useApp();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
+
+    const closeMenu = () => {
+        setIsMenuOpen(false);
+    };
 
     return (
         <div className="layout">
-            <header style={{
-                padding: 'var(--spacing-md)',
-                borderBottom: '1px solid var(--color-border)',
-                backgroundColor: 'var(--color-card-bg)',
-                position: 'sticky',
-                top: 0,
-                zIndex: 10
-            }}>
-                <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <h1 style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--color-primary)', fontFamily: 'var(--font-display)', fontWeight: 400, margin: 0 }}>
-                        <span style={{ fontSize: '32px' }}>🍳</span>
-                        <span style={{ fontSize: '28px' }}>Alize's Kitchen</span>
+            <header className="layout-header">
+                <div className="container header-container">
+                    <h1 className="logo">
+                        <span className="logo-icon">🍳</span>
+                        <span className="logo-text">Alize's Kitchen</span>
                     </h1>
-                    <nav style={{ display: 'flex', gap: 'var(--spacing-md)' }}>
+
+                    <button
+                        className="mobile-menu-btn"
+                        onClick={toggleMenu}
+                        aria-label="Toggle menu"
+                    >
+                        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
+
+                    <nav className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
                         <NavLink
                             to="/recipes"
-                            className={({ isActive }) => isActive ? 'btn btn-primary' : 'btn btn-outline'}
-                            style={{ gap: 'var(--spacing-sm)' }}
+                            className={({ isActive }) => `nav-link ${isActive ? 'btn btn-primary' : 'btn btn-outline'}`}
+                            onClick={closeMenu}
                         >
                             <ChefHat size={20} />
                             Recipes
                         </NavLink>
                         <NavLink
                             to="/meal-planner"
-                            className={({ isActive }) => isActive ? 'btn btn-secondary' : 'btn btn-outline'}
-                            style={{ gap: 'var(--spacing-sm)' }}
+                            className={({ isActive }) => `nav-link ${isActive ? 'btn btn-secondary' : 'btn btn-outline'}`}
+                            onClick={closeMenu}
                         >
                             <Calendar size={20} />
                             Planner
                         </NavLink>
                         <NavLink
                             to="/inventory"
-                            className={({ isActive }) => isActive ? 'btn btn-secondary' : 'btn btn-outline'}
-                            style={{ gap: 'var(--spacing-sm)' }}
+                            className={({ isActive }) => `nav-link ${isActive ? 'btn btn-secondary' : 'btn btn-outline'}`}
+                            onClick={closeMenu}
                         >
                             <Package size={20} />
                             Inventory
                         </NavLink>
                         <NavLink
                             to="/compare"
-                            className={({ isActive }) => isActive ? 'btn btn-secondary' : 'btn btn-outline'}
-                            style={{ gap: 'var(--spacing-sm)' }}
+                            className={({ isActive }) => `nav-link ${isActive ? 'btn btn-secondary' : 'btn btn-outline'}`}
+                            onClick={closeMenu}
                         >
                             <TrendingUp size={20} />
                             Compare
                         </NavLink>
                         <NavLink
                             to="/shopping-cart"
-                            className={({ isActive }) => isActive ? 'btn btn-primary' : 'btn btn-outline'}
-                            style={{ gap: 'var(--spacing-sm)', position: 'relative' }}
+                            className={({ isActive }) => `nav-link ${isActive ? 'btn btn-primary' : 'btn btn-outline'}`}
+                            onClick={closeMenu}
                         >
                             <ShoppingCart size={20} />
                             Cart
                             {cart.length > 0 && (
-                                <span style={{
-                                    position: 'absolute',
-                                    top: '-5px',
-                                    right: '-5px',
-                                    backgroundColor: 'var(--color-danger)',
-                                    color: 'white',
-                                    borderRadius: '50%',
-                                    width: '20px',
-                                    height: '20px',
-                                    fontSize: '12px',
-                                    fontWeight: 'bold',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}>
+                                <span className="cart-badge">
                                     {cart.length}
                                 </span>
                             )}
