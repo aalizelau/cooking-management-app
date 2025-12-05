@@ -204,103 +204,101 @@ const InventoryDashboard = () => {
             </div>
 
             {isAdding && (
-                <div className="card" style={{ marginBottom: 'var(--spacing-md)', border: '2px solid var(--color-primary)' }}>
-                    <h3>Add New Ingredient</h3>
-                    <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)', marginTop: 'var(--spacing-md)' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: 'var(--spacing-md)' }}>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Emoji</label>
-                                <div style={{ position: 'relative' }} ref={emojiPickerRef}>
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                                        style={{
-                                            width: '80px',
-                                            height: '80px',
-                                            fontSize: '2.5rem',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            border: '2px solid var(--color-border)',
-                                            borderRadius: 'var(--radius-sm)',
-                                            backgroundColor: 'var(--color-bg-secondary)',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s ease'
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.borderColor = 'var(--color-primary)';
-                                            e.currentTarget.style.transform = 'scale(1.05)';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.borderColor = 'var(--color-border)';
-                                            e.currentTarget.style.transform = 'scale(1)';
-                                        }}
-                                    >
-                                        {newIngredient.emoji || '➕'}
-                                    </button>
-                                    {showEmojiPicker && (
-                                        <div style={{
-                                            position: 'absolute',
-                                            top: '85px',
-                                            left: 0,
-                                            zIndex: 1000
-                                        }}>
-                                            <EmojiPicker
-                                                onEmojiClick={(emojiObject) => {
-                                                    setNewIngredient({ ...newIngredient, emoji: emojiObject.emoji });
-                                                    setShowEmojiPicker(false);
-                                                }}
-                                                width={350}
-                                                height={400}
-                                            />
-                                        </div>
-                                    )}
-                                </div>
+                <div className="card" style={{ marginBottom: 'var(--spacing-md)', border: '2px solid var(--color-primary)', padding: 'var(--spacing-sm)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-sm)' }}>
+                        <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Add New Ingredient</h3>
+                        <button
+                            onClick={() => {
+                                setIsAdding(false);
+                                setShowEmojiPicker(false);
+                            }}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
+                        >
+                            <X size={18} />
+                        </button>
+                    </div>
+
+                    <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+                        <div style={{ display: 'flex', gap: 'var(--spacing-sm)' }}>
+                            {/* Emoji Picker */}
+                            <div style={{ position: 'relative' }} ref={emojiPickerRef}>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                    style={{
+                                        width: '42px',
+                                        height: '42px',
+                                        fontSize: '1.5rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        border: '1px solid var(--color-border)',
+                                        borderRadius: 'var(--radius-sm)',
+                                        backgroundColor: 'var(--color-bg-secondary)',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    {newIngredient.emoji || '➕'}
+                                </button>
+                                {showEmojiPicker && (
+                                    <div style={{ position: 'absolute', top: '45px', left: 0, zIndex: 1000 }}>
+                                        <EmojiPicker
+                                            onEmojiClick={(emojiObject) => {
+                                                setNewIngredient({ ...newIngredient, emoji: emojiObject.emoji });
+                                                setShowEmojiPicker(false);
+                                            }}
+                                            width={300}
+                                            height={350}
+                                        />
+                                    </div>
+                                )}
                             </div>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Name</label>
-                                <input
-                                    placeholder="e.g. Milk, Chicken, Rice"
-                                    value={newIngredient.name}
-                                    onChange={e => setNewIngredient({ ...newIngredient, name: e.target.value })}
-                                    style={{ width: '100%', fontSize: '1.2rem', height: '80px' }}
-                                    autoFocus
-                                />
-                            </div>
+
+                            {/* Name Input */}
+                            <input
+                                placeholder="Name (e.g. Milk)"
+                                value={newIngredient.name}
+                                onChange={e => setNewIngredient({ ...newIngredient, name: e.target.value })}
+                                style={{ flex: 1, height: '42px', fontSize: '1rem' }}
+                                autoFocus
+                            />
+
+                            {/* Save Button */}
+                            <button type="submit" className="btn btn-primary" style={{ height: '42px', padding: '0 16px' }}>
+                                {/* <Plus size={18} style={{ marginRight: '4px' }} /> */}
+                                 Save
+                            </button>
                         </div>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Category</label>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 'var(--spacing-sm)', alignItems: 'center' }}>
+                            {/* Category Select */}
                             <select
                                 value={newIngredient.category}
                                 onChange={e => handleCategoryChange(e.target.value)}
-                                style={{ width: '100%' }}
+                                style={{ height: '36px', fontSize: '0.9rem' }}
                             >
-                                <option value="原材料">🥬 原材料 (Raw Materials)</option>
-                                <option value="水果">🍎 水果 (Fruits)</option>
-                                <option value="零食">🍪 零食 (Snacks)</option>
-                                <option value="半成品">📦 半成品 (Semi-finished)</option>
-                                <option value="調味料">🧂 調味料 (Seasonings)</option>
-                                <option value="無食材類型">🍴 無食材類型 (Uncategorized)</option>
+                                <option value="原材料">🥬 原材料</option>
+                                <option value="水果">🍎 水果</option>
+                                <option value="零食">🍪 零食</option>
+                                <option value="半成品">📦 半成品</option>
+                                <option value="調味料">🧂 調味料</option>
+                                <option value="無食材類型">🍴 Uncategorized</option>
                             </select>
-                        </div>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Default Location</label>
+
+                            {/* Location Select */}
                             <select
                                 value={newIngredient.location}
                                 onChange={e => setNewIngredient({ ...newIngredient, location: e.target.value })}
                                 disabled={newIngredient.stockStatus === 'Out of Stock'}
-                                style={{ width: '100%' }}
+                                style={{ height: '36px', fontSize: '0.9rem' }}
                             >
-                                <option value="冷藏">🧊 冷藏 (Refrigerated)</option>
-                                <option value="急凍">❄️ 急凍 (Frozen)</option>
-                                <option value="常溫">🌡️ 常溫 (Room Temp)</option>
+                                <option value="冷藏">🧊 冷藏</option>
+                                <option value="急凍">❄️ 急凍</option>
+                                <option value="常溫">🌡️ 常溫</option>
                             </select>
-                            <small style={{ color: 'var(--color-muted)', fontSize: '0.85rem' }}>
-                                Items will return to this location when restocked
-                            </small>
-                        </div>
-                        <div>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer' }}>
+
+                            {/* Stock Status Checkbox */}
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }}>
                                 <input
                                     type="checkbox"
                                     checked={newIngredient.stockStatus === 'In Stock'}
@@ -308,35 +306,12 @@ const InventoryDashboard = () => {
                                         ...newIngredient,
                                         stockStatus: e.target.checked ? 'In Stock' : 'Out of Stock'
                                     })}
-                                    style={{
-                                        width: '20px',
-                                        height: '20px',
-                                        cursor: 'pointer',
-                                        accentColor: 'var(--color-success)'
-                                    }}
+                                    style={{ width: '16px', height: '16px', accentColor: 'var(--color-success)' }}
                                 />
-                                <span style={{
-                                    color: newIngredient.stockStatus === 'In Stock' ? 'var(--color-success)' : 'var(--color-danger)',
-                                    fontWeight: 'bold'
-                                }}>
-                                    {newIngredient.stockStatus === 'In Stock' ? 'In Stock' : 'Out of Stock'}
+                                <span style={{ color: newIngredient.stockStatus === 'In Stock' ? 'var(--color-success)' : 'var(--color-danger)' }}>
+                                    {newIngredient.stockStatus === 'In Stock' ? 'In Stock' : 'Out Stock'}
                                 </span>
                             </label>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--spacing-sm)', marginTop: 'var(--spacing-sm)' }}>
-                            <button
-                                type="button"
-                                className="btn btn-outline"
-                                onClick={() => {
-                                    setIsAdding(false);
-                                    setShowEmojiPicker(false);
-                                }}
-                            >
-                                <X size={18} style={{ marginRight: '6px' }} /> Cancel
-                            </button>
-                            <button type="submit" className="btn btn-primary">
-                                <Plus size={18} style={{ marginRight: '6px' }} /> Save Item
-                            </button>
                         </div>
                     </form>
                 </div>
