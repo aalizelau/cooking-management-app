@@ -3,6 +3,7 @@ import { Search, X } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import StoreLogo from '../components/StoreLogo';
 import IngredientDetail from './IngredientDetail';
+import { SUPERMARKETS } from '../utils/stores';
 
 const ComparePrices = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -65,12 +66,11 @@ const ComparePrices = () => {
             <div style={{ flex: selectedIngredientId ? 1 : 'auto', overflowY: 'auto', paddingRight: 'var(--spacing-sm)' }}>
                 <header className="page-header">
                     <div>
-                        <h1 className="page-title">Price Comparison</h1>
-                        <p className="text-muted">Compare prices by supermarket</p>
+                        <h2 className="page-title">Price Comparison</h2>
                     </div>
                 </header>
 
-                <div className="search-bar" style={{ marginBottom: 'var(--spacing-lg)' }}>
+                <div className="search-bar-wrapper" style={{ marginBottom: 'var(--spacing-lg)' }}>
                     <Search size={20} className="search-icon" />
                     <input
                         type="text"
@@ -82,24 +82,38 @@ const ComparePrices = () => {
                 </div>
 
                 <div style={{ display: 'grid', gap: 'var(--spacing-lg)' }}>
-                {Object.entries(filteredStores).map(([store, items]) => (
-                    <div key={store} className="card" style={{ padding: 'var(--spacing-md)' }}>
+                {Object.entries(filteredStores)
+                    .sort(([storeA], [storeB]) => {
+                        const indexA = SUPERMARKETS.indexOf(storeA);
+                        const indexB = SUPERMARKETS.indexOf(storeB);
+                        // If both stores are in SUPERMARKETS, sort by their index
+                        if (indexA !== -1 && indexB !== -1) {
+                            return indexA - indexB;
+                        }
+                        // If only one is in SUPERMARKETS, prioritize it
+                        if (indexA !== -1) return -1;
+                        if (indexB !== -1) return 1;
+                        // If neither is in SUPERMARKETS, sort alphabetically
+                        return storeA.localeCompare(storeB);
+                    })
+                    .map(([store, items]) => (
+                    <div key={store} className="card" style={{ padding: 'var(--spacing-sm)' }}>
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
                             gap: 'var(--spacing-sm)',
-                            marginBottom: 'var(--spacing-md)',
+                            marginBottom: 'var(--spacing-sm)',
                             borderBottom: '1px solid var(--color-border)',
                             paddingBottom: 'var(--spacing-sm)'
                         }}>
-                            <StoreLogo storeName={store} size={40} />
-                            <h2 style={{ margin: 0, fontSize: '1.4rem' }}>{store}</h2>
-                            <span className="badge badge-secondary" style={{ marginLeft: 'auto' }}>
+                            <StoreLogo storeName={store} size={28} />
+                            <h2 style={{ margin: 0, fontSize: '1rem' }}>{store}</h2>
+                            <span className="badge badge-secondary" style={{ marginLeft: 'auto', fontSize: '0.75rem', padding: '2px 8px' }}>
                                 {items.length} items
                             </span>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 'var(--spacing-md)' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 'var(--spacing-sm)' }}>
                             {items.map((item, index) => {
                                 const isSelected = selectedIngredientId === item.id;
                                 return (
@@ -108,12 +122,12 @@ const ComparePrices = () => {
                                         onClick={() => setSelectedIngredientId(item.id)}
                                         style={{
                                             backgroundColor: isSelected ? '#fff8f6' : 'var(--color-bg-secondary)',
-                                            padding: 'var(--spacing-md)',
+                                            padding: 'var(--spacing-sm)',
                                             borderRadius: 'var(--radius-sm)',
                                             border: isSelected ? '2px solid var(--color-primary)' : '1px solid var(--color-border)',
                                             display: 'flex',
                                             flexDirection: 'column',
-                                            gap: '8px',
+                                            gap: '4px',
                                             cursor: 'pointer',
                                             transition: 'all 0.2s ease',
                                         }}
@@ -127,14 +141,14 @@ const ComparePrices = () => {
                                         }}
                                     >
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <span style={{ fontSize: '1.5rem' }}>{item.emoji}</span>
-                                            <span style={{ fontWeight: 'bold' }}>{item.name}</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <span style={{ fontSize: '1.2rem' }}>{item.emoji}</span>
+                                            <span style={{ fontWeight: '500', fontSize: '0.9rem' }}>{item.name}</span>
                                         </div>
                                     </div>
 
                                     <div style={{
-                                        fontSize: '1.2rem',
+                                        fontSize: '0.8rem',
                                         fontWeight: '600',
                                         color: 'var(--color-primary)',
                                         marginTop: 'auto'
