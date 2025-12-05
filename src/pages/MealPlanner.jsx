@@ -174,7 +174,7 @@ const MealPlanner = () => {
                 draggable={!!recipe}
                 onDragStart={(e) => recipe && handleDragStart(e, recipe, plan.id)}
                 style={{
-                    minHeight: '100px',
+                    height: '90px',
                     backgroundColor: recipe ? 'white' : 'rgba(0,0,0,0.02)',
                     border: '1px dashed var(--color-border)',
                     borderRadius: 'var(--radius-sm)',
@@ -185,20 +185,30 @@ const MealPlanner = () => {
                     alignItems: recipe ? 'stretch' : 'center',
                     transition: 'all 0.2s ease',
                     cursor: recipe ? 'grab' : 'default',
-                    opacity: draggedRecipe && recipe && draggedRecipe.id === recipe.id && plan?.id ? 0.5 : 1
+                    opacity: draggedRecipe && recipe && draggedRecipe.id === recipe.id && plan?.id ? 0.5 : 1,
+                    overflow: 'hidden'
                 }}
             >
                 {recipe ? (
                     <>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'start' }}>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'start', overflow: 'hidden' }}>
                             {recipe.image && (
                                 <img
                                     src={recipe.image}
                                     alt={recipe.title}
-                                    style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover' }}
+                                    style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover', flexShrink: 0 }}
                                 />
                             )}
-                            <div style={{ fontSize: '0.9rem', fontWeight: '600', lineHeight: '1.2' }}>
+                            <div style={{
+                                fontSize: '0.9rem',
+                                fontWeight: '600',
+                                lineHeight: '1.2',
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
+                            }}>
                                 {recipe.title}
                             </div>
                         </div>
