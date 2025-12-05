@@ -11,12 +11,16 @@ const MealPlanner = () => {
     const [draggedRecipe, setDraggedRecipe] = useState(null);
     const [expandedCategories, setExpandedCategories] = useState({});
 
-    // Calculate week days centered on currentDate
-    const weekDays = Array.from({ length: 7 }, (_, i) => {
-        const d = new Date(currentDate);
-        d.setDate(d.getDate() - 3 + i); // Start 3 days before current date
-        return d;
-    });
+    // Calculate 14 days (2 weeks) starting from the beginning of the current week
+    const planDays = (() => {
+        const start = new Date(currentDate);
+        start.setDate(start.getDate() - start.getDay()); // Start from Sunday
+        return Array.from({ length: 14 }, (_, i) => {
+            const d = new Date(start);
+            d.setDate(d.getDate() + i);
+            return d;
+        });
+    })();
 
     const formatDate = (date) => {
         const year = date.getFullYear();
@@ -26,7 +30,7 @@ const MealPlanner = () => {
     };
 
     useEffect(() => {
-        loadWeekPlan();
+        loadPlan();
     }, [currentDate]);
 
     // Helper to calculate availability score (0-1)
@@ -56,11 +60,11 @@ const MealPlanner = () => {
         }));
     };
 
-    const loadWeekPlan = async () => {
+    const loadPlan = async () => {
         setLoading(true);
         try {
-            const start = formatDate(weekDays[0]);
-            const end = formatDate(weekDays[6]);
+            const start = formatDate(planDays[0]);
+            const end = formatDate(planDays[planDays.length - 1]);
             const data = await fetchMealPlan(start, end);
             setWeekPlan(data || []);
         } catch (err) {
@@ -131,11 +135,11 @@ const MealPlanner = () => {
             // 2. Insert new entry
             await upsertMealPlan(dateStr, slot, recipeId);
 
-            loadWeekPlan(); // Reload to get real IDs
+            loadPlan(); // Reload to get real IDs
         } catch (err) {
             console.error('Failed to save meal plan:', err);
             alert('Failed to save meal plan');
-            loadWeekPlan(); // Revert
+            loadPlan(); // Revert
         }
         setDraggedRecipe(null);
     };
@@ -151,7 +155,7 @@ const MealPlanner = () => {
                 await deleteMealPlan(id);
             } catch (err) {
                 console.error('Failed to delete meal plan:', err);
-                loadWeekPlan(); // Revert
+                loadPlan(); // Revert
             }
         }
     };
@@ -307,17 +311,17 @@ const MealPlanner = () => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
                         <button
                             className="btn btn-outline"
-                            onClick={() => setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() - 7)))}
+                            onClick={() => setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() - 14)))}
                         >
                             <ChevronLeft size={20} />
                         </button>
-                        <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px', minWidth: '200px', justifyContent: 'center' }}>
                             <Calendar size={24} />
-                            {weekDays[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {weekDays[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            {planDays[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {planDays[13].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </h2>
                         <button
                             className="btn btn-outline"
-                            onClick={() => setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() + 7)))}
+                            onClick={() => setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() + 14)))}
                         >
                             <ChevronRight size={20} />
                         </button>
@@ -334,9 +338,10 @@ const MealPlanner = () => {
                     display: 'grid',
                     gridTemplateColumns: 'repeat(7, 1fr)',
                     gap: 'var(--spacing-sm)',
-                    flex: 1
+                    flex: 1,
+                    overflowY: 'auto'
                 }}>
-                    {weekDays.map(day => (
+                    {planDays.map(day => (
                         <div key={day.toISOString()} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
                             <div style={{
                                 textAlign: 'center',
