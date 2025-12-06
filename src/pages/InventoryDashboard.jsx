@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Search, X } from 'lucide-react';
+import { Plus, Search, X, LayoutGrid, MapPin, CheckCircle, AlertCircle } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import IngredientCard from '../components/IngredientCard';
 import EmojiPicker from 'emoji-picker-react';
@@ -266,7 +266,7 @@ const InventoryDashboard = () => {
                             {/* Save Button */}
                             <button type="submit" className="btn btn-primary" style={{ height: '42px', padding: '0 16px' }}>
                                 {/* <Plus size={18} style={{ marginRight: '4px' }} /> */}
-                                 Save
+                                Save
                             </button>
                         </div>
 
@@ -320,23 +320,33 @@ const InventoryDashboard = () => {
             {/* TAB NAVIGATION */}
             <div style={{ display: 'flex', gap: 'var(--spacing-md)', marginBottom: 'var(--spacing-lg)', alignItems: 'center', flexWrap: 'wrap' }}>
                 {/* Stock Status Tabs */}
-                <div style={{ display: 'flex', overflow: 'hidden', borderRadius: 'var(--border-radius)' }}>
+                <div style={{
+                    backgroundColor: '#f0f0f0',
+                    padding: '4px',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    // border: '1px solid var(--color-tag-bg)'
+                }}>
                     <button
                         onClick={() => setStockTab('in-stock')}
                         style={{
-                            padding: 'var(--spacing-sm) var(--spacing-md)',
+                            padding: '6px 16px',
+                            borderRadius: '6px',
+                            fontSize: '0.875rem',
+                            fontWeight: 600,
+                            transition: 'all 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
                             border: 'none',
-                            borderRadius: 0,
                             cursor: 'pointer',
-                            fontWeight: '600',
-                            fontSize: '0.95rem',
-                            transition: 'all 0.2s ease',
-                            backgroundColor: stockTab === 'in-stock' ? 'var(--color-success)' : '#f5f5f5',
-                            color: stockTab === 'in-stock' ? 'white' : 'var(--color-text)',
-                            borderTopLeftRadius: 'var(--border-radius)',
-                            borderBottomLeftRadius: 'var(--border-radius)',
+                            backgroundColor: stockTab === 'in-stock' ? 'var(--color-secondary)' : 'transparent',
+                            color: stockTab === 'in-stock' ? 'white' : '#BEBEBE',
+                            boxShadow: stockTab === 'in-stock' ? '0 1px 2px 0 rgba(0, 0, 0, 0.05)' : 'none',
                         }}
                     >
+                        {/* <CheckCircle size={16} /> */}
                         In Stock ({inStockCount})
                     </button>
                     <button
@@ -348,63 +358,77 @@ const InventoryDashboard = () => {
                             }
                         }}
                         style={{
-                            padding: 'var(--spacing-sm) var(--spacing-md)',
+                            padding: '6px 10px',
+                            borderRadius: '6px',
+                            fontSize: '0.875rem',
+                            fontWeight: 500,
+                            transition: 'all 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
                             border: 'none',
-                            borderRadius: 0,
                             cursor: 'pointer',
-                            fontWeight: '600',
-                            fontSize: '0.95rem',
-                            transition: 'all 0.2s ease',
-                            backgroundColor: stockTab === 'out-of-stock' ? 'var(--color-danger)' : '#f5f5f5',
-                            color: stockTab === 'out-of-stock' ? 'white' : 'var(--color-text)',
-                            borderLeft: '1px solid rgba(0,0,0,0.1)',
-                            borderTopRightRadius: 'var(--border-radius)',
-                            borderBottomRightRadius: 'var(--border-radius)',
+                            backgroundColor: stockTab === 'out-of-stock' ? 'var(--color-secondary)' : 'transparent',
+                            color: stockTab === 'out-of-stock' ? 'white' : '#BEBEBE',
+                            boxShadow: stockTab === 'out-of-stock' ? '0 1px 2px 0 rgba(0, 0, 0, 0.05)' : 'none',
                         }}
                     >
+                        {/* <AlertCircle size={16} /> */}
                         Out of Stock ({outOfStockCount})
                     </button>
                 </div>
 
                 {/* Group By Tabs */}
-                <div style={{ display: 'flex', overflow: 'hidden', borderRadius: 'var(--border-radius)' }}>
+                <div style={{
+                    backgroundColor: '#f0f0f0',
+                    padding: '4px',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    // border: '1px solid #e2e8f0'
+                }}>
                     <button
                         onClick={() => setGroupByTab('category')}
                         style={{
-                            padding: 'var(--spacing-sm) var(--spacing-md)',
+                            padding: '6px 16px',
+                            borderRadius: '6px',
+                            fontSize: '0.875rem',
+                            fontWeight: 500,
+                            transition: 'all 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
                             border: 'none',
-                            borderRadius: 0,
                             cursor: 'pointer',
-                            fontWeight: '500',
-                            fontSize: '0.9rem',
-                            transition: 'all 0.2s ease',
-                            backgroundColor: groupByTab === 'category' ? 'var(--color-primary)' : '#f5f5f5',
-                            color: groupByTab === 'category' ? 'white' : 'var(--color-text)',
-                            borderTopLeftRadius: 'var(--border-radius)',
-                            borderBottomLeftRadius: 'var(--border-radius)',
+                            backgroundColor: groupByTab === 'category' ? 'var(--color-secondary)' : 'transparent',
+                            color: groupByTab === 'category' ? 'white' : '#BEBEBE',
+                            boxShadow: groupByTab === 'category' ? '0 1px 2px 0 rgba(0, 0, 0, 0.05)' : 'none',
                         }}
                     >
+                        {/* <LayoutGrid size={16} /> */}
                         By Category
                     </button>
                     <button
                         onClick={() => setGroupByTab('location')}
                         disabled={stockTab === 'out-of-stock'}
                         style={{
-                            padding: 'var(--spacing-sm) var(--spacing-md)',
+                            padding: '6px 16px',
+                            borderRadius: '6px',
+                            fontSize: '0.875rem',
+                            fontWeight: 500,
+                            transition: 'all 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
                             border: 'none',
-                            borderRadius: 0,
                             cursor: stockTab === 'out-of-stock' ? 'not-allowed' : 'pointer',
-                            fontWeight: '500',
-                            fontSize: '0.9rem',
-                            transition: 'all 0.2s ease',
-                            backgroundColor: groupByTab === 'location' ? 'var(--color-primary)' : '#f5f5f5',
-                            color: groupByTab === 'location' ? 'white' : 'var(--color-text)',
+                            backgroundColor: groupByTab === 'location' ? 'var(--color-secondary)' : 'transparent',
+                            color: groupByTab === 'location' ? 'white' : '#BEBEBE',
+                            boxShadow: groupByTab === 'location' ? '0 1px 2px 0 rgba(0, 0, 0, 0.05)' : 'none',
                             opacity: stockTab === 'out-of-stock' ? 0.5 : 1,
-                            borderLeft: '1px solid rgba(0,0,0,0.1)',
-                            borderTopRightRadius: 'var(--border-radius)',
-                            borderBottomRightRadius: 'var(--border-radius)',
                         }}
                     >
+                        {/* <MapPin size={16} /> */}
                         By Location
                     </button>
                 </div>

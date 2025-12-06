@@ -52,7 +52,7 @@ const Layout = () => {
                         </NavLink>
                         <NavLink
                             to="/inventory"
-                            className={({ isActive }) => `nav-link ${isActive ? 'btn btn-secondary' : 'btn btn-outline'}`}
+                            className={({ isActive }) => `nav-link ${isActive ? 'btn btn-primary' : 'btn btn-outline'}`}
                             onClick={closeMenu}
                         >
                             <Package size={20} />
