@@ -3,11 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit2, Save, X, Plus, Trash2, CheckCircle, AlertCircle, Upload, Image, ExternalLink } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { uploadRecipeImage, syncRecipeIngredients } from '../lib/supabase';
+import EmojiPicker from 'emoji-picker-react';
 
 const RecipeDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { recipes, updateRecipe, deleteRecipe, ingredients, cart, addToCart } = useApp();
+    const { recipes, updateRecipe, deleteRecipe, ingredients, cart, addToCart, addIngredient } = useApp();
 
     const [recipe, setRecipe] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -17,6 +18,83 @@ const RecipeDetail = () => {
     const [uploadingImage, setUploadingImage] = useState(false);
     const [imageError, setImageError] = useState(false);
     const fileInputRef = useRef(null);
+
+    // New Ingredient State
+    const [isAddingIngredient, setIsAddingIngredient] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const emojiPickerRef = useRef(null);
+    const [newIngredient, setNewIngredient] = useState({
+        name: '',
+        emoji: '',
+        category: '無食材類型',
+        stockStatus: 'In Stock',
+        location: '常溫'
+    });
+
+    // Handle click outside emoji picker
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+                setShowEmojiPicker(false);
+            }
+        };
+
+        if (showEmojiPicker) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showEmojiPicker]);
+
+    const getDefaultLocationForCategory = (category) => {
+        const categoryDefaults = {
+            '原材料': '冷藏',
+            '水果': '冷藏',
+            '零食': '常溫',
+            '半成品': '急凍',
+            '調味料': '冷藏',
+            '無食材類型': '常溫'
+        };
+        return categoryDefaults[category] || '常溫';
+    };
+
+    const handleCategoryChange = (category) => {
+        const defaultLocation = getDefaultLocationForCategory(category);
+        setNewIngredient({
+            ...newIngredient,
+            category: category,
+            location: defaultLocation
+        });
+    };
+
+    const handleAddIngredient = async (e) => {
+        e.preventDefault();
+        if (!newIngredient.name) return;
+
+        const defaultLocation = getDefaultLocationForCategory(newIngredient.category);
+
+        try {
+            const addedIngredient = await addIngredient({
+                ...newIngredient,
+                defaultLocation: defaultLocation,
+                location: newIngredient.stockStatus === 'Out of Stock' ? defaultLocation : newIngredient.location,
+                history: []
+            });
+
+            // Link to current recipe
+            if (addedIngredient && addedIngredient.id) {
+                toggleLinkedIngredient(addedIngredient.id);
+            }
+
+            setNewIngredient({ name: '', emoji: '', category: '無食材類型', stockStatus: 'In Stock', location: '常溫' });
+            setIsAddingIngredient(false);
+            setShowEmojiPicker(false);
+        } catch (error) {
+            console.error("Failed to add ingredient", error);
+        }
+    };
 
     useEffect(() => {
         // Convert id to number if recipes have numeric IDs
@@ -350,18 +428,169 @@ const RecipeDetail = () => {
                                                     overflowY: 'auto',
                                                     boxShadow: 'var(--shadow-md)'
                                                 }}>
-                                                    {availableIngredients.map(ing => (
-                                                        <div
-                                                            key={ing.id}
-                                                            onClick={() => { toggleLinkedIngredient(ing.id); setIngredientSearch(''); }}
-                                                            style={{ padding: '8px', cursor: 'pointer', borderBottom: '1px solid #eee' }}
-                                                        >
-                                                            <Plus size={14} style={{ display: 'inline', marginRight: '4px' }} /> {ing.name}
+                                                    {availableIngredients.length > 0 ? (
+                                                        availableIngredients.map(ing => (
+                                                            <div
+                                                                key={ing.id}
+                                                                onClick={() => { toggleLinkedIngredient(ing.id); setIngredientSearch(''); }}
+                                                                style={{ padding: '8px', cursor: 'pointer', borderBottom: '1px solid #eee' }}
+                                                            >
+                                                                <Plus size={14} style={{ display: 'inline', marginRight: '4px' }} /> {ing.name}
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <div style={{ padding: '8px', color: 'var(--color-muted)', fontStyle: 'italic' }}>
+                                                            No matching ingredients found.
                                                         </div>
-                                                    ))}
+                                                    )}
+
+                                                    {/* Quick Create Option */}
+                                                    <div
+                                                        onClick={() => {
+                                                            setNewIngredient({ ...newIngredient, name: ingredientSearch });
+                                                            setIsAddingIngredient(true);
+                                                            setIngredientSearch('');
+                                                        }}
+                                                        style={{
+                                                            padding: '8px',
+                                                            cursor: 'pointer',
+                                                            backgroundColor: '#f0f9ff',
+                                                            color: 'var(--color-primary)',
+                                                            fontWeight: '500',
+                                                            borderTop: '1px solid #eee',
+                                                            display: 'flex',
+                                                            alignItems: 'center'
+                                                        }}
+                                                    >
+                                                        <Plus size={14} style={{ marginRight: '4px' }} /> Create "{ingredientSearch}"
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
+                                    </div>
+
+                                    {/* Create New Ingredient Button/Form */}
+                                    <div style={{ marginTop: 'var(--spacing-sm)', marginBottom: 'var(--spacing-lg)' }}>
+                                        {!isAddingIngredient ? (
+                                            <button
+                                                className="btn btn-outline"
+                                                onClick={() => setIsAddingIngredient(true)}
+                                                style={{ width: '100%', borderStyle: 'dashed', fontSize: '0.9rem' }}
+                                            >
+                                                <Plus size={16} style={{ marginRight: '6px' }} /> Create New Ingredient
+                                            </button>
+                                        ) : (
+                                            <div className="card" style={{ border: '1px solid var(--color-border)', padding: 'var(--spacing-sm)', backgroundColor: '#f9f9f9' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-sm)' }}>
+                                                    <h4 style={{ margin: 0, fontSize: '1rem' }}>New Ingredient</h4>
+                                                    <button
+                                                        onClick={() => {
+                                                            setIsAddingIngredient(false);
+                                                            setShowEmojiPicker(false);
+                                                        }}
+                                                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
+                                                    >
+                                                        <X size={16} />
+                                                    </button>
+                                                </div>
+
+                                                <form onSubmit={handleAddIngredient} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+                                                    <div style={{ display: 'flex', gap: 'var(--spacing-sm)' }}>
+                                                        {/* Emoji Picker */}
+                                                        <div style={{ position: 'relative' }} ref={emojiPickerRef}>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                                                style={{
+                                                                    width: '38px',
+                                                                    height: '38px',
+                                                                    fontSize: '1.2rem',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    border: '1px solid var(--color-border)',
+                                                                    borderRadius: 'var(--radius-sm)',
+                                                                    backgroundColor: 'white',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                            >
+                                                                {newIngredient.emoji || '➕'}
+                                                            </button>
+                                                            {showEmojiPicker && (
+                                                                <div style={{ position: 'absolute', top: '40px', left: 0, zIndex: 1000 }}>
+                                                                    <EmojiPicker
+                                                                        onEmojiClick={(emojiObject) => {
+                                                                            setNewIngredient({ ...newIngredient, emoji: emojiObject.emoji });
+                                                                            setShowEmojiPicker(false);
+                                                                        }}
+                                                                        width={300}
+                                                                        height={350}
+                                                                    />
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Name Input */}
+                                                        <input
+                                                            placeholder="Name"
+                                                            value={newIngredient.name}
+                                                            onChange={e => setNewIngredient({ ...newIngredient, name: e.target.value })}
+                                                            style={{ flex: 1, height: '38px', fontSize: '0.95rem', padding: '0 8px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}
+                                                            autoFocus
+                                                        />
+
+                                                        {/* Save Button */}
+                                                        <button type="submit" className="btn btn-primary" style={{ height: '38px', padding: '0 12px', fontSize: '0.9rem' }}>
+                                                            Save
+                                                        </button>
+                                                    </div>
+
+                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 'var(--spacing-sm)', alignItems: 'center' }}>
+                                                        {/* Category Select */}
+                                                        <select
+                                                            value={newIngredient.category}
+                                                            onChange={e => handleCategoryChange(e.target.value)}
+                                                            style={{ height: '32px', fontSize: '0.85rem', padding: '0 4px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}
+                                                        >
+                                                            <option value="原材料">🥬 原材料</option>
+                                                            <option value="水果">🍎 水果</option>
+                                                            <option value="零食">🍪 零食</option>
+                                                            <option value="半成品">📦 半成品</option>
+                                                            <option value="調味料">🧂 調味料</option>
+                                                            <option value="無食材類型">🍴 Other</option>
+                                                        </select>
+
+                                                        {/* Location Select */}
+                                                        <select
+                                                            value={newIngredient.location}
+                                                            onChange={e => setNewIngredient({ ...newIngredient, location: e.target.value })}
+                                                            disabled={newIngredient.stockStatus === 'Out of Stock'}
+                                                            style={{ height: '32px', fontSize: '0.85rem', padding: '0 4px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}
+                                                        >
+                                                            <option value="冷藏">🧊 冷藏</option>
+                                                            <option value="急凍">❄️ 急凍</option>
+                                                            <option value="常溫">🌡️ 常溫</option>
+                                                        </select>
+
+                                                        {/* Stock Status Checkbox */}
+                                                        <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={newIngredient.stockStatus === 'In Stock'}
+                                                                onChange={e => setNewIngredient({
+                                                                    ...newIngredient,
+                                                                    stockStatus: e.target.checked ? 'In Stock' : 'Out of Stock'
+                                                                })}
+                                                                style={{ width: '14px', height: '14px', accentColor: 'var(--color-success)' }}
+                                                            />
+                                                            <span style={{ color: newIngredient.stockStatus === 'In Stock' ? 'var(--color-success)' : 'var(--color-danger)' }}>
+                                                                {newIngredient.stockStatus === 'In Stock' ? 'In' : 'Out'}
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <h4 style={{ fontSize: '0.9rem', color: 'var(--color-muted)', textTransform: 'uppercase' }}>Text Ingredients</h4>
