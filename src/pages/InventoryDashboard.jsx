@@ -7,7 +7,7 @@ import EmojiPicker from 'emoji-picker-react';
 import { useNavigate } from 'react-router-dom';
 
 const InventoryDashboard = () => {
-    const { ingredients, addIngredient } = useApp();
+    const { ingredients, recipes, addIngredient } = useApp();
     const navigate = useNavigate();
 
     // State with persistence
@@ -69,6 +69,13 @@ const InventoryDashboard = () => {
             '無食材類型': '常溫'
         };
         return categoryDefaults[category] || '常溫';
+    };
+
+    // Helper function to count how many recipes an ingredient appears in
+    const getRecipeCountForIngredient = (ingredientId) => {
+        return recipes.filter(recipe =>
+            (recipe.linkedIngredientIds || []).includes(ingredientId)
+        ).length;
     };
 
     // Count ingredients for each tab
@@ -548,7 +555,12 @@ const InventoryDashboard = () => {
                                         return a.name.localeCompare(b.name);
                                     })
                                     .map(ing => (
-                                        <IngredientCard key={ing.id} ingredient={ing} onCardClick={() => setSearchQuery('')} />
+                                        <IngredientCard
+                                            key={ing.id}
+                                            ingredient={ing}
+                                            recipeCount={getRecipeCountForIngredient(ing.id)}
+                                            onCardClick={() => setSearchQuery('')}
+                                        />
                                     ))}
                             </div>
                         </div>

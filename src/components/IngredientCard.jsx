@@ -1,9 +1,9 @@
 import React from 'react';
-import { ShoppingCart, Check, X, ChefHat } from 'lucide-react';
+import { ShoppingCart, Check, X, ChefHat, BookOpen } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 
-const IngredientCard = ({ ingredient }) => {
+const IngredientCard = ({ ingredient, recipeCount = 0 }) => {
     const { updateIngredient, addToCart, removeFromCart, cart } = useApp();
     const navigate = useNavigate();
     const isInCart = cart.some(item => item.ingredientId === ingredient.id);
@@ -55,7 +55,7 @@ const IngredientCard = ({ ingredient }) => {
                         {ingredient.emoji}
                     </span>
                 )}
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                     <h3 style={{ fontSize: '1rem', margin: 0 }}>{ingredient.name}</h3>
                     {ingredient.stockStatus === 'In Stock' && ingredient.shelfLifeDays && ingredient.boughtDate && (
                         (() => {
@@ -81,6 +81,19 @@ const IngredientCard = ({ ingredient }) => {
                                 </span>
                             );
                         })()
+                    )}
+                    {recipeCount > 0 && (
+                        <span style={{
+                            fontSize: '0.75rem',
+                            color: '#8b7355',
+                            fontWeight: '600',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                        }}>
+                            <BookOpen size={12} />
+                            {recipeCount} {recipeCount === 1 ? 'recipe' : 'recipes'}
+                        </span>
                     )}
                 </div>
             </div>
