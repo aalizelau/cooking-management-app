@@ -3,7 +3,7 @@ import { ShoppingCart, Check, X, ChefHat, BookOpen } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 
-const IngredientCard = ({ ingredient, recipeCount = 0 }) => {
+const IngredientCard = ({ ingredient, recipeCount = 0, showRecipeCount = false }) => {
     const { updateIngredient, addToCart, removeFromCart, cart } = useApp();
     const navigate = useNavigate();
     const isInCart = cart.some(item => item.ingredientId === ingredient.id);
@@ -82,7 +82,7 @@ const IngredientCard = ({ ingredient, recipeCount = 0 }) => {
                             );
                         })()
                     )}
-                    {recipeCount > 0 && (
+                    {showRecipeCount && recipeCount > 0 && (
                         <span style={{
                             fontSize: '0.75rem',
                             color: '#8b7355',

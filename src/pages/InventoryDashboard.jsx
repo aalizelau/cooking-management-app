@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Search, X, LayoutGrid, MapPin, CheckCircle, AlertCircle } from 'lucide-react';
+import { Plus, Search, X, LayoutGrid, MapPin, CheckCircle, AlertCircle, BookOpen } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import IngredientCard from '../components/IngredientCard';
 import EmojiPicker from 'emoji-picker-react';
@@ -16,6 +16,7 @@ const InventoryDashboard = () => {
     const [filterCategory, setFilterCategory] = useState(() => sessionStorage.getItem('inventory_filterCategory') || 'All');
     const [filterLocation, setFilterLocation] = useState(() => sessionStorage.getItem('inventory_filterLocation') || 'All');
     const [searchQuery, setSearchQuery] = useState(() => sessionStorage.getItem('inventory_searchQuery') || '');
+    const [showRecipeCount, setShowRecipeCount] = useState(() => sessionStorage.getItem('inventory_showRecipeCount') === 'true');
 
     const [isAdding, setIsAdding] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -27,7 +28,8 @@ const InventoryDashboard = () => {
         sessionStorage.setItem('inventory_filterCategory', filterCategory);
         sessionStorage.setItem('inventory_filterLocation', filterLocation);
         sessionStorage.setItem('inventory_searchQuery', searchQuery);
-    }, [stockTab, groupByTab, filterCategory, filterLocation, searchQuery]);
+        sessionStorage.setItem('inventory_showRecipeCount', showRecipeCount.toString());
+    }, [stockTab, groupByTab, filterCategory, filterLocation, searchQuery, showRecipeCount]);
 
     // Handle click outside emoji picker
     useEffect(() => {
@@ -335,6 +337,39 @@ const InventoryDashboard = () => {
                     alignItems: 'center',
                     // border: '1px solid var(--color-tag-bg)'
                 }}>
+                    {/* Recipe Count Toggle Button */}
+                    <button
+                        onClick={() => setShowRecipeCount(!showRecipeCount)}
+                        title={showRecipeCount ? "Hide recipe count" : "Show recipe count"}
+                        style={{
+                            padding: '6px 12px',
+                            borderRadius: '6px',
+                            fontSize: '0.875rem',
+                            fontWeight: 600,
+                            transition: 'all 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            border: 'none',
+                            cursor: 'pointer',
+                            backgroundColor: showRecipeCount ? 'var(--color-secondary)' : 'transparent',
+                            color: showRecipeCount ? 'white' : '#BEBEBE',
+                            boxShadow: showRecipeCount ? '0 1px 2px 0 rgba(0, 0, 0, 0.05)' : 'none',
+                            marginRight: '4px'
+                        }}
+                    >
+                        <BookOpen size={16} />
+                    </button>
+                </div>
+
+                <div style={{
+                    backgroundColor: '#f0f0f0',
+                    padding: '4px',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    // border: '1px solid var(--color-tag-bg)'
+                }}>
                     <button
                         onClick={() => setStockTab('in-stock')}
                         style={{
@@ -559,6 +594,7 @@ const InventoryDashboard = () => {
                                             key={ing.id}
                                             ingredient={ing}
                                             recipeCount={getRecipeCountForIngredient(ing.id)}
+                                            showRecipeCount={showRecipeCount}
                                             onCardClick={() => setSearchQuery('')}
                                         />
                                     ))}
