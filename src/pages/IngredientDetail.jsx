@@ -15,8 +15,9 @@ const IngredientDetail = ({ id: propId }) => {
     const backPath = location.state?.from === 'compare' ? '/compare' : '/inventory';
     const backLabel = location.state?.from === 'compare' ? 'Back to Compare' : 'Back to Inventory';
 
-    const { ingredients, updateIngredient, deleteIngredient, addToCart, removeFromCart, cart, recipes } = useApp();
-    const isInCart = cart.some(item => item.ingredientId === id);
+    const { ingredients, updateIngredient, deleteIngredient, addToCart, removeFromCart, cart, wishlist, removeFromWishlist, recipes } = useApp();
+    const isInCart = cart.some(item => item.ingredientId === id) ||
+                     wishlist.some(item => item.ingredientId === id);
 
 
 
@@ -146,9 +147,16 @@ const IngredientDetail = ({ id: propId }) => {
     const handleDelete = async () => {
         try {
             // Remove from cart if it's in the cart
-            if (isInCart) {
+            const inCart = cart.some(item => item.ingredientId === ingredient.id);
+            const inWishlist = wishlist.some(item => item.ingredientId === ingredient.id);
+
+            if (inCart) {
                 await removeFromCart(ingredient.id);
             }
+            if (inWishlist) {
+                await removeFromWishlist(ingredient.id);
+            }
+
             // Delete the ingredient
             await deleteIngredient(ingredient.id);
             // Navigate back to inventory
