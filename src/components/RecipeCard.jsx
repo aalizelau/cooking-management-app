@@ -58,23 +58,17 @@ const RecipeCard = ({ recipe }) => {
                     position: 'absolute',
                     top: '8px',
                     right: '8px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                    padding: '4px 8px',
-                    borderRadius: 'var(--radius-sm)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    padding: '3px 6px',
+                    borderRadius: 'var(--radius-full)',
                     fontSize: '0.7rem',
                     fontWeight: 'bold',
+                    color: availabilityColor,
                     display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-end',
-                    gap: '2px',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                    alignItems: 'center',
+                    gap: '3px'
                 }}>
-                    <div style={{ color: availabilityColor }}>
-                        {isRecipeAvailable ? '✓ Available' : '✗ Unavailable'}
-                    </div>
-                    <div style={{ fontSize: '0.65rem', color: 'var(--color-muted)' }}>
-                        {availabilityPct}% in stock
-                    </div>
+                    {availabilityPct}%
                 </div>
             </div>
 
@@ -83,7 +77,7 @@ const RecipeCard = ({ recipe }) => {
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
                     <span className="badge" style={{ backgroundColor: '#f0f0f0', color: '#555', fontSize: '0.7rem', padding: '2px 6px' }}>
-                        {recipe.status}
+                        {isRecipeAvailable ? 'Available' : 'Unavailable'}
                     </span>
                     <div style={{ fontSize: '0.7rem', color: 'var(--color-muted)' }}>
                         {totalLinked} items
