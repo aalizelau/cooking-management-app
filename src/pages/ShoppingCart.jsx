@@ -6,7 +6,20 @@ import IngredientDetail from './IngredientDetail'; // Import IngredientDetail fo
 import '../styles/ShoppingCart.css';
 
 const ShoppingCart = () => {
-    const { cart, ingredients, removeFromCart, updateIngredient, clearCart, addToCart, toggleCartItemChecked } = useApp();
+    const {
+        cart,
+        wishlist,
+        ingredients,
+        removeFromCart,
+        updateIngredient,
+        clearCart,
+        addToCart,
+        addToWishlist,
+        removeFromWishlist,
+        moveToShoppingList,
+        moveToWishlist,
+        toggleCartItemChecked
+    } = useApp();
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedIngredientId, setSelectedIngredientId] = useState(null); // Track selected ingredient for side panel
@@ -14,17 +27,12 @@ const ShoppingCart = () => {
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('shopping'); // 'wishlist' or 'shopping'
 
-    // Mock wishlist data (temporary for UI preview) - using first 3 ingredients
-    const [mockWishlist, setMockWishlist] = useState(
-        ingredients.slice(0, 3).map(ing => ({ ingredientId: ing.id, isChecked: false }))
-    );
-
     const cartIngredients = ingredients.filter(ing =>
         cart.some(item => item.ingredientId === ing.id)
     );
 
     const wishlistIngredients = ingredients.filter(ing =>
-        mockWishlist.some(item => item.ingredientId === ing.id)
+        wishlist.some(item => item.ingredientId === ing.id)
     );
 
     // Get all unique stores from cart ingredients (exclude Metro and IGA)
@@ -61,23 +69,17 @@ const ShoppingCart = () => {
 
     // Handler to move item from wishlist to shopping list
     const handleMoveToShoppingList = (ingredientId) => {
-        // Remove from wishlist
-        setMockWishlist(prev => prev.filter(item => item.ingredientId !== ingredientId));
-        // Add to cart
-        addToCart(ingredientId);
+        moveToShoppingList(ingredientId);
     };
 
     // Handler to remove from wishlist
     const handleRemoveFromWishlist = (ingredientId) => {
-        setMockWishlist(prev => prev.filter(item => item.ingredientId !== ingredientId));
+        removeFromWishlist(ingredientId);
     };
 
     // Handler to move item from shopping list to wishlist
     const handleMoveToWishlist = (ingredientId) => {
-        // Remove from cart
-        removeFromCart(ingredientId);
-        // Add to wishlist
-        setMockWishlist(prev => [...prev, { ingredientId, isChecked: false }]);
+        moveToWishlist(ingredientId);
     };
 
     const toggleCheck = (id) => {
@@ -157,7 +159,7 @@ const ShoppingCart = () => {
                     ) : activeTab === 'shopping' ? (
                         <span> ({cart.length})</span>
                     ) : (
-                        <span> ({mockWishlist.length})</span>
+                        <span> ({wishlist.length})</span>
                     )}
                 </h2>
 
@@ -167,7 +169,7 @@ const ShoppingCart = () => {
                         className={`tab-btn ${activeTab === 'wishlist' ? 'active' : ''}`}
                         onClick={() => setActiveTab('wishlist')}
                     >
-                        Want to Buy ({mockWishlist.length})
+                        Want to Buy ({wishlist.length})
                     </button>
                     <button
                         className={`tab-btn ${activeTab === 'shopping' ? 'active' : ''}`}
@@ -270,7 +272,7 @@ const ShoppingCart = () => {
 
                 {/* Wishlist Tab Content */}
                 {activeTab === 'wishlist' && (
-                    mockWishlist.length === 0 ? (
+                    wishlist.length === 0 ? (
                         <div className="empty-cart-state">
                             <ShoppingBag size={48} color="var(--color-muted)" />
                             <h2 style={{ marginTop: 'var(--spacing-md)' }}>Your wishlist is empty</h2>

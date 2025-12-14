@@ -274,11 +274,13 @@ function getDeviceId() {
 
 /**
  * Fetch all cart items from Supabase
+ * @param {string} listType - Type of list to fetch: 'wishlist' or 'shopping'
  */
-export async function fetchCartItems() {
+export async function fetchCartItems(listType = 'shopping') {
     const { data, error } = await supabase
         .from('shopping_cart')
         .select('ingredient_id, is_checked')
+        .eq('list_type', listType)
         .order('added_at', { ascending: true });
 
     if (error) {
@@ -295,28 +297,37 @@ export async function fetchCartItems() {
 
 /**
  * Add an item to the cart
+ * @param {string} ingredientId - The ingredient ID to add
+ * @param {string} listType - Type of list: 'wishlist' or 'shopping'
  */
-export async function addToCartDB(ingredientId) {
+export async function addToCartDB(ingredientId, listType = 'shopping') {
     const deviceId = getDeviceId();
 
-    // Check if item already exists in cart
+    // Check if item already exists in ANY list
     const { data: existing } = await supabase
         .from('shopping_cart')
-        .select('id')
+        .select('id, list_type')
         .eq('ingredient_id', ingredientId)
         .maybeSingle();
 
     if (existing) {
-        console.log('Item already in cart');
+        // If item exists but in different list type, update it
+        if (existing.list_type !== listType) {
+            console.log(`Item exists in ${existing.list_type}, moving to ${listType}`);
+            return await updateCartItemListType(ingredientId, listType);
+        }
+        console.log('Item already in this list');
         return true;
     }
 
+    // Insert new item
     const { error } = await supabase
         .from('shopping_cart')
         .insert([{
             ingredient_id: ingredientId,
             device_id: deviceId,
-            is_checked: false
+            is_checked: false,
+            list_type: listType
         }]);
 
     if (error) {
@@ -355,6 +366,28 @@ export async function updateCartItemChecked(ingredientId, isChecked) {
 
     if (error) {
         console.error('Error updating cart item checked state:', error);
+        throw error;
+    }
+
+    return true;
+}
+
+/**
+ * Update the list type of a cart item (move between wishlist and shopping list)
+ * @param {string} ingredientId - The ingredient ID to update
+ * @param {string} listType - New list type: 'wishlist' or 'shopping'
+ */
+export async function updateCartItemListType(ingredientId, listType) {
+    const { error } = await supabase
+        .from('shopping_cart')
+        .update({
+            list_type: listType,
+            is_checked: false // Reset checked state when moving between lists
+        })
+        .eq('ingredient_id', ingredientId);
+
+    if (error) {
+        console.error('Error updating cart item list type:', error);
         throw error;
     }
 
