@@ -743,7 +743,7 @@ const RecipeDetail = () => {
                                             <li key={ing.id} style={{
                                                 padding: '8px',
                                                 marginBottom: '8px',
-                                                backgroundColor: ing.stockStatus === 'In Stock' ? '#e6f4ea' : '#fff0f0',
+                                                backgroundColor: ing.stockStatus === 'In Stock' ? '#e6f4ea' : '#FFF8F0',
                                                 // borderRadius: 'var(--radius-sm)',
                                                 display: 'flex',
                                                 justifyContent: 'space-between',
@@ -753,18 +753,9 @@ const RecipeDetail = () => {
                                             }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                     {ing.isRequired && <span style={{ color: '#ffc107', fontSize: '1rem' }}>★</span>}
-                                                    <span style={{ fontWeight: ing.isRequired ? 'bold' : '500' }}>
+                                                    <span style={{ fontWeight: '500' }}>
                                                         {ing.name}
-                                                        {!ing.isRequired && (
-                                                            <span style={{
-                                                                fontSize: '0.7rem',
-                                                                color: 'var(--color-muted)',
-                                                                fontStyle: 'italic',
-                                                                marginLeft: '6px'
-                                                            }}>
-                                                                (optional)
-                                                            </span>
-                                                        )}
+                                                   
                                                     </span>
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
