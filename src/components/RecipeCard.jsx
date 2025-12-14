@@ -12,16 +12,28 @@ const RecipeCard = ({ recipe }) => {
     const linkedIngredients = recipe.linkedIngredientIds || [];
     const totalLinked = linkedIngredients.length;
 
-    const inStockCount = linkedIngredients.filter(id => {
-        const ing = ingredients.find(i => i.id === id);
-        return ing && ing.stockStatus === 'In Stock';
-    }).length;
+    // Get ingredient data with required status
+    const linkedIngredientsData = linkedIngredients.map(link => {
+        const ingredientId = typeof link === 'object' ? link.ingredientId : link;
+        const isRequired = typeof link === 'object' ? link.isRequired === true : false;
+        const ing = ingredients.find(i => i.id === ingredientId);
+        return {
+            id: ingredientId,
+            isRequired,
+            stockStatus: ing?.stockStatus || 'Unknown'
+        };
+    });
 
-    const availability = totalLinked > 0 ? Math.round((inStockCount / totalLinked) * 100) : 0;
+    // Calculate percentage based on ALL ingredients
+    const inStockCount = linkedIngredientsData.filter(i => i.stockStatus === 'In Stock').length;
+    const availabilityPct = totalLinked > 0 ? Math.round((inStockCount / totalLinked) * 100) : 0;
 
-    let availabilityColor = 'var(--color-danger)';
-    if (availability >= 100) availabilityColor = 'var(--color-success)';
-    else if (availability >= 50) availabilityColor = 'var(--color-accent)';
+    // Calculate if recipe is "available" based on REQUIRED ingredients only
+    const requiredIngredients = linkedIngredientsData.filter(i => i.isRequired);
+    const requiredInStock = requiredIngredients.filter(i => i.stockStatus === 'In Stock');
+    const isRecipeAvailable = requiredIngredients.length === 0 || requiredInStock.length === requiredIngredients.length;
+
+    const availabilityColor = isRecipeAvailable ? 'var(--color-success)' : 'var(--color-danger)';
 
     return (
         <div
@@ -46,17 +58,23 @@ const RecipeCard = ({ recipe }) => {
                     position: 'absolute',
                     top: '8px',
                     right: '8px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    padding: '3px 6px',
-                    borderRadius: 'var(--radius-full)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    padding: '4px 8px',
+                    borderRadius: 'var(--radius-sm)',
                     fontSize: '0.7rem',
                     fontWeight: 'bold',
-                    color: availabilityColor,
                     display: 'flex',
-                    alignItems: 'center',
-                    gap: '3px'
+                    flexDirection: 'column',
+                    alignItems: 'flex-end',
+                    gap: '2px',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
                 }}>
-                    {availability}%
+                    <div style={{ color: availabilityColor }}>
+                        {isRecipeAvailable ? '✓ Available' : '✗ Unavailable'}
+                    </div>
+                    <div style={{ fontSize: '0.65rem', color: 'var(--color-muted)' }}>
+                        {availabilityPct}% in stock
+                    </div>
                 </div>
             </div>
 

@@ -20,18 +20,45 @@ const RecipeGallery = () => {
         return matchesSearch && matchesTab;
     });
 
-    // Sort by availability (100% at top)
+    // Sort by availability (Available recipes first, then by percentage)
     const sortedRecipes = [...filteredRecipes].sort((a, b) => {
-        const getAvailability = (r) => {
+        const getRecipeAvailability = (r) => {
             const linked = r.linkedIngredientIds || [];
-            if (linked.length === 0) return 0;
-            const inStock = linked.filter(id => {
-                const ing = ingredients.find(i => i.id === id);
-                return ing && ing.stockStatus === 'In Stock';
-            }).length;
-            return (inStock / linked.length) * 100;
+            if (linked.length === 0) return { isAvailable: true, pct: 0 };
+
+            // Get ingredient data with required status
+            const linkedData = linked.map(link => {
+                const ingredientId = typeof link === 'object' ? link.ingredientId : link;
+                const isRequired = typeof link === 'object' ? link.isRequired === true : false;
+                const ing = ingredients.find(i => i.id === ingredientId);
+                return {
+                    isRequired,
+                    stockStatus: ing?.stockStatus || 'Unknown'
+                };
+            });
+
+            // Calculate percentage
+            const inStock = linkedData.filter(i => i.stockStatus === 'In Stock').length;
+            const pct = (inStock / linked.length) * 100;
+
+            // Calculate availability based on required ingredients
+            const required = linkedData.filter(i => i.isRequired);
+            const requiredInStock = required.filter(i => i.stockStatus === 'In Stock');
+            const isAvailable = required.length === 0 || requiredInStock.length === required.length;
+
+            return { isAvailable, pct };
         };
-        return getAvailability(b) - getAvailability(a);
+
+        const availA = getRecipeAvailability(a);
+        const availB = getRecipeAvailability(b);
+
+        // Sort by availability status first
+        if (availA.isAvailable !== availB.isAvailable) {
+            return availB.isAvailable ? 1 : -1; // Available first
+        }
+
+        // Then sort by percentage
+        return availB.pct - availA.pct;
     });
 
     const [isCreating, setIsCreating] = useState(false);
