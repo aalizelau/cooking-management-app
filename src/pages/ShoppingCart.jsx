@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckSquare, Square, ShoppingBag, Search, Plus, X, Store, Filter } from 'lucide-react';
+import { CheckSquare, Square, ShoppingBag, Search, Plus, X, Store, Filter, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import IngredientDetail from './IngredientDetail'; // Import IngredientDetail for the side panel
@@ -12,9 +12,19 @@ const ShoppingCart = () => {
     const [selectedIngredientId, setSelectedIngredientId] = useState(null); // Track selected ingredient for side panel
     const [selectedStore, setSelectedStore] = useState('all'); // Store filter
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState('shopping'); // 'wishlist' or 'shopping'
+
+    // Mock wishlist data (temporary for UI preview) - using first 3 ingredients
+    const [mockWishlist, setMockWishlist] = useState(
+        ingredients.slice(0, 3).map(ing => ({ ingredientId: ing.id, isChecked: false }))
+    );
 
     const cartIngredients = ingredients.filter(ing =>
         cart.some(item => item.ingredientId === ing.id)
+    );
+
+    const wishlistIngredients = ingredients.filter(ing =>
+        mockWishlist.some(item => item.ingredientId === ing.id)
     );
 
     // Get all unique stores from cart ingredients (exclude Metro and IGA)
@@ -47,6 +57,28 @@ const ShoppingCart = () => {
     };
 
     const groupedCartItems = groupByCategory(filteredCartIngredients);
+    const groupedWishlistItems = groupByCategory(wishlistIngredients);
+
+    // Handler to move item from wishlist to shopping list
+    const handleMoveToShoppingList = (ingredientId) => {
+        // Remove from wishlist
+        setMockWishlist(prev => prev.filter(item => item.ingredientId !== ingredientId));
+        // Add to cart
+        addToCart(ingredientId);
+    };
+
+    // Handler to remove from wishlist
+    const handleRemoveFromWishlist = (ingredientId) => {
+        setMockWishlist(prev => prev.filter(item => item.ingredientId !== ingredientId));
+    };
+
+    // Handler to move item from shopping list to wishlist
+    const handleMoveToWishlist = (ingredientId) => {
+        // Remove from cart
+        removeFromCart(ingredientId);
+        // Add to wishlist
+        setMockWishlist(prev => [...prev, { ingredientId, isChecked: false }]);
+    };
 
     const toggleCheck = (id) => {
         toggleCartItemChecked(id);
@@ -117,15 +149,33 @@ const ShoppingCart = () => {
             {/* Left Panel: Shopping List */}
             <div className="cart-list-panel">
                 <h2 className="cart-header">
-                    Shopping Cart
-                    {selectedStore !== 'all' ? (
+                    {activeTab === 'wishlist' ? 'Want to Buy' : 'Shopping Cart'}
+                    {activeTab === 'shopping' && selectedStore !== 'all' ? (
                         <span>
                             {' '}({filteredCartIngredients.length} of {cart.length})
                         </span>
-                    ) : (
+                    ) : activeTab === 'shopping' ? (
                         <span> ({cart.length})</span>
+                    ) : (
+                        <span> ({mockWishlist.length})</span>
                     )}
                 </h2>
+
+                {/* Tab Segmented Control */}
+                <div className="tab-control">
+                    <button
+                        className={`tab-btn ${activeTab === 'wishlist' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('wishlist')}
+                    >
+                        Want to Buy ({mockWishlist.length})
+                    </button>
+                    <button
+                        className={`tab-btn ${activeTab === 'shopping' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('shopping')}
+                    >
+                        Final Shopping List ({cart.length})
+                    </button>
+                </div>
 
                 {/* Search Bar and Store Filter - Combined */}
                 <div className="search-filter-container">
@@ -218,69 +268,154 @@ const ShoppingCart = () => {
                     </div>
                 </div>
 
-                {cart.length === 0 ? (
-                    <div className="empty-cart-state">
-                        <ShoppingBag size={48} color="var(--color-muted)" />
-                        <h2 style={{ marginTop: 'var(--spacing-md)' }}>Your cart is empty</h2>
-                        <p style={{ color: 'var(--color-muted)' }}>Add items using the search bar above or from the inventory.</p>
-                        <button className="btn btn-primary" style={{ marginTop: 'var(--spacing-md)' }} onClick={() => navigate('/inventory')}>
-                            Back to Inventory
-                        </button>
-                    </div>
-                ) : (
-                    <div className="cart-items-container">
-                        {Object.keys(groupedCartItems).sort(sortCategories).map(category => (
-                            <div key={category}>
-                                <h4 className="category-header">
-                                    {category}
-                                    <span className="category-count">
-                                        {groupedCartItems[category].length}
-                                    </span>
-                                </h4>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
-                                    {groupedCartItems[category].map(ing => {
-                                        const cartItem = cart.find(item => item.ingredientId === ing.id);
-                                        const isChecked = cartItem?.isChecked || false;
-                                        const isSelected = selectedIngredientId === ing.id;
-                                        return (
-                                            <div
-                                                key={ing.id}
-                                                className={`card cart-item-card ${isChecked ? 'checked' : ''} ${isSelected ? 'selected' : ''}`}
-                                                onClick={() => setSelectedIngredientId(ing.id)}
-                                            >
+                {/* Wishlist Tab Content */}
+                {activeTab === 'wishlist' && (
+                    mockWishlist.length === 0 ? (
+                        <div className="empty-cart-state">
+                            <ShoppingBag size={48} color="var(--color-muted)" />
+                            <h2 style={{ marginTop: 'var(--spacing-md)' }}>Your wishlist is empty</h2>
+                            <p style={{ color: 'var(--color-muted)' }}>Add items you're thinking about buying.</p>
+                        </div>
+                    ) : (
+                        <div className="cart-items-container">
+                            {Object.keys(groupedWishlistItems).sort(sortCategories).map(category => (
+                                <div key={category}>
+                                    <h4 className="category-header">
+                                        {category}
+                                        <span className="category-count">
+                                            {groupedWishlistItems[category].length}
+                                        </span>
+                                    </h4>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+                                        {groupedWishlistItems[category].map(ing => {
+                                            const isSelected = selectedIngredientId === ing.id;
+                                            return (
                                                 <div
-                                                    className={`checkbox-wrapper ${isChecked ? 'checked' : ''}`}
-                                                    onClick={(e) => { e.stopPropagation(); toggleCheck(ing.id); }}
+                                                    key={ing.id}
+                                                    className={`card wishlist-item-card ${isSelected ? 'selected' : ''}`}
+                                                    onClick={() => setSelectedIngredientId(ing.id)}
                                                 >
-                                                    {isChecked ? <CheckSquare size={24} /> : <Square size={24} />}
-                                                </div>
-                                                <div className="item-details">
-                                                    {ing.emoji && <span className="item-emoji">{ing.emoji}</span>}
-                                                    <div className="item-info">
-                                                        <h3 className={`item-name ${isChecked ? 'checked' : ''}`}>
-                                                            {ing.name}
-                                                        </h3>
-                                                        {ing.history && ing.history.length > 0 && (
-                                                            <div className="store-tags">
-                                                                {[...new Set(ing.history.map(h => h.store))].map((store, idx) => (
-                                                                    <span
-                                                                        key={idx}
-                                                                        className="store-tag"
-                                                                    >
-                                                                        {store}
-                                                                    </span>
-                                                                ))}
-                                                            </div>
-                                                        )}
+                                                    <div className="item-details">
+                                                        {ing.emoji && <span className="item-emoji">{ing.emoji}</span>}
+                                                        <div className="item-info">
+                                                            <h3 className="item-name">
+                                                                {ing.name}
+                                                            </h3>
+                                                            {ing.history && ing.history.length > 0 && (
+                                                                <div className="store-tags">
+                                                                    {[...new Set(ing.history.map(h => h.store))].map((store, idx) => (
+                                                                        <span
+                                                                            key={idx}
+                                                                            className="store-tag"
+                                                                        >
+                                                                            {store}
+                                                                        </span>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: 'var(--spacing-xs)' }}>
+                                                        <button
+                                                            className="btn btn-primary btn-sm"
+                                                            onClick={(e) => { e.stopPropagation(); handleMoveToShoppingList(ing.id); }}
+                                                            title="Move to Shopping List"
+                                                        >
+                                                            <ArrowRight size={16} />
+                                                        </button>
+                                                        <button
+                                                            className="btn btn-outline btn-sm"
+                                                            onClick={(e) => { e.stopPropagation(); handleRemoveFromWishlist(ing.id); }}
+                                                            title="Remove from Wishlist"
+                                                        >
+                                                            <X size={16} />
+                                                        </button>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        );
-                                    })}
+                                            );
+                                        })}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )
+                )}
+
+                {/* Shopping List Tab Content */}
+                {activeTab === 'shopping' && (
+                    cart.length === 0 ? (
+                        <div className="empty-cart-state">
+                            <ShoppingBag size={48} color="var(--color-muted)" />
+                            <h2 style={{ marginTop: 'var(--spacing-md)' }}>Your cart is empty</h2>
+                            <p style={{ color: 'var(--color-muted)' }}>Add items using the search bar above or from the inventory.</p>
+                            <button className="btn btn-primary" style={{ marginTop: 'var(--spacing-md)' }} onClick={() => navigate('/inventory')}>
+                                Back to Inventory
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="cart-items-container">
+                            {Object.keys(groupedCartItems).sort(sortCategories).map(category => (
+                                <div key={category}>
+                                    <h4 className="category-header">
+                                        {category}
+                                        <span className="category-count">
+                                            {groupedCartItems[category].length}
+                                        </span>
+                                    </h4>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+                                        {groupedCartItems[category].map(ing => {
+                                            const cartItem = cart.find(item => item.ingredientId === ing.id);
+                                            const isChecked = cartItem?.isChecked || false;
+                                            const isSelected = selectedIngredientId === ing.id;
+                                            return (
+                                                <div
+                                                    key={ing.id}
+                                                    className={`card cart-item-card ${isChecked ? 'checked' : ''} ${isSelected ? 'selected' : ''}`}
+                                                    onClick={() => setSelectedIngredientId(ing.id)}
+                                                >
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)', flex: 1 }}>
+                                                        <div
+                                                            className={`checkbox-wrapper ${isChecked ? 'checked' : ''}`}
+                                                            onClick={(e) => { e.stopPropagation(); toggleCheck(ing.id); }}
+                                                        >
+                                                            {isChecked ? <CheckSquare size={24} /> : <Square size={24} />}
+                                                        </div>
+                                                        <div className="item-details">
+                                                            {ing.emoji && <span className="item-emoji">{ing.emoji}</span>}
+                                                            <div className="item-info">
+                                                                <h3 className={`item-name ${isChecked ? 'checked' : ''}`}>
+                                                                    {ing.name}
+                                                                </h3>
+                                                                {ing.history && ing.history.length > 0 && (
+                                                                    <div className="store-tags">
+                                                                        {[...new Set(ing.history.map(h => h.store))].map((store, idx) => (
+                                                                            <span
+                                                                                key={idx}
+                                                                                className="store-tag"
+                                                                            >
+                                                                                {store}
+                                                                            </span>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        className="btn btn-outline btn-sm"
+                                                        onClick={(e) => { e.stopPropagation(); handleMoveToWishlist(ing.id); }}
+                                                        title="Move to Want to Buy"
+                                                    >
+                                                        <ArrowLeft size={16} />
+                                                    </button>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )
                 )}
             </div>
 
