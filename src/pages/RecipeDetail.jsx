@@ -299,18 +299,23 @@ const RecipeDetail = () => {
             };
         }
     }).sort((a, b) => {
-        // Sort: Required first, then by stock status
+        // Primary sort: by stock status (Out of Stock first, then everything else)
+        const getStockScore = (status) => {
+            if (status === 'Out of Stock') return 0;
+            return 1; // In Stock, Low Stock, Unknown - all treated the same
+        };
+
+        const stockDiff = getStockScore(a.stockStatus) - getStockScore(b.stockStatus);
+        if (stockDiff !== 0) {
+            return stockDiff;
+        }
+
+        // Secondary sort: Required before Optional (within same stock status)
         if (a.isRequired !== b.isRequired) {
             return a.isRequired ? -1 : 1;
         }
-        // Then sort by stock status: Out of Stock first, then Low Stock, then In Stock
-        const getScore = (status) => {
-            if (status === 'Out of Stock') return 0;
-            if (status === 'Low Stock') return 1;
-            if (status === 'In Stock') return 2;
-            return 3; // Unknown
-        };
-        return getScore(a.stockStatus) - getScore(b.stockStatus);
+
+        return 0;
     });
 
     // Calculate percentage based on ALL ingredients
