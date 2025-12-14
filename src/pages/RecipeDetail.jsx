@@ -98,9 +98,11 @@ const RecipeDetail = () => {
     };
 
     useEffect(() => {
+        console.log('🔄 useEffect triggered - recipes changed');
         // Convert id to number if recipes have numeric IDs
         const found = recipes.find(r => r.id == id);
         if (found) {
+            console.log('✅ Recipe found, updating state');
             setRecipe(found);
 
             // Initialize instruction sections for editing
@@ -155,13 +157,17 @@ const RecipeDetail = () => {
                 };
             });
 
-            // Update recipe in database
-            await updateRecipe(recipe.id, editedRecipe);
-
-            // Sync ingredient links to junction table with required status
+            // Sync ingredient links to junction table with required status FIRST
+            // This ensures the database has the latest isRequired values before we update the recipe
             await syncRecipeIngredients(recipe.id, ingredientLinks);
 
+            // Update recipe in database (this will also refetch ingredients in AppContext)
+            await updateRecipe(recipe.id, editedRecipe);
+
             setIsEditing(false);
+
+            // Note: The useEffect will automatically update with fresh data from context
+            // when recipes array updates after updateRecipe completes
         } catch (error) {
             console.error('Failed to save recipe:', error);
             alert('Failed to save recipe. Please try again.');
