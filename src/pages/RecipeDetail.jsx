@@ -759,14 +759,16 @@ const RecipeDetail = () => {
                                                     </span>
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                    <span style={{
-                                                        fontSize: '0.75rem',
-                                                        fontWeight: 'bold',
-                                                        color: ing.stockStatus === 'In Stock' ? 'var(--color-success)' : 'var(--color-danger)',
-                                                        textTransform: 'uppercase'
-                                                    }}>
-                                                        {ing.stockStatus === 'In Stock' ? 'In Stock' : 'Out'}
-                                                    </span>
+                                                    {ing.stockStatus === 'In Stock' && (
+                                                        <span style={{
+                                                            fontSize: '0.75rem',
+                                                            fontWeight: 'bold',
+                                                            color: 'var(--color-success)',
+                                                            textTransform: 'uppercase'
+                                                        }}>
+                                                            In Stock
+                                                        </span>
+                                                    )}
                                                     {ing.stockStatus !== 'In Stock' && (
                                                         <button
                                                             onClick={() => !isInCart && addToCart(ing.id)}
