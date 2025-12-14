@@ -16,7 +16,8 @@ import {
     createRecipe,
     updateRecipe as updateRecipeDB,
     deleteRecipe,
-    syncRecipeIngredients
+    syncRecipeIngredients,
+    fetchRecipeIngredients
 } from '../lib/supabase';
 
 const AppContext = createContext();
@@ -414,11 +415,17 @@ export const AppProvider = ({ children }) => {
         try {
             const updatedRecipe = await updateRecipeDB(id, updates);
 
-            // Preserve linkedIngredientIds from the input updates if they exist
-            // This is necessary because updateRecipeDB returns the recipe from the 'recipes' table
-            // which doesn't include the joined ingredients data
-            if (updates.linkedIngredientIds) {
-                updatedRecipe.linkedIngredientIds = updates.linkedIngredientIds;
+            // Refetch the recipe ingredients from the database to get the latest isRequired flags
+            // This ensures we have the correct format with {ingredientId, quantity, isRequired}
+            try {
+                const ingredientLinks = await fetchRecipeIngredients(id);
+                updatedRecipe.linkedIngredientIds = ingredientLinks;
+            } catch (err) {
+                console.error('Failed to refetch recipe ingredients after update:', err);
+                // Fallback to updates if refetch fails
+                if (updates.linkedIngredientIds) {
+                    updatedRecipe.linkedIngredientIds = updates.linkedIngredientIds;
+                }
             }
 
             setRecipes(prev => prev.map(rec => rec.id === id ? updatedRecipe : rec));

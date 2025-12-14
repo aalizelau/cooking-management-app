@@ -117,16 +117,20 @@ const RecipeDetail = () => {
             // Initialize required status Map from linkedIngredientIds
             const requiredMap = new Map();
             if (found.linkedIngredientIds && Array.isArray(found.linkedIngredientIds)) {
+                console.log('🔍 Loading linkedIngredientIds:', found.linkedIngredientIds);
                 found.linkedIngredientIds.forEach(link => {
                     if (typeof link === 'object' && link.ingredientId) {
                         // New format: object with ingredientId and isRequired
+                        console.log(`  ✅ Object format - ID: ${link.ingredientId}, Required: ${link.isRequired}`);
                         requiredMap.set(link.ingredientId, link.isRequired === true);
                     } else {
                         // Old format: just string ID, default to optional (false)
+                        console.log(`  ⚠️ Old format - ID: ${link}`);
                         requiredMap.set(link, false);
                     }
                 });
             }
+            console.log('🗺️ Final requiredMap:', Array.from(requiredMap.entries()));
             setIngredientRequiredStatus(requiredMap);
         }
     }, [id, recipes]);
@@ -273,7 +277,8 @@ const RecipeDetail = () => {
     // Calculate Availability for View Mode
     const linkedIngredientsData = (recipe.linkedIngredientIds || []).map(link => {
         const ingredientId = typeof link === 'object' ? link.ingredientId : link;
-        const isRequired = typeof link === 'object' ? link.isRequired === true : false;
+        // Use ingredientRequiredStatus Map (source of truth for required status)
+        const isRequired = ingredientRequiredStatus.get(ingredientId) === true;
         const ing = ingredients.find(i => i.id === ingredientId);
 
         if (ing) {
