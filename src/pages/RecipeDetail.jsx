@@ -18,6 +18,7 @@ const RecipeDetail = () => {
     const [uploadingImage, setUploadingImage] = useState(false);
     const [imageError, setImageError] = useState(false);
     const fileInputRef = useRef(null);
+    const [ingredientRequiredStatus, setIngredientRequiredStatus] = useState(new Map());
 
     // New Ingredient State
     const [isAddingIngredient, setIsAddingIngredient] = useState(false);
@@ -112,18 +113,49 @@ const RecipeDetail = () => {
 
             setEditedRecipe({ ...found, instructionSections: sections });
             setImageError(false); // Reset error state when recipe changes
+
+            // Initialize required status Map from linkedIngredientIds
+            const requiredMap = new Map();
+            if (found.linkedIngredientIds && Array.isArray(found.linkedIngredientIds)) {
+                found.linkedIngredientIds.forEach(link => {
+                    if (typeof link === 'object' && link.ingredientId) {
+                        // New format: object with ingredientId and isRequired
+                        requiredMap.set(link.ingredientId, link.isRequired === true);
+                    } else {
+                        // Old format: just string ID, default to optional (false)
+                        requiredMap.set(link, false);
+                    }
+                });
+            }
+            setIngredientRequiredStatus(requiredMap);
         }
     }, [id, recipes]);
 
     if (!recipe) return <div>Recipe not found</div>;
 
+    const toggleRequiredStatus = (ingredientId) => {
+        const newMap = new Map(ingredientRequiredStatus);
+        newMap.set(ingredientId, !newMap.get(ingredientId));
+        setIngredientRequiredStatus(newMap);
+    };
+
     const handleSave = async () => {
         try {
+            // Build ingredient links with required status
+            const ingredientLinks = (editedRecipe.linkedIngredientIds || []).map(linkOrId => {
+                const ingredientId = typeof linkOrId === 'object' ? linkOrId.ingredientId : linkOrId;
+                return {
+                    ingredientId,
+                    quantity: typeof linkOrId === 'object' ? linkOrId.quantity : null,
+                    isRequired: ingredientRequiredStatus.get(ingredientId) === true
+                };
+            });
+
             // Update recipe in database
             await updateRecipe(recipe.id, editedRecipe);
 
-            // Sync ingredient links to junction table
-            await syncRecipeIngredients(recipe.id, editedRecipe.linkedIngredientIds || []);
+            // Sync ingredient links to junction table with required status
+            await syncRecipeIngredients(recipe.id, ingredientLinks);
 
             setIsEditing(false);
         } catch (error) {
@@ -177,23 +209,41 @@ const RecipeDetail = () => {
 
     const toggleLinkedIngredient = (ingId) => {
         const current = editedRecipe.linkedIngredientIds || [];
-        if (current.includes(ingId)) {
+        const currentIds = current.map(link => typeof link === 'object' ? link.ingredientId : link);
+
+        if (currentIds.includes(ingId)) {
+            // Remove ingredient
             setEditedRecipe({
                 ...editedRecipe,
-                linkedIngredientIds: current.filter(id => id !== ingId)
+                linkedIngredientIds: current.filter(link => {
+                    const id = typeof link === 'object' ? link.ingredientId : link;
+                    return id !== ingId;
+                })
             });
+            // Remove from required status map
+            const newMap = new Map(ingredientRequiredStatus);
+            newMap.delete(ingId);
+            setIngredientRequiredStatus(newMap);
         } else {
+            // Add ingredient
             setEditedRecipe({
                 ...editedRecipe,
                 linkedIngredientIds: [...current, ingId]
             });
+            // Initialize as optional (false) in required status map
+            const newMap = new Map(ingredientRequiredStatus);
+            newMap.set(ingId, false);
+            setIngredientRequiredStatus(newMap);
         }
     };
 
-    const availableIngredients = ingredients.filter(ing =>
-        ing.name.toLowerCase().includes(ingredientSearch.toLowerCase()) &&
-        !editedRecipe.linkedIngredientIds?.includes(ing.id)
-    );
+    const availableIngredients = ingredients.filter(ing => {
+        const currentIds = (editedRecipe.linkedIngredientIds || []).map(link =>
+            typeof link === 'object' ? link.ingredientId : link
+        );
+        return ing.name.toLowerCase().includes(ingredientSearch.toLowerCase()) &&
+            !currentIds.includes(ing.id);
+    });
 
     const handleSectionChange = (index, field, value) => {
         const newSections = [...editedRecipe.instructionSections];
@@ -221,12 +271,28 @@ const RecipeDetail = () => {
     };
 
     // Calculate Availability for View Mode
-    // Calculate Availability for View Mode
-    const linkedIngredientsData = (recipe.linkedIngredientIds || []).map(linkId => {
-        const ing = ingredients.find(i => i.id === linkId);
-        return ing ? { ...ing, found: true } : { id: linkId, name: 'Unknown Ingredient', stockStatus: 'Unknown', found: false };
+    const linkedIngredientsData = (recipe.linkedIngredientIds || []).map(link => {
+        const ingredientId = typeof link === 'object' ? link.ingredientId : link;
+        const isRequired = typeof link === 'object' ? link.isRequired === true : false;
+        const ing = ingredients.find(i => i.id === ingredientId);
+
+        if (ing) {
+            return { ...ing, isRequired, found: true };
+        } else {
+            return {
+                id: ingredientId,
+                name: 'Unknown Ingredient',
+                stockStatus: 'Unknown',
+                isRequired,
+                found: false
+            };
+        }
     }).sort((a, b) => {
-        // Sort: Out of Stock first, then Low Stock, then In Stock
+        // Sort: Required first, then by stock status
+        if (a.isRequired !== b.isRequired) {
+            return a.isRequired ? -1 : 1;
+        }
+        // Then sort by stock status: Out of Stock first, then Low Stock, then In Stock
         const getScore = (status) => {
             if (status === 'Out of Stock') return 0;
             if (status === 'Low Stock') return 1;
@@ -236,9 +302,15 @@ const RecipeDetail = () => {
         return getScore(a.stockStatus) - getScore(b.stockStatus);
     });
 
+    // Calculate percentage based on ALL ingredients
     const inStockCount = linkedIngredientsData.filter(i => i.stockStatus === 'In Stock').length;
     const totalLinked = linkedIngredientsData.length;
     const availabilityPct = totalLinked > 0 ? Math.round((inStockCount / totalLinked) * 100) : 0;
+
+    // Calculate if recipe is "available" based on REQUIRED ingredients only
+    const requiredIngredients = linkedIngredientsData.filter(i => i.isRequired);
+    const requiredInStock = requiredIngredients.filter(i => i.stockStatus === 'In Stock');
+    const isRecipeAvailable = requiredIngredients.length === 0 || requiredInStock.length === requiredIngredients.length;
 
     return (
         <div style={{ paddingBottom: 'var(--spacing-xl)' }}>
@@ -342,10 +414,17 @@ const RecipeDetail = () => {
                                                 gap: '8px',
                                                 fontSize: '1rem',
                                                 fontWeight: 'bold',
-                                                color: availabilityPct === 100 ? 'var(--color-success)' : 'var(--color-primary)'
+                                                color: isRecipeAvailable ? 'var(--color-success)' : 'var(--color-danger)'
                                             }}>
-                                                {availabilityPct === 100 ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
-                                                {availabilityPct}% Available
+                                                {isRecipeAvailable ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+                                                {isRecipeAvailable ? 'Available' : 'Unavailable'}
+                                            </div>
+                                            <div style={{
+                                                fontSize: '0.9rem',
+                                                color: 'var(--color-muted)',
+                                                fontWeight: 'normal'
+                                            }}>
+                                                {availabilityPct}% in stock
                                             </div>
                                             <span className="badge" style={{ backgroundColor: '#f0f0f0', fontSize: '0.9rem', padding: '4px 10px' }}>
                                                 {recipe.status}
@@ -396,14 +475,52 @@ const RecipeDetail = () => {
                                 <div>
                                     <div style={{ marginBottom: 'var(--spacing-md)' }}>
                                         <h4 style={{ fontSize: '0.9rem', color: 'var(--color-muted)', textTransform: 'uppercase' }}>Linked Items</h4>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: 'var(--spacing-sm)' }}>
-                                            {(editedRecipe.linkedIngredientIds || []).map(id => {
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: 'var(--spacing-sm)' }}>
+                                            {(editedRecipe.linkedIngredientIds || []).map(link => {
+                                                const id = typeof link === 'object' ? link.ingredientId : link;
                                                 const ing = ingredients.find(i => i.id === id);
+                                                const isRequired = ingredientRequiredStatus.get(id) === true;
                                                 return (
-                                                    <span key={id} className="badge" style={{ display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: '#e0e0e0' }}>
-                                                        {ing?.name || 'Unknown'}
-                                                        <button onClick={() => toggleLinkedIngredient(id)} style={{ padding: 0 }}><X size={14} /></button>
-                                                    </span>
+                                                    <div key={id} style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '8px',
+                                                        padding: '6px 10px',
+                                                        backgroundColor: isRequired ? '#fff9e6' : '#e0e0e0',
+                                                        // borderRadius: 'var(--radius-sm)',
+                                                        // border: isRequired ? '2px solid #ffc107' : 'none'
+                                                    }}>
+                                                        <label style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '6px',
+                                                            cursor: 'pointer',
+                                                            flex: 1,
+                                                            fontSize: '0.9rem'
+                                                        }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={isRequired}
+                                                                onChange={() => toggleRequiredStatus(id)}
+                                                                style={{ accentColor: '#ffc107' }}
+                                                            />
+                                                            <span style={{ fontWeight: isRequired ? 'bold' : 'normal' }}>
+                                                                {isRequired && '★ '}
+                                                                {ing?.name || 'Unknown'}
+                                                            </span>
+                                                            <span style={{
+                                                                fontSize: '0.7rem',
+                                                                color: 'var(--color-muted)',
+                                                                fontStyle: 'italic',
+                                                                marginLeft: '4px'
+                                                            }}>
+                                                                {isRequired ? '(required)' : '(optional)'}
+                                                            </span>
+                                                        </label>
+                                                        <button onClick={() => toggleLinkedIngredient(id)} style={{ padding: '2px', background: 'none', border: 'none', cursor: 'pointer' }}>
+                                                            <X size={16} />
+                                                        </button>
+                                                    </div>
                                                 );
                                             })}
                                         </div>
@@ -611,12 +728,29 @@ const RecipeDetail = () => {
                                                 padding: '8px',
                                                 marginBottom: '8px',
                                                 backgroundColor: ing.stockStatus === 'In Stock' ? '#e6f4ea' : '#fff0f0',
-                                                borderRadius: 'var(--radius-sm)',
+                                                // borderRadius: 'var(--radius-sm)',
                                                 display: 'flex',
                                                 justifyContent: 'space-between',
-                                                alignItems: 'center'
+                                                alignItems: 'center',
+                                                // border: ing.isRequired ? '2px solid #ffc107' : 'none',
+                                                position: 'relative'
                                             }}>
-                                                <span style={{ fontWeight: '500' }}>{ing.name}</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                    {ing.isRequired && <span style={{ color: '#ffc107', fontSize: '1rem' }}>★</span>}
+                                                    <span style={{ fontWeight: ing.isRequired ? 'bold' : '500' }}>
+                                                        {ing.name}
+                                                        {!ing.isRequired && (
+                                                            <span style={{
+                                                                fontSize: '0.7rem',
+                                                                color: 'var(--color-muted)',
+                                                                fontStyle: 'italic',
+                                                                marginLeft: '6px'
+                                                            }}>
+                                                                (optional)
+                                                            </span>
+                                                        )}
+                                                    </span>
+                                                </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                     <span style={{
                                                         fontSize: '0.75rem',

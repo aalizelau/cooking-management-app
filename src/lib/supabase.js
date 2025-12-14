@@ -526,11 +526,13 @@ export async function deleteRecipeImage(imageUrl) {
 
 /**
  * Fetch ingredient IDs linked to a specific recipe
+ * @param {string} recipeId - The recipe ID
+ * @returns {Promise<Array<{ingredientId: string, quantity: number|null, isRequired: boolean}>>}
  */
 export async function fetchRecipeIngredients(recipeId) {
     const { data, error } = await supabase
         .from('recipe_ingredients')
-        .select('ingredient_id, quantity')
+        .select('ingredient_id, quantity, is_required')
         .eq('recipe_id', recipeId);
 
     if (error) {
@@ -538,14 +540,20 @@ export async function fetchRecipeIngredients(recipeId) {
         throw error;
     }
 
-    // Return array of ingredient IDs
-    return data.map(item => item.ingredient_id);
+    // Return array of objects with ingredient_id, quantity, and is_required flag
+    return data.map(item => ({
+        ingredientId: item.ingredient_id,
+        quantity: item.quantity,
+        isRequired: item.is_required === true // Explicitly check for true (defaults to false)
+    }));
 }
 
 /**
  * Sync recipe ingredients - replaces all existing links with new ones
+ * @param {string} recipeId - The recipe ID
+ * @param {Array<string|{ingredientId: string, quantity: number|null, isRequired: boolean}>} ingredientLinks - Array of ingredient IDs or objects
  */
-export async function syncRecipeIngredients(recipeId, ingredientIds) {
+export async function syncRecipeIngredients(recipeId, ingredientLinks) {
     try {
         // First, delete all existing links for this recipe
         const { error: deleteError } = await supabase
@@ -559,16 +567,18 @@ export async function syncRecipeIngredients(recipeId, ingredientIds) {
         }
 
         // If no ingredients to link, we're done
-        if (!ingredientIds || ingredientIds.length === 0) {
+        if (!ingredientLinks || ingredientLinks.length === 0) {
             console.log('✅ All recipe ingredients removed');
             return true;
         }
 
-        // Insert new links
-        const linksToInsert = ingredientIds.map(ingredientId => ({
+        // Insert new links with is_required flag
+        // Support both old format (string IDs) and new format (objects)
+        const linksToInsert = ingredientLinks.map(link => ({
             recipe_id: recipeId,
-            ingredient_id: ingredientId,
-            quantity: null // Can be enhanced later
+            ingredient_id: typeof link === 'string' ? link : link.ingredientId,
+            quantity: typeof link === 'object' ? link.quantity : null,
+            is_required: typeof link === 'object' ? (link.isRequired === true) : false // Default to false for backward compatibility
         }));
 
         const { error: insertError } = await supabase
@@ -580,7 +590,7 @@ export async function syncRecipeIngredients(recipeId, ingredientIds) {
             throw insertError;
         }
 
-        console.log(`✅ Synced ${ingredientIds.length} ingredients to recipe ${recipeId}`);
+        console.log(`✅ Synced ${ingredientLinks.length} ingredients to recipe ${recipeId}`);
         return true;
     } catch (error) {
         console.error('Failed to sync recipe ingredients:', error);
