@@ -75,9 +75,14 @@ const InventoryDashboard = () => {
 
     // Helper function to count how many recipes an ingredient appears in
     const getRecipeCountForIngredient = (ingredientId) => {
-        return recipes.filter(recipe =>
-            (recipe.linkedIngredientIds || []).includes(ingredientId)
-        ).length;
+        return recipes.filter(recipe => {
+            const linkedIds = recipe.linkedIngredientIds || [];
+            // Check both old format (string IDs) and new format (objects with ingredientId)
+            return linkedIds.some(link => {
+                const id = typeof link === 'object' ? link.ingredientId : link;
+                return id === ingredientId;
+            });
+        }).length;
     };
 
     // Count ingredients for each tab
