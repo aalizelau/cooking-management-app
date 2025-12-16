@@ -735,10 +735,21 @@ export async function fetchMealPlan(startDate, endDate) {
 /**
  * Add or update a meal plan entry
  */
-export async function upsertMealPlan(date, slot, recipeId) {
+export async function upsertMealPlan(date, slot, recipeId = null, customText = null) {
+    const entry = { date, slot };
+
+    // Add either recipe_id or custom_text (not both)
+    if (recipeId) {
+        entry.recipe_id = recipeId;
+        entry.custom_text = null;
+    } else if (customText) {
+        entry.custom_text = customText;
+        entry.recipe_id = null;
+    }
+
     const { data, error } = await supabase
         .from('meal_plan')
-        .upsert({ date, slot, recipe_id: recipeId }, { onConflict: 'date, slot' })
+        .upsert(entry, { onConflict: 'date, slot' })
         .select()
         .single();
 

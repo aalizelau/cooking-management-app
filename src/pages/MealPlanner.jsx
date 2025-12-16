@@ -1,14 +1,250 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { fetchMealPlan, upsertMealPlan, deleteMealPlan } from '../lib/supabase';
-import { ChevronLeft, ChevronRight, Trash2, Calendar, ChevronDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Trash2, Calendar, ChevronDown, Edit2, Check, X, PlusCircle, Coffee, Pizza, Utensils, Box } from 'lucide-react';
+
+const MealSlot = ({ date, slot, plan, recipe, onDrop, onRemove, onUpdateText }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editText, setEditText] = useState('');
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        if (isEditing && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [isEditing]);
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+    };
+
+    const hasContent = recipe || plan?.custom_text;
+    const isCustomText = !recipe && plan?.custom_text;
+
+    const startEditing = (e) => {
+        e.stopPropagation();
+        setEditText(plan.custom_text || '');
+        setIsEditing(true);
+    };
+
+    const saveEdit = async () => {
+        if (editText.trim() !== (plan.custom_text || '')) {
+            await onUpdateText(plan.id, editText.trim());
+        }
+        setIsEditing(false);
+    };
+
+    const cancelEdit = () => {
+        setIsEditing(false);
+        setEditText(plan.custom_text || '');
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            saveEdit();
+        } else if (e.key === 'Escape') {
+            cancelEdit();
+        }
+    };
+
+    return (
+        <div
+            onDragOver={handleDragOver}
+            onDrop={(e) => onDrop(e, date, slot)}
+            // Only draggable if it's a recipe or non-editing custom text
+            draggable={!!(hasContent && !isEditing)}
+            onDragStart={(e) => {
+                const data = JSON.stringify({
+                    recipeId: recipe?.id,
+                    customText: plan?.custom_text,
+                    fromId: plan.id
+                });
+                e.dataTransfer.setData('application/json', data);
+                e.dataTransfer.effectAllowed = 'copyMove';
+            }}
+            style={{
+                height: '100px', // Slightly taller for better editing
+                backgroundColor: hasContent ? 'white' : 'rgba(0,0,0,0.02)',
+                border: '1px dashed var(--color-border)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '8px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: hasContent ? 'space-between' : 'center',
+                alignItems: hasContent ? 'stretch' : 'center',
+                transition: 'all 0.2s ease',
+                cursor: hasContent && !isEditing ? 'grab' : 'default',
+                position: 'relative',
+                overflow: 'hidden'
+            }}
+        >
+            {hasContent ? (
+                <>
+                    {recipe ? (
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'start', overflow: 'hidden' }}>
+                            {recipe.image && (
+                                <img
+                                    src={recipe.image}
+                                    alt={recipe.title}
+                                    style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover', flexShrink: 0 }}
+                                />
+                            )}
+                            <div style={{
+                                fontSize: '0.9rem',
+                                fontWeight: '600',
+                                lineHeight: '1.2',
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
+                            }}>
+                                {recipe.title}
+                            </div>
+                        </div>
+                    ) : (
+                        // Custom Text Content
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                            {isEditing ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: '4px' }}>
+                                    <textarea
+                                        ref={inputRef}
+                                        value={editText}
+                                        onChange={(e) => setEditText(e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                        onBlur={saveEdit}
+                                        style={{
+                                            flex: 1,
+                                            width: '100%',
+                                            padding: '4px',
+                                            fontSize: '0.9rem',
+                                            border: '1px solid var(--color-primary)',
+                                            borderRadius: '4px',
+                                            resize: 'none',
+                                            fontFamily: 'inherit'
+                                        }}
+                                    />
+                                    <div style={{ fontSize: '0.7rem', color: 'var(--color-muted)', textAlign: 'right' }}>
+                                        Enter to save
+                                    </div>
+                                </div>
+                            ) : (
+                                <div
+                                    onClick={startEditing}
+                                    title="Click to edit"
+                                    style={{
+                                        fontSize: '0.9rem',
+                                        fontWeight: '500',
+                                        lineHeight: '1.3',
+                                        fontStyle: 'italic',
+                                        color: '#555',
+                                        whiteSpace: 'pre-wrap',
+                                        cursor: 'text',
+                                        flex: 1,
+                                        display: 'flex',
+                                        alignItems: 'flex-start'
+                                        // display: '-webkit-box',
+                                        // WebkitLineClamp: 3,
+                                        // WebkitBoxOrient: 'vertical',
+                                        // overflow: 'hidden',
+                                    }}
+                                >
+                                    {plan.custom_text}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {!isEditing && (
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '4px', marginTop: '4px' }}>
+                            {isCustomText && (
+                                <button
+                                    onClick={startEditing}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        color: 'var(--color-muted)',
+                                        cursor: 'pointer',
+                                        padding: '4px'
+                                    }}
+                                >
+                                    <Edit2 size={14} />
+                                </button>
+                            )}
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onRemove(plan.id);
+                                }}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: 'var(--color-danger)',
+                                    cursor: 'pointer',
+                                    padding: '4px'
+                                }}
+                            >
+                                <Trash2 size={14} />
+                            </button>
+                        </div>
+                    )}
+                </>
+            ) : (
+                <span style={{ color: 'var(--color-muted)', fontSize: '0.8rem' }}>Drop here</span>
+            )}
+        </div>
+    );
+};
+
+const DraggableBlock = ({ text, icon: Icon, color = '#666', bg = '#fffbf0', border = '#e8d7a1' }) => {
+    const handleDragStart = (e) => {
+        const data = JSON.stringify({ customText: text });
+        e.dataTransfer.setData('application/json', data);
+        e.dataTransfer.effectAllowed = 'copy';
+    };
+
+    return (
+        <div
+            draggable
+            onDragStart={handleDragStart}
+            style={{
+                padding: '8px 12px',
+                backgroundColor: bg,
+                border: `1px solid ${border}`,
+                borderRadius: 'var(--radius-sm)',
+                cursor: 'grab',
+                fontSize: '0.9rem',
+                fontWeight: '500',
+                color: color,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginBottom: '8px',
+                transition: 'transform 0.1s, box-shadow 0.1s'
+            }}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'none';
+                e.currentTarget.style.boxShadow = 'none';
+            }}
+        >
+            {Icon && <Icon size={16} />}
+            {text}
+        </div>
+    );
+};
+
 
 const MealPlanner = () => {
     const { recipes, ingredients } = useApp();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [weekPlan, setWeekPlan] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [draggedRecipe, setDraggedRecipe] = useState(null);
     const [expandedCategories, setExpandedCategories] = useState({});
 
     // Calculate which 14-day period the current date falls into
@@ -91,17 +327,10 @@ const MealPlanner = () => {
         }
     };
 
-    const handleDragStart = (e, recipe, fromId = null) => {
-        setDraggedRecipe(recipe);
-        // Store both recipe ID and the source plan ID (if moving)
-        const data = JSON.stringify({ recipeId: recipe.id, fromId });
+    const handleDragStartRecipe = (e, recipe) => {
+        const data = JSON.stringify({ recipeId: recipe.id });
         e.dataTransfer.setData('application/json', data);
-        e.dataTransfer.effectAllowed = 'copyMove';
-    };
-
-    const handleDragOver = (e) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'copy';
+        e.dataTransfer.effectAllowed = 'copy';
     };
 
     const handleDrop = async (e, date, slot) => {
@@ -109,9 +338,9 @@ const MealPlanner = () => {
         const json = e.dataTransfer.getData('application/json');
         if (!json) return;
 
-        const { recipeId, fromId } = JSON.parse(json);
+        const { recipeId, customText, fromId } = JSON.parse(json);
 
-        if (!recipeId) return;
+        if (!recipeId && !customText) return;
 
         const dateStr = formatDate(date);
 
@@ -127,7 +356,8 @@ const MealPlanner = () => {
         const newEntry = {
             date: dateStr,
             slot,
-            recipe_id: recipeId,
+            recipe_id: recipeId || null,
+            custom_text: customText || null,
             id: 'temp-' + Date.now() // Temporary ID
         };
 
@@ -144,29 +374,22 @@ const MealPlanner = () => {
         });
 
         try {
-            // 1. If moving, delete old entry first (or update if we had an update API, but delete+insert is safer for unique constraints)
+            // 1. If moving, delete old entry first
             if (fromId && !fromId.startsWith('temp-')) {
                 await deleteMealPlan(fromId);
             }
-
             // 2. Insert new entry
-            await upsertMealPlan(dateStr, slot, recipeId);
-
+            await upsertMealPlan(dateStr, slot, recipeId, customText);
             loadPlan(); // Reload to get real IDs
         } catch (err) {
             console.error('Failed to save meal plan:', err);
-            alert('Failed to save meal plan');
             loadPlan(); // Revert
         }
-        setDraggedRecipe(null);
     };
 
     const handleRemove = async (id) => {
         if (!id) return;
-
-        // Optimistic
         setWeekPlan(prev => prev.filter(p => p.id !== id));
-
         if (!id.startsWith('temp-')) {
             try {
                 await deleteMealPlan(id);
@@ -177,81 +400,41 @@ const MealPlanner = () => {
         }
     };
 
+    const handleUpdateText = async (id, newText) => {
+        if (!id) return;
+        // setWeekPlan(prev => prev.map(p =>
+        //     p.id === id ? { ...p, custom_text: newText } : p
+        // ));
+        // Actually, we should just optimistic update:
+        setWeekPlan(prev => {
+            return prev.map(p => {
+                if (p.id === id) {
+                    return { ...p, custom_text: newText };
+                }
+                return p;
+            });
+        });
+
+        if (!id.startsWith('temp-')) {
+            try {
+                const plan = weekPlan.find(p => p.id === id);
+                // Note: plan here might be stale if we used it directly from state closure,
+                // but since we found it by ID which is unique, we need the *latest* plan info except for the text we are changing.
+                // Actually, `weekPlan` in `handleUpdateText` closure will be current render's weekPlan.
+                // Ideally we should rely on the args. New text is passed in.
+                // We need date and slot from the plan item.
+                if (plan) {
+                    await upsertMealPlan(plan.date, plan.slot, null, newText);
+                }
+            } catch (err) {
+                console.error('Failed to update text:', err);
+                loadPlan(); // Revert
+            }
+        }
+    };
+
     const getRecipe = (id) => recipes.find(r => r.id === id);
 
-    const renderSlot = (date, slot) => {
-        const dateStr = formatDate(date);
-        const plan = weekPlan.find(p => p.date === dateStr && p.slot === slot);
-        const recipe = plan ? getRecipe(plan.recipe_id) : null;
-
-        return (
-            <div
-                onDragOver={handleDragOver}
-                onDrop={(e) => handleDrop(e, date, slot)}
-                draggable={!!recipe}
-                onDragStart={(e) => recipe && handleDragStart(e, recipe, plan.id)}
-                style={{
-                    height: '90px',
-                    backgroundColor: recipe ? 'white' : 'rgba(0,0,0,0.02)',
-                    border: '1px dashed var(--color-border)',
-                    borderRadius: 'var(--radius-sm)',
-                    padding: '8px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: recipe ? 'space-between' : 'center',
-                    alignItems: recipe ? 'stretch' : 'center',
-                    transition: 'all 0.2s ease',
-                    cursor: recipe ? 'grab' : 'default',
-                    opacity: draggedRecipe && recipe && draggedRecipe.id === recipe.id && plan?.id ? 0.5 : 1,
-                    overflow: 'hidden'
-                }}
-            >
-                {recipe ? (
-                    <>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'start', overflow: 'hidden' }}>
-                            {recipe.image && (
-                                <img
-                                    src={recipe.image}
-                                    alt={recipe.title}
-                                    style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover', flexShrink: 0 }}
-                                />
-                            )}
-                            <div style={{
-                                fontSize: '0.9rem',
-                                fontWeight: '600',
-                                lineHeight: '1.2',
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis'
-                            }}>
-                                {recipe.title}
-                            </div>
-                        </div>
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation(); // Prevent drag start
-                                handleRemove(plan.id);
-                            }}
-                            style={{
-                                alignSelf: 'flex-end',
-                                background: 'none',
-                                border: 'none',
-                                color: 'var(--color-danger)',
-                                cursor: 'pointer',
-                                padding: '4px'
-                            }}
-                        >
-                            <Trash2 size={14} />
-                        </button>
-                    </>
-                ) : (
-                    <span style={{ color: 'var(--color-muted)', fontSize: '0.8rem' }}>Drop here</span>
-                )}
-            </div>
-        );
-    };
 
     return (
         <div style={{ display: 'flex', height: 'calc(100vh - 100px)', gap: 'var(--spacing-lg)' }}>
@@ -264,7 +447,21 @@ const MealPlanner = () => {
                 paddingRight: 'var(--spacing-md)',
                 overflowY: 'auto'
             }}>
-                <h3 style={{ marginBottom: 'var(--spacing-md)' }}>Recipes</h3>
+                <h3 style={{ marginBottom: 'var(--spacing-md)' }}>Meal Planner</h3>
+
+                {/* Toolbox */}
+                <div style={{ marginBottom: 'var(--spacing-lg)', paddingBottom: 'var(--spacing-md)', borderBottom: '2px solid var(--color-border)' }}>
+                    <h4 style={{ fontSize: '0.9rem', marginBottom: 'var(--spacing-sm)', color: 'var(--color-muted)', textTransform: 'uppercase' }}>
+                        Quick Add
+                    </h4>
+                    <DraggableBlock text="Note" icon={Edit2} />
+                    <DraggableBlock text="Leftovers" icon={Box} color="#155724" bg="#d4edda" border="#c3e6cb" />
+                    <DraggableBlock text="Eat Out" icon={Utensils} color="#721c24" bg="#f8d7da" border="#f5c6cb" />
+                    <DraggableBlock text="Order In" icon={Pizza} color="#004085" bg="#cce5ff" border="#b8daff" />
+                </div>
+
+
+                <h4 style={{ fontSize: '0.9rem', marginBottom: 'var(--spacing-md)', color: 'var(--color-muted)', textTransform: 'uppercase' }}>Recipes</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
                     {Object.entries(groupedRecipes).map(([category, categoryRecipes]) => (
                         <div key={category} style={{ marginBottom: 'var(--spacing-xs)' }}>
@@ -299,7 +496,7 @@ const MealPlanner = () => {
                                         <div
                                             key={recipe.id}
                                             draggable
-                                            onDragStart={(e) => handleDragStart(e, recipe)}
+                                            onDragStart={(e) => handleDragStartRecipe(e, recipe)}
                                             style={{
                                                 padding: '10px',
                                                 backgroundColor: 'white',
@@ -321,7 +518,6 @@ const MealPlanner = () => {
                                                 e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
                                             }}
                                         >
-
                                             <div style={{ fontSize: '0.9rem', fontWeight: '500' }}>{recipe.title}</div>
                                         </div>
                                     ))}
@@ -437,10 +633,28 @@ const MealPlanner = () => {
 
                             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
                                 <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--color-muted)', textTransform: 'uppercase' }}>Lunch</div>
-                                {renderSlot(day, 'lunch')}
+                                {/* Lunch Slot */}
+                                <MealSlot
+                                    date={day}
+                                    slot="lunch"
+                                    plan={weekPlan.find(p => p.date === formatDate(day) && p.slot === 'lunch') || {}}
+                                    recipe={weekPlan.find(p => p.date === formatDate(day) && p.slot === 'lunch')?.recipe_id ? getRecipe(weekPlan.find(p => p.date === formatDate(day) && p.slot === 'lunch').recipe_id) : null}
+                                    onDrop={handleDrop}
+                                    onRemove={handleRemove}
+                                    onUpdateText={handleUpdateText}
+                                />
 
                                 <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--color-muted)', textTransform: 'uppercase', marginTop: 'var(--spacing-xs)' }}>Dinner</div>
-                                {renderSlot(day, 'dinner')}
+                                {/* Dinner Slot */}
+                                <MealSlot
+                                    date={day}
+                                    slot="dinner"
+                                    plan={weekPlan.find(p => p.date === formatDate(day) && p.slot === 'dinner') || {}}
+                                    recipe={weekPlan.find(p => p.date === formatDate(day) && p.slot === 'dinner')?.recipe_id ? getRecipe(weekPlan.find(p => p.date === formatDate(day) && p.slot === 'dinner').recipe_id) : null}
+                                    onDrop={handleDrop}
+                                    onRemove={handleRemove}
+                                    onUpdateText={handleUpdateText}
+                                />
                             </div>
                         </div>
                     ))}
