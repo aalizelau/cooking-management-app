@@ -113,12 +113,17 @@ const ShoppingCart = () => {
     const searchResults = searchQuery.length > 0
         ? ingredients.filter(ing =>
             ing.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-            !cart.some(item => item.ingredientId === ing.id)
+            !cart.some(item => item.ingredientId === ing.id) &&
+            !wishlist.some(item => item.ingredientId === ing.id)
         )
         : [];
 
     const handleAddToCart = (id) => {
-        addToCart(id);
+        if (activeTab === 'wishlist') {
+            addToWishlist(id);
+        } else {
+            addToCart(id);
+        }
         setSearchQuery('');
     };
 

@@ -8,7 +8,7 @@ import EmojiPicker from 'emoji-picker-react';
 const RecipeDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { recipes, updateRecipe, deleteRecipe, ingredients, cart, addToCart, addIngredient } = useApp();
+    const { recipes, updateRecipe, deleteRecipe, ingredients, cart, wishlist, addToWishlist, addIngredient } = useApp();
 
     const [recipe, setRecipe] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -739,7 +739,8 @@ const RecipeDetail = () => {
                             ) : (
                                 <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                                     {linkedIngredientsData.map(ing => {
-                                        const isInCart = cart.some(item => item.ingredientId === ing.id);
+                                        const isInCart = cart.some(item => item.ingredientId === ing.id) ||
+                                                        wishlist.some(item => item.ingredientId === ing.id);
                                         return (
                                             <li key={ing.id} style={{
                                                 padding: '8px',
@@ -756,7 +757,7 @@ const RecipeDetail = () => {
                                                     {ing.isRequired && <span style={{ color: '#ffc107', fontSize: '1rem' }}>★</span>}
                                                     <span style={{ fontWeight: '500' }}>
                                                         {ing.name}
-                                                   
+
                                                     </span>
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -772,7 +773,7 @@ const RecipeDetail = () => {
                                                     )}
                                                     {ing.stockStatus !== 'In Stock' && (
                                                         <button
-                                                            onClick={() => !isInCart && addToCart(ing.id)}
+                                                            onClick={() => !isInCart && addToWishlist(ing.id)}
                                                             disabled={isInCart}
                                                             style={{
                                                                 padding: '4px 8px',

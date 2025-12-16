@@ -4,7 +4,7 @@ import { useApp } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 
 const IngredientCard = ({ ingredient, recipeCount = 0, showRecipeCount = false }) => {
-    const { updateIngredient, addToCart, removeFromCart, cart, wishlist } = useApp();
+    const { updateIngredient, addToWishlist, removeFromWishlist, cart, wishlist } = useApp();
     const navigate = useNavigate();
     const isInCart = cart.some(item => item.ingredientId === ingredient.id) ||
                      wishlist.some(item => item.ingredientId === ingredient.id);
@@ -17,9 +17,9 @@ const IngredientCard = ({ ingredient, recipeCount = 0, showRecipeCount = false }
     const handleToggleCart = (e) => {
         e.stopPropagation(); // Prevent card click navigation
         if (isInCart) {
-            removeFromCart(ingredient.id);
+            removeFromWishlist(ingredient.id);
         } else {
-            addToCart(ingredient.id);
+            addToWishlist(ingredient.id);
         }
     };
 

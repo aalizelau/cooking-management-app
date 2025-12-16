@@ -15,7 +15,7 @@ const IngredientDetail = ({ id: propId }) => {
     const backPath = location.state?.from === 'compare' ? '/compare' : '/inventory';
     const backLabel = location.state?.from === 'compare' ? 'Back to Compare' : 'Back to Inventory';
 
-    const { ingredients, updateIngredient, deleteIngredient, addToCart, removeFromCart, cart, wishlist, removeFromWishlist, recipes } = useApp();
+    const { ingredients, updateIngredient, deleteIngredient, addToWishlist, removeFromWishlist, cart, wishlist, recipes } = useApp();
     const isInCart = cart.some(item => item.ingredientId === id) ||
                      wishlist.some(item => item.ingredientId === id);
 
@@ -365,7 +365,7 @@ const IngredientDetail = ({ id: propId }) => {
                                             </span>
                                             <span
                                                 className="badge"
-                                                onClick={() => isInCart ? removeFromCart(ingredient.id) : addToCart(ingredient.id)}
+                                                onClick={() => isInCart ? removeFromWishlist(ingredient.id) : addToWishlist(ingredient.id)}
                                                 style={{
                                                     backgroundColor: isInCart ? 'var(--color-primary)' : 'var(--color-tag-bg)',
                                                     color: isInCart ? '#fff' : 'var(--color-text)',
