@@ -599,11 +599,21 @@ const IngredientDetail = ({ id: propId }) => {
             <div className="card" style={{ marginTop: 'var(--spacing-lg)' }}>
                 <h3>Linked Recipes</h3>
                 <div style={{ marginTop: 'var(--spacing-md)' }}>
-                    {recipes.filter(r => (r.linkedIngredientIds || []).includes(ingredient.id)).length === 0 ? (
+                    {recipes.filter(r => {
+                        const linkedIds = (r.linkedIngredientIds || []).map(link =>
+                            typeof link === 'object' ? link.ingredientId : link
+                        );
+                        return linkedIds.includes(ingredient.id);
+                    }).length === 0 ? (
                         <p style={{ color: 'var(--color-muted)' }}>No recipes linked to this ingredient yet.</p>
                     ) : (
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 'var(--spacing-md)' }}>
-                            {recipes.filter(r => (r.linkedIngredientIds || []).includes(ingredient.id)).map(recipe => (
+                            {recipes.filter(r => {
+                                const linkedIds = (r.linkedIngredientIds || []).map(link =>
+                                    typeof link === 'object' ? link.ingredientId : link
+                                );
+                                return linkedIds.includes(ingredient.id);
+                            }).map(recipe => (
                                 <div
                                     key={recipe.id}
                                     onClick={() => navigate(`/recipes/${recipe.id}`)}
