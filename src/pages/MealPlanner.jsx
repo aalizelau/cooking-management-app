@@ -11,10 +11,27 @@ const MealPlanner = () => {
     const [draggedRecipe, setDraggedRecipe] = useState(null);
     const [expandedCategories, setExpandedCategories] = useState({});
 
-    // Calculate 14 days (2 weeks) starting from the beginning of the current week
+    // Calculate which 14-day period the current date falls into
     const planDays = (() => {
+        const day = currentDate.getDate();
         const start = new Date(currentDate);
-        start.setDate(start.getDate() - start.getDay()); // Start from Sunday
+
+        // Get the number of days in current month
+        const daysInMonth = new Date(start.getFullYear(), start.getMonth() + 1, 0).getDate();
+
+        // Determine which period based on month length
+        if (day <= 14) {
+            start.setDate(1); // First period: 1st-14th
+        } else if (daysInMonth <= 28) {
+            // For February (28 or 29 days), only have 2 periods
+            start.setDate(15); // Second period: 15th onwards
+        } else if (day <= 28) {
+            start.setDate(15); // Second period: 15th-28th
+        } else {
+            start.setDate(29); // Third period: 29th onwards
+        }
+
+        // Generate 14 consecutive days from the start
         return Array.from({ length: 14 }, (_, i) => {
             const d = new Date(start);
             d.setDate(d.getDate() + i);
@@ -321,7 +338,37 @@ const MealPlanner = () => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
                         <button
                             className="btn btn-outline"
-                            onClick={() => setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() - 14)))}
+                            onClick={() => {
+                                const newDate = new Date(currentDate);
+                                const day = newDate.getDate();
+                                const daysInMonth = new Date(newDate.getFullYear(), newDate.getMonth() + 1, 0).getDate();
+
+                                if (day <= 14) {
+                                    // From period 1 -> go to previous month's last period
+                                    newDate.setMonth(newDate.getMonth() - 1);
+                                    const prevMonthDays = new Date(newDate.getFullYear(), newDate.getMonth() + 1, 0).getDate();
+
+                                    if (prevMonthDays <= 28) {
+                                        // Previous month is February, go to period 2 (day 15)
+                                        newDate.setDate(15);
+                                    } else {
+                                        // Previous month has 30/31 days, go to period 3 (day 29)
+                                        newDate.setDate(29);
+                                    }
+                                } else if (daysInMonth <= 28) {
+                                    // Current month is February
+                                    // From period 2 -> go to period 1
+                                    newDate.setDate(1);
+                                } else if (day <= 28) {
+                                    // From period 2 -> go to period 1
+                                    newDate.setDate(1);
+                                } else {
+                                    // From period 3 -> go to period 2
+                                    newDate.setDate(15);
+                                }
+
+                                setCurrentDate(newDate);
+                            }}
                         >
                             <ChevronLeft size={20} />
                         </button>
@@ -331,7 +378,30 @@ const MealPlanner = () => {
                         </h2>
                         <button
                             className="btn btn-outline"
-                            onClick={() => setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() + 14)))}
+                            onClick={() => {
+                                const newDate = new Date(currentDate);
+                                const day = newDate.getDate();
+                                const daysInMonth = new Date(newDate.getFullYear(), newDate.getMonth() + 1, 0).getDate();
+
+                                if (day <= 14) {
+                                    // From period 1 -> go to period 2
+                                    newDate.setDate(15);
+                                } else if (daysInMonth <= 28) {
+                                    // Current month is February (only 2 periods)
+                                    // From period 2 -> go to next month's period 1
+                                    newDate.setMonth(newDate.getMonth() + 1);
+                                    newDate.setDate(1);
+                                } else if (day <= 28) {
+                                    // From period 2 -> go to period 3
+                                    newDate.setDate(29);
+                                } else {
+                                    // From period 3 -> go to next month's period 1
+                                    newDate.setMonth(newDate.getMonth() + 1);
+                                    newDate.setDate(1);
+                                }
+
+                                setCurrentDate(newDate);
+                            }}
                         >
                             <ChevronRight size={20} />
                         </button>
