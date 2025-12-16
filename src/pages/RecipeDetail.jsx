@@ -8,7 +8,7 @@ import EmojiPicker from 'emoji-picker-react';
 const RecipeDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { recipes, updateRecipe, deleteRecipe, ingredients, cart, wishlist, addToWishlist, addIngredient } = useApp();
+    const { recipes, updateRecipe, deleteRecipe, ingredients, cart, wishlist, addToWishlist, removeFromWishlist, addIngredient } = useApp();
 
     const [recipe, setRecipe] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -773,15 +773,14 @@ const RecipeDetail = () => {
                                                     )}
                                                     {ing.stockStatus !== 'In Stock' && (
                                                         <button
-                                                            onClick={() => !isInCart && addToWishlist(ing.id)}
-                                                            disabled={isInCart}
+                                                            onClick={() => isInCart ? removeFromWishlist(ing.id) : addToWishlist(ing.id)}
                                                             style={{
                                                                 padding: '4px 8px',
                                                                 fontSize: '0.75rem',
                                                                 backgroundColor: isInCart ? 'var(--color-success)' : 'var(--color-primary)',
                                                                 color: 'white',
                                                                 borderRadius: '4px',
-                                                                cursor: isInCart ? 'default' : 'pointer',
+                                                                cursor: 'pointer',
                                                                 opacity: isInCart ? 0.8 : 1,
                                                                 border: 'none'
                                                             }}
