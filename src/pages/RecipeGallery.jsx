@@ -162,6 +162,7 @@ const RecipeGallery = () => {
                                 <option value="Side">Side</option>
                                 <option value="Half-done">Half-done</option>
                                 <option value="Done">Done</option>
+                                <option value="Archive">Archive</option>
                             </select>
                         </div>
 
@@ -194,7 +195,7 @@ const RecipeGallery = () => {
             </div>
 
             <div style={{ display: 'flex', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-lg)', overflowX: 'auto', paddingBottom: '4px' }}>
-                {['Done', 'Side', 'Half-done', 'New', 'All'].map(tab => (
+                {['Done', 'Side', 'Half-done', 'New', 'Archive', 'All'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}

@@ -411,6 +411,7 @@ const RecipeDetail = () => {
                                                 <option value="Side">Side</option>
                                                 <option value="Half-done">Half-done</option>
                                                 <option value="New">New</option>
+                                                <option value="Archive">Archive</option>
                                             </select>
                                             <input
                                                 value={editedRecipe.image || ''}
