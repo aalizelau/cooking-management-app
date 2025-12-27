@@ -11,7 +11,7 @@ const IngredientCard = ({ ingredient, recipeCount = 0, showRecipeCount = false }
 
     const handleConsume = (e) => {
         e.stopPropagation(); // Prevent card click navigation
-        updateIngredient(ingredient.id, { stockStatus: 'Out of Stock' });
+        updateIngredient(ingredient.id, { stockStatus: 'Out of Stock', boughtDate: '' });
     };
 
     const handleToggleCart = (e) => {

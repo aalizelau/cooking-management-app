@@ -95,7 +95,7 @@ const IngredientDetail = ({ id: propId }) => {
     };
 
     const handleSave = () => {
-        updateIngredient(ingredient.id, {
+        const updates = {
             name: editForm.name,
             category: editForm.category,
             emoji: editForm.emoji,
@@ -106,7 +106,14 @@ const IngredientDetail = ({ id: propId }) => {
             shelfLifeDays: editForm.shelfLifeDays,
             boughtDate: editForm.boughtDate,
             notes: editForm.notes
-        });
+        };
+
+        // Reset boughtDate when moving to Out of Stock
+        if (editForm.stockStatus === 'Out of Stock' && ingredient.stockStatus === 'In Stock') {
+            updates.boughtDate = '';
+        }
+
+        updateIngredient(ingredient.id, updates);
         setIsEditing(false);
         setShowEmojiPicker(false);
     };
@@ -348,9 +355,15 @@ const IngredientDetail = ({ id: propId }) => {
                                         <>
                                             <span
                                                 className="badge"
-                                                onClick={() => updateIngredient(ingredient.id, {
-                                                    stockStatus: ingredient.stockStatus === 'In Stock' ? 'Out of Stock' : 'In Stock'
-                                                })}
+                                                onClick={() => {
+                                                    const newStatus = ingredient.stockStatus === 'In Stock' ? 'Out of Stock' : 'In Stock';
+                                                    const updates = { stockStatus: newStatus };
+                                                    // Reset boughtDate when moving to Out of Stock
+                                                    if (newStatus === 'Out of Stock') {
+                                                        updates.boughtDate = '';
+                                                    }
+                                                    updateIngredient(ingredient.id, updates);
+                                                }}
                                                 style={{
                                                     backgroundColor: ingredient.stockStatus === 'In Stock' ? 'var(--color-primary)' : 'var(--color-tag-bg)',
                                                     color: ingredient.stockStatus === 'In Stock' ? '#fff' : 'var(--color-text)',
