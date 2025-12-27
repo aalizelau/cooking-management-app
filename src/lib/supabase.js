@@ -227,8 +227,13 @@ function transformToDB(appIngredient) {
         emoji: appIngredient.emoji,
         stock_status: appIngredient.stockStatus,
         default_location: appIngredient.defaultLocation,
-        history: appIngredient.history || []
+        default_location: appIngredient.defaultLocation
     };
+
+    // Only include history if it has a value (don't default to empty array, otherwise we overwrite on partial updates)
+    if (appIngredient.history) {
+        dbIngredient.history = appIngredient.history;
+    }
 
     // Only include storage_tips if it has a value
     if (appIngredient.storageTips) {
